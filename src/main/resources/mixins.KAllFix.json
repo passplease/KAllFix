@@ -1,0 +1,16 @@
+{
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "package": "n1luik.KAllFix.mixin",
+  "refmap": "mixins.K_multi_threading.refmap.json",
+  "plugin": "n1luik.KAllFix.Imixin.Plugin",
+  "server": [
+  ],
+  "mixins": [
+    "ex.EntityMixin",
+    "mixinfix.alexscaves.MagnetUtilMixin",
+    "mixinfix.biolith.MinecraftServerMixin",
+    "mixinfix.biolith.terrablender.InitializationHandlerMixin",
+    "mixinfix.gtceu.MedicalConditionTrackerMixin"
+  ]
+}
