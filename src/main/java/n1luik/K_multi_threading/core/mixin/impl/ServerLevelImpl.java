@@ -106,7 +106,7 @@ public abstract class ServerLevelImpl implements GetBlockTickSync {
 
         //Base.LOGGER.info("tickEntity1 {}",entities.length);
         if (entities.length >= 2) {
-            CalculateTask submit = (new CalculateTask("TickEntities", 0, entities.length, (i) -> {
+            CalculateTask submit = (new CalculateTask(()->"TickEntities", 0, entities.length, (i) -> {
 
                 //blockTickSync._run(c-> {
 
