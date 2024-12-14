@@ -8,7 +8,7 @@
 
 可以用-DKMT_D=false和-DKAllFix_D=false禁用独立mod
 
-##  食用方法
+##  使用方法
 
 1: 把gradle.properties里的代理删了 
     
