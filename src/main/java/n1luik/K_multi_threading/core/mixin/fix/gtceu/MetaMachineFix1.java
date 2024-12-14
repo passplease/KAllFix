@@ -21,13 +21,13 @@ import java.util.List;
 public class MetaMachineFix1 {
 
     @Mutable
-    @Shadow @Final protected List<MachineTrait> traits;
+    @Shadow(remap = false) @Final protected List<MachineTrait> traits;
 
     @Mutable
-    @Shadow @Final private List<TickableSubscription> serverTicks;
+    @Shadow(remap = false) @Final private List<TickableSubscription> serverTicks;
 
     @Mutable
-    @Shadow @Final private List<TickableSubscription> waitingToAdd;
+    @Shadow(remap = false) @Final private List<TickableSubscription> waitingToAdd;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void fix1(IMachineBlockEntity holder, CallbackInfo ci){

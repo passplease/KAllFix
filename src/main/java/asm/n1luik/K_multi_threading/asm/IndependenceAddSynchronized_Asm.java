@@ -16,6 +16,7 @@ import java.util.*;
 public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> {
     public static final List<String[]> stringsList = new ArrayList<>(List.<String[]>of(
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.startTickingChunk(Lnet/minecraft/world/level/chunk/LevelChunk;)V")
+            ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.startTickingChunk(Lnet/minecraft/world/level/chunk/LevelChunk;)V")
     ));
 
     int posfilter = Opcodes.ACC_PUBLIC;
@@ -38,7 +39,7 @@ public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> 
                         for (MethodNode method : input.methods) {//防止没有函数然后还添加了，会导致浪费一定的资源
                             if ((method.name.equals(strings[1]) && method.desc.equals(strings[2]))) {
                                 debug_add2 = true;
-                                input.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL, name
+                                input.visitField(Opcodes.ACC_PRIVATE/* | Opcodes.ACC_FINAL*/, name
                                         , "Ljava/lang/Object;", null, null);
                                 for (MethodNode method2 : input.methods) {
                                     if (method2.name.equals("<init>")) {

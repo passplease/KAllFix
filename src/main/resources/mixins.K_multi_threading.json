@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "n1luik.K_multi_threading.core.mixin",
   "refmap": "mixins.K_multi_threading.refmap.json",
+  "plugin": "n1luik.K_multi_threading.core.Imixin.Plugin",
   "server": [
     "ChunkAccessMixin",
     "UtilMixin1",
@@ -23,9 +24,9 @@
     "fix.mek.TransmitterNetworkRegistry_OrphanPathFinder",
     "fix.nuclearcraft.FluidCapabilityHandlerFix1",
     "fix.nuclearcraft.FluidHandlerWrapperFix1",
-    "impl.LevelTickImpl",
-    "impl.LevelTickImpl4Mixin",
-    "impl.MinecraftServerTickMixin1",
+    "impl.LevelImpl1",
+    "impl.LevelTicksImpl1",
+    "impl.MinecraftServerImpl1",
     "impl.ServerLevelImpl",
     "impl.WaitImplMinecraftServerMixin",
     "JProfiler.serverRunTick",
@@ -46,6 +47,8 @@
     "minecraftfix.ServerPlayerGameModeFix1"
   ],
   "mixins": [
+    "debug.NbtIoDebug",
+    "impl.MinecraftServerImpl2",
     "k.CommandsMixin",
     "k.Connection_1Mixin",
     "k.ConnectionMixin",

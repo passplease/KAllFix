@@ -8,9 +8,18 @@
   ],
   "mixins": [
     "ex.EntityMixin",
+    "mixinfix.MinecraftServerMixin2",
     "mixinfix.alexscaves.MagnetUtilMixin",
     "mixinfix.biolith.MinecraftServerMixin",
+    "mixinfix.biolith.MultiNoiseBiomeSource2",
     "mixinfix.biolith.terrablender.InitializationHandlerMixin",
-    "mixinfix.gtceu.MedicalConditionTrackerMixin"
+    "mixinfix.biolith.test_all.MultiNoiseBiomeSourceMixin",
+    "mixinfix.biolith.test_else.TerramityModBiomesMixin",
+    "mixinfix.destroy.BadgeHandlerMixin",
+    "mixinfix.fancyenchantments.EnchantmentEventsMixin",
+    "mixinfix.LivingEntityMixin1",
+    "mixinfix.gtceu.MedicalConditionTrackerMixin",
+    "unsafe.ChatPacket256Mixin",
+    "unsafe.NbtIoMixin_NotGZip"
   ]
 }

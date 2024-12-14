@@ -30,9 +30,18 @@
 
 ##  功能
 - 修复Biolith兼容问题
+- (MCreator所有模组, terramity（尝试解决这一类问题）)
 - 添加可独立关闭的多线程
 - 解决alexscaves磁场依托答辩问题
 - 解决gtm一直有辐射问题（就是把辐射ban了[捂脸]）
 - 解决createdieselgenerators不会用导致他的mixin依托答辩问题
+- (不安全)（需要开启-DKAF-NbtIoMixin_NotGZip=true)加一个try catch解决nbtio的gzip问题
+- 解决老destroy的数据库连不上就崩服问题
+
+##  可开启
+- -DIndependencePlayer=true 开启玩家异步，这玩意大概率是负优化
+- -DFixBiolithBugMode2=true 开启这个尝试解决大部分Biolith兼容问题但是可能会出大bug
 
   
+#####   吐槽
+- 我服了这个 [我们走过的生物群系, 余烬复刻版, Corgilib, Fantactic Biomes Cave, Oh-The-Trees-Youll-Grow, qraftyfied, scorched, terramity] 我加进去就tm报错nbt打包不是gzip有病吧我还要调，然后还不能正常保存世界还以为forge那个sb的根本不报错我找了半个月

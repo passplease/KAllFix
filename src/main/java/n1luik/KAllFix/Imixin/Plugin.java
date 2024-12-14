@@ -23,10 +23,30 @@ public class Plugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        String s = "n1luik.KAllFix.mixin.unsafe.";
+        if (mixinClassName.startsWith(s)){
+            return Boolean.getBoolean("KAF-"+mixinClassName.substring(s.length()));
+        }
         final boolean biolith = isModLoaded("biolith");
         boolean terrablender = isModLoaded("terrablender");
+        String s2 = "n1luik.KAllFix.mixin.mixinfix.biolith.test_else.";
+        String s3 = "n1luik.KAllFix.mixin.mixinfix.biolith.test_all.";
+        String s4 = "n1luik.KAllFix.mixin.mixinfix.fancyenchantments.";
+        boolean fixBiolithBugMode2 = Boolean.getBoolean("FixBiolithBugMode2");
+        if (!biolith && mixinClassName.startsWith(s2) && fixBiolithBugMode2) {
+            return false;
+        }
+        if (!biolith && mixinClassName.startsWith(s3) && !fixBiolithBugMode2) {
+            return false;
+        }
+        if (mixinClassName.startsWith(s4)) {
+            return isModLoaded("fancyenchantments");
+        }
+        //KAF-NbtAZ
         return switch (mixinClassName) {
             case "n1luik.KAllFix.mixin.mixinfix.biolith.MinecraftServerMixin" -> biolith;
+            case "n1luik.KAllFix.mixin.mixinfix.biolith.test_all.MultiNoiseBiomeSourceMixin" -> biolith;
+            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin2" -> biolith;
             case "n1luik.KAllFix.mixin.mixinfix.biolith.terrablender.InitializationHandlerMixin" ->
                     biolith && terrablender;
             default -> true;

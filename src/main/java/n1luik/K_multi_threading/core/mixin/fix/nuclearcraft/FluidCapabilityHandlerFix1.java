@@ -18,7 +18,7 @@ import java.util.List;
 
 @Mixin(value = FluidCapabilityHandler.class, priority = 1100)
 public class FluidCapabilityHandlerFix1 {
-    @Shadow public HashMap<Integer, List<FluidStack>> allowedFluids;
+    @Shadow(remap = false) public HashMap<Integer, List<FluidStack>> allowedFluids;
 
     @Inject(method = "isValidSlotFluid", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"), cancellable = true, remap = false)
     public void fix2(int id, FluidStack fluid, CallbackInfoReturnable<Boolean> cir){
