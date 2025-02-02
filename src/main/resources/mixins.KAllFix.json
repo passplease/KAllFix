@@ -18,7 +18,7 @@
     "mixinfix.destroy.BadgeHandlerMixin",
     "mixinfix.fancyenchantments.EnchantmentEventsMixin",
     "mixinfix.LivingEntityMixin1",
-    "mixinfix.gtceu.MedicalConditionTrackerMixin",
+    "unsafe.gtceu.MedicalConditionTrackerMixin",
     "unsafe.ChatPacket256Mixin",
     "unsafe.NbtIoMixin_NotGZip"
   ]

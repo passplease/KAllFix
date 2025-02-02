@@ -1,4 +1,4 @@
-package n1luik.KAllFix.mixin.mixinfix.gtceu;
+package n1luik.KAllFix.mixin.unsafe.gtceu;
 
 import com.gregtechceu.gtceu.api.data.medicalcondition.MedicalCondition;
 import com.gregtechceu.gtceu.common.capability.MedicalConditionTracker;
