@@ -1,12 +1,14 @@
 package asm.n1luik.KAllFix.asm;
 
 import asm.n1luik.KAllFix.asm.mod.createdieselgenerators.EntityMixinAsm;
+import asm.n1luik.KAllFix.asm.mod.fabric_object_builder_api.TradeOffersTypeAwareBuyForOneEmeraldFactoryMixinAsm;
 import cpw.mods.modlauncher.api.IEnvironment;
 import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.IncompatibleEnvironmentException;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -28,8 +30,12 @@ public class KAllFixAsm implements ITransformationService {
 
     @Override
     public @NotNull List<ITransformer> transformers() {
-        return List.of(
+        List<ITransformer> transformers = new ArrayList<>(List.of(
                 new EntityMixinAsm()
-        );
+        ));
+        if (Boolean.getBoolean("KAF-Fix_fabric-object-builder-api.jar")){
+            transformers.add(new TradeOffersTypeAwareBuyForOneEmeraldFactoryMixinAsm());
+        }
+        return transformers;
     }
 }

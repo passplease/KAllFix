@@ -42,3 +42,4 @@
 - -DIndependencePlayer=true 开启玩家异步，这玩意大概率是负优化
 - -DFixBiolithBugMode2=true 开启这个尝试解决大部分Biolith兼容问题但是可能会出大bug
 - -Dgtceu.MedicalConditionTrackerMixin=true 禁止添加gtm的辐射
+- -DKAF-Fix_fabric-object-builder-api.jar=true 修复信雅互联的fabric-object-builder-api不兼容47.3.27的问题，我因为这个问题让这个mod晚发了半个月他们还没有解决

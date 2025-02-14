@@ -97,6 +97,8 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         //iMainThreadExecutor = (IMainThreadExecutor) mainThreadProcessor;
         //cacheThread = new Thread(this::chunkCacheCleanup, "Chunk Cache Cleaner " + worldIn.dimension().location().getPath());
         //cacheThread.start();
+
+        //这里出现过locks没有数据
         for (int i = 0; i < BuiltInRegistries.CHUNK_STATUS.size(); i++) {
             locks.add(new Object());
         }
