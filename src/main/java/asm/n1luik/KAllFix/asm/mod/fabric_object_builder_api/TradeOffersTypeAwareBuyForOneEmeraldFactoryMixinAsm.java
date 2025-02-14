@@ -15,7 +15,7 @@ public class TradeOffersTypeAwareBuyForOneEmeraldFactoryMixinAsm implements ITra
     public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
         try {
             ClassNode classNode = new ClassNode();
-            byte[] bytes = TradeOffersTypeAwareBuyForOneEmeraldFactoryMixinAsm.class.getResourceAsStream("/fix/KAllFix/fabric-object-builder-api-v1-11.1.3/TradeOffersTypeAwareBuyForOneEmeraldFactoryMixin.class").readAllBytes();]
+            byte[] bytes = TradeOffersTypeAwareBuyForOneEmeraldFactoryMixinAsm.class.getResourceAsStream("/fix/KAllFix/fabric-object-builder-api-v1-11.1.3/TradeOffersTypeAwareBuyForOneEmeraldFactoryMixin.class").readAllBytes();
             new ClassReader(bytes).accept(classNode, 0);
             return classNode;
         } catch (IOException e) {
