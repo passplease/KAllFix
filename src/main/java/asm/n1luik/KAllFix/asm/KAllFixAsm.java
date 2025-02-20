@@ -1,7 +1,7 @@
 package asm.n1luik.KAllFix.asm;
 
 import asm.n1luik.KAllFix.asm.mod.createdieselgenerators.EntityMixinAsm;
-import asm.n1luik.KAllFix.asm.mod.fabric_object_builder_api.TradeOffersTypeAwareBuyForOneEmeraldFactoryMixinAsm;
+import asm.n1luik.KAllFix.asm.mod.fabric_object_builder_api.ReadClassAsm;
 import cpw.mods.modlauncher.api.IEnvironment;
 import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.api.ITransformer;
@@ -34,7 +34,7 @@ public class KAllFixAsm implements ITransformationService {
                 new EntityMixinAsm()
         ));
         if (Boolean.getBoolean("KAF-Fix_fabric-object-builder-api.jar")){
-            transformers.add(new TradeOffersTypeAwareBuyForOneEmeraldFactoryMixinAsm());
+            transformers.add(new ReadClassAsm("fabric-object-builder-api", "v1-11.1.3", "TradeOffersTypeAwareBuyForOneEmeraldFactoryMixin"));
         }
         return transformers;
     }

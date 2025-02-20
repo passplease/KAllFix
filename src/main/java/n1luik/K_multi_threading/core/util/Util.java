@@ -40,6 +40,7 @@ public class Util {
                 "K_multi_threading.mapping",
                 "asm/n1luik/K_multi_threading",
                 "asm/n1luik/KAllFix",
+                "asm/KAllFix.fix/",
                 "META-INF/services"
                 );
         List<String> names = new ArrayList<>();

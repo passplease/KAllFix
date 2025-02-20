@@ -10,12 +10,16 @@ import org.objectweb.asm.tree.ClassNode;
 import java.io.IOException;
 import java.util.Set;
 
-public class TradeOffersTypeAwareBuyForOneEmeraldFactoryMixinAsm implements ITransformer<ClassNode> {
+public record ReadClassAsm(String file, String version, String target) implements ITransformer<ClassNode> {
     @Override
     public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
         try {
             ClassNode classNode = new ClassNode();
-            byte[] bytes = TradeOffersTypeAwareBuyForOneEmeraldFactoryMixinAsm.class.getResourceAsStream("/fix/KAllFix/fabric-object-builder-api-v1-11.1.3/TradeOffersTypeAwareBuyForOneEmeraldFactoryMixin.class").readAllBytes();
+            byte[] bytes = ReadClassAsm.class.getResourceAsStream("/asm/KAllFix.fix/"+file+"/"+version+"/"+target+".fix").readAllBytes();
+            bytes[0] = (byte)0xCA;
+            bytes[1] = (byte)0xFE;
+            bytes[2] = (byte)0xBA;
+            bytes[3] = (byte)0xBE;
             new ClassReader(bytes).accept(classNode, 0);
             return classNode;
         } catch (IOException e) {
