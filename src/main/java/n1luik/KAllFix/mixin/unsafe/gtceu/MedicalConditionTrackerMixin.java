@@ -20,9 +20,9 @@ public class MedicalConditionTrackerMixin {
 
         if (com.gregtechceu.gtceu.common.data.GTMedicalConditions.CARCINOGEN == condition) {
             ci.cancel();
-        //    StackWalker.getInstance().forEach(v -> {
-        //        k_multi_threading$logger.info(v.toString());
-        //    });
+            //    StackWalker.getInstance().forEach(v -> {
+            //        k_multi_threading$logger.info(v.toString());
+            //    });
         }
     }
 }

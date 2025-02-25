@@ -1,6 +1,7 @@
 package n1luik.K_multi_threading.core.mixin.minecraftfix;
 
 import lombok.Getter;
+import lombok.Setter;
 import n1luik.K_multi_threading.core.Imixin.IMainThreadExecutor;
 import n1luik.K_multi_threading.core.base.CalculateTask;
 import net.minecraft.server.level.ServerChunkCache;
@@ -8,6 +9,7 @@ import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -21,16 +23,17 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
     protected ServerChunkCache_MainThreadExecutorFix2(String p_18686_) {
         super(p_18686_);
     }
+    @Unique
     @Getter
     private Thread callThread;
+    @Unique
     @Getter
     private boolean isCall;
+    @Unique
+    @Setter
     private boolean m2 = true;
+    @Unique
     private int multiThreadingSize = 0;
-
-    public void setM2(boolean m2) {
-        this.m2 = m2;
-    }
 
     @Override
     public void pushThread() {

@@ -1,7 +1,6 @@
-package n1luik.KAllFix.mixin.mixinfix.biolith.test_else;
+package n1luik.KAllFix.mixin.mixinfix.biolith.mod;
 
 import n1luik.KAllFix.fix.biolith.Fun_biolith;
-import n1luik.K_multi_threading.core.Base;
 import net.mcreator.terramity.init.TerramityModBiomes;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import org.spongepowered.asm.mixin.Mixin;
