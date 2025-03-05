@@ -27,8 +27,8 @@ public class Plugin implements IMixinConfigPlugin {
         if (mixinClassName.startsWith(s)){
             return Boolean.getBoolean("KAF-"+mixinClassName.substring(s.length()));
         }
-        final boolean biolith = isModLoaded("biolith");
-        boolean terrablender = isModLoaded("terrablender");
+        //final boolean biolith = isModLoaded("biolith");
+        //boolean terrablender = isModLoaded("terrablender");
         //wc这玩意默认双开的
         //String s2 = "n1luik.KAllFix.mixin.mixinfix.biolith.test_else.";
         //String s3 = "n1luik.KAllFix.mixin.mixinfix.biolith.test_all.";
@@ -45,13 +45,14 @@ public class Plugin implements IMixinConfigPlugin {
         }
         //KAF-NbtAZ
         return switch (mixinClassName) {
-            case "n1luik.KAllFix.mixin.mixinfix.biolith.MinecraftServerMixin" -> biolith;
-            //case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> biolith;
-            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> biolith;
-            case "n1luik.KAllFix.mixin.mixinfix.biolith.mod.TerramityModBiomesMixin" -> biolith;
-            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin2" -> biolith;
+            case "n1luik.KAllFix.mixin.mixinfix.biolith.MinecraftServerMixin" -> isModLoaded("biolith");
+            //case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> isModLoaded("biolith");
+            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> isModLoaded("biolith");
+            case "n1luik.KAllFix.mixin.mixinfix.biolith.mod.TerramityModBiomesMixin" -> isModLoaded("biolith");
+            case "n1luik.KAllFix.mixin.mixinfix.mixinfix.biolith.MultiNoiseBiomeSource2" -> isModLoaded("biolith");
+            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin2" -> isModLoaded("biolith");
             case "n1luik.KAllFix.mixin.mixinfix.biolith.terrablender.InitializationHandlerMixin" ->
-                    biolith && terrablender;
+                    isModLoaded("biolith") && isModLoaded("terrablender");
             default -> true;
         };
     }
