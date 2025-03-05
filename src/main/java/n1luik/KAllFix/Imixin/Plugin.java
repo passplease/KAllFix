@@ -49,7 +49,7 @@ public class Plugin implements IMixinConfigPlugin {
             //case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> isModLoaded("biolith");
             case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> isModLoaded("biolith");
             case "n1luik.KAllFix.mixin.mixinfix.biolith.mod.TerramityModBiomesMixin" -> isModLoaded("biolith");
-            case "n1luik.KAllFix.mixin.mixinfix.mixinfix.biolith.MultiNoiseBiomeSource2" -> isModLoaded("biolith");
+            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSource2" -> isModLoaded("biolith");
             case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin2" -> isModLoaded("biolith");
             case "n1luik.KAllFix.mixin.mixinfix.biolith.terrablender.InitializationHandlerMixin" ->
                     isModLoaded("biolith") && isModLoaded("terrablender");
