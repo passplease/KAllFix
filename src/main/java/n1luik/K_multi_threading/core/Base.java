@@ -197,7 +197,7 @@ public class Base {
 
 
     static {
-        int max = threadMax = Math.max(2, (int)(Runtime.getRuntime().availableProcessors() * 0.9));
+        int max = threadMax = Integer.getInteger("KMT-threadMax", Math.max(2, (int)(Runtime.getRuntime().availableProcessors() * 0.9)));
         Base.setupThreadpool(Base.threadMax);
         Base.LOGGER.info("threadMax {}",threadMax);
         try {

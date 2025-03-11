@@ -84,6 +84,21 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("com/regtechceu/gtceu/api/machine/MetaMachine.executeTick()V"),
             ForgeAsm.minecraft_map.mapMethod("com/regtechceu/gtceu/api/machine/MetaMachine.onUnload()V"),
             ForgeAsm.minecraft_map.mapMethod("com/regtechceu/gtceu/api/machine/MetaMachine.subscribeServerTick(Ljava/lang/Runnable;)Lcom/gregtechceu/gtceu/api/machine/TickableSubscription;"),
+            //ApothicAttributes
+            ForgeAsm.minecraft_map.mapMethod("dev/shadowsoffire/attributeslib/mixin/AttributeMapMixin.apoth_attrModifiedEvent(Lnet/minecraft/world/entity/ai/attributes/AttributeInstance;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V"),
+            ForgeAsm.minecraft_map.mapMethod("dev/shadowsoffire/attributeslib/mixin/AttributeMapMixin.setAttributesUpdating(Z)V"),
+            ForgeAsm.minecraft_map.mapMethod("dev/shadowsoffire/attributeslib/mixin/AttributeMapMixin.areAttributesUpdating()V"),
+            //lithium
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_183393_(Lnet/minecraft/world/ticks/ScheduledTick;)V"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.queueTick(Lnet/minecraft/world/ticks/ScheduledTick;)V"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_193189_()Lnet/minecraft/world/ticks/ScheduledTick;"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_193195_()Lnet/minecraft/world/ticks/ScheduledTick;"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_183582_(Lnet/minecraft/core/BlockPos;Ljava/lang/Object;)Z"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_193183_(Ljava/util/function/Predicate;)V"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_193196_()Ljava/util/stream/Stream;"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_183574_()I"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_183237_(JLjava/util/function/Function;)Lnet/minecraft/nbt/ListTag;"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_193171_(J)V"),
             //ae2
             //ForgeAsm.minecraft_map.mapMethod("appeng/me/service/PathingService.onServerEndTick()V"),
             //ForgeAsm.minecraft_map.mapMethod("appeng/me/service/PathingService.repath()V"),
@@ -119,6 +134,8 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("appeng/me/service/EnergyService.removeRequester(Lappeng/api/networking/energy/IAEPowerStorage;)V"),
             //永恒枪械工坊
             ForgeAsm.minecraft_map.mapMethod("com/tacz/guns/entity/sync/core/SyncedEntityData.hasSyncedDataKey(Ljava/lang/Class;)Z"),
+            ForgeAsm.minecraft_map.mapMethod("com/tacz/guns/entity/sync/core/SyncedEntityData.set(Lnet/minecraft/world/entity/Entity;Lcom/tacz/guns/entity/sync/core/SyncedDataKey;Ljava/lang/Object;)V"),
+            ForgeAsm.minecraft_map.mapMethod("com/tacz/guns/entity/sync/core/SyncedEntityData.get(Lnet/minecraft/world/entity/Entity;Lcom/tacz/guns/entity/sync/core/SyncedDataKey;)Ljava/lang/Object;"),
             //mek
             ForgeAsm.minecraft_map.mapMethod("mekanism/common/lib/transmitter/acceptor/NetworkAcceptorCache.hasAcceptor()Z"),
             ForgeAsm.minecraft_map.mapMethod("mekanism/common/lib/transmitter/acceptor/NetworkAcceptorCache.getAcceptorCount()I"),

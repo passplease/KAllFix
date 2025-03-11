@@ -8,6 +8,9 @@
 
 可以用-DKMT_D=false和-DKAllFix_D=false禁用独立mod
 
+当前版本1.0.3,正在开发目前还有很多问题，暂时没有jar
+
+
 ##  使用方法
 
 1: 把gradle.properties里的代理删了 
@@ -37,21 +40,40 @@
 - 解决createdieselgenerators不会用导致他的mixin依托答辩问题
 - (不安全)（需要开启-DKAF-NbtIoMixin_NotGZip=true)加一个try catch解决nbtio的gzip问题
 - 解决老destroy的数据库连不上就崩服问题
+- -DKMT-threadMax=[线程池的线程数] | 1.0.3
+- 使用-DKAF-RemoveMixin:[类名]禁用指定的mixin，KMT也可以
+- -DKAF-ClientboundKeepAlivePacket_Max=[多少毫秒] 修改ClientboundKeepAlivePacket数据包的时间要求，默认15秒
+  - ClientboundKeepAlivePacket包是需要小于15秒发送一次要不然就会被踢出服务器理由是连接超时
+- 通过-DKAF-ServerTimeout=[多少秒]设置服务器连接超时时间，不一定有用可以试试另一个方式
+  - forge自带的另一个建议2个都设置: -Dforge.readTimeout=[多少秒]
 - 指令:
-- |- debug_GetterClassFile 类名
-- |-| 获取游戏最终游戏运行的类型文件数据，会保存在游戏目录下面“保存时间的时间戳_save.class”
-- |- SetterWorldConfig [维度的注册id, ClearErrorSize, RemoveRemoveErrorSize]
-- |-| 设置之后并不会保存
-- |-| 维度的注册id:
-- |--| setM2 [true, false] 设置维度的实现过程方式是另一种，但是可能会卡死
-- |--| setMultiThreading [数量] 默认0，设置多线程同时运行任务的数量，但是可能会卡死
-- |-| ClearErrorSize 直接清除报错导致服务器崩溃的次数
-- |-| RemoveRemoveErrorSize 让服务器不会纪录崩溃的次数，无限拦截
+  - debug_GetterClassFile 类名
+    - 获取游戏最终游戏运行的类型文件数据，会保存在游戏目录下面“保存时间的时间戳_save.class”
+  -  SetterWorldConfig [world, ClearErrorSize, RemoveRemoveErrorSize]
+    - 设置之后并不会保存
+      - world [维度的注册id]:
+        - setM2 [true, false] 设置维度的实现过程方式是另一种，但是可能会卡死
+        - setMultiThreading [数量] 默认0，设置多线程同时运行任务的数量，但是可能会卡死
+      - ClearErrorSize 直接清除报错导致服务器崩溃的次数
+      - RemoveRemoveErrorSize 让服务器不会纪录崩溃的次数，无限拦截
 
 ##  可开启
 - -DIndependencePlayer=true 开启玩家异步，这玩意大概率是负优化
 - -DKAF-gtceu.MedicalConditionTrackerMixin=true 禁止添加gtm的辐射
+- -DKAF-RemoveClientboundKeepAlivePacket=true 禁用ClientboundKeepAlivePacket功能
 - -DKAF-Fix_fabric-object-builder-api.jar=true 修复信雅互联的fabric-object-builder-api不兼容47.3.27的问题，我因为这个问题让这个mod晚发了半个月他们还没有解决
+- -DKAF-FixConfigAuto=true自动修改配置文件为正确的选项
+- -DKAF-fix.asynchronous.ClientboundCustomQueryPacket=true握手异步，如果加的mod太多可能会导致握手的时候堵包导致不能玩服务器
+- -DKMT-LoginMultiThreading=true登陆多线程，防止模组过多在[net.minecraftforge.event.OnDatapackSyncEvent]的过程中出现bug
+  - 多线程登录只能在原版的登录数据包才可以多线程其他模型需要适配目前只适配了[原版]
+  - -DKMT-LoginMultiThreading.ConnectionLock=true在tick结束的时候等待异步执行完成，建议关闭可以起到一定的优化效果但是会导致速度变慢
+    - 建议开启
+  - -DKMT-LoginMultiThreading.TaskSizeMax=[数字]设置最多运行多少登陆任务让其他的等待，默认8
+- -DKAF-LoginProtectionMod=true添加登陆保护功能，但是需要服务器和客户端都启用
 
 ## 问题
+- cupboard模组的logOffthreadEntityAdd功能可能不兼容，我不想直接让他直接消失而且被人发现，可以通过-DKAF-FixConfigAuto=true自动禁用
 - 多线程会出现线程池拦截报错不会崩溃的情况，但是有一个拦截次数超过这个次数会报错，这个次数是可以设置的
+- 跟现代化修复(modernfix)的mixin.perf.cache_upgraded_structures可能冲突的，建议先试一试会不会出问题在关闭
+  - 关闭方法：在config/modernfix-mixins.properties文件新增一行插入的mixin.perf.cache_upgraded_structures=false
+- 登陆多线程可能会导致服务器提前接受到ServerboundMovePlayerPacket导致报错一次

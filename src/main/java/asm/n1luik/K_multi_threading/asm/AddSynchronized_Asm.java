@@ -198,6 +198,8 @@ public class AddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.shouldBeSaved()Z"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.saveAsPassenger(Lnet/minecraft/nbt/CompoundTag;)Z"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.unsetRemoved()V"),
+            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.baseTick()V"),
+            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.getFeetBlockState()Lnet/minecraft/world/level/block/state/BlockState;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.distanceToSqr(DDD)D"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.setRemoved(Lnet/minecraft/world/entity/Entity$RemovalReason;)V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/ChunkGenerator.getMobsAt(Lnet/minecraft/core/Holder;Lnet/minecraft/world/level/StructureManager;Lnet/minecraft/world/entity/MobCategory;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/util/random/WeightedRandomList;"),

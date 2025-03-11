@@ -10,6 +10,8 @@ public class MixinConnector implements IMixinConnector {
             Mixins.addConfigurations("mixins.K_multi_threading.json");
         if (System.getProperty("KAllFix_D") == null)
             Mixins.addConfigurations("mixins.KAllFix.json");
+        if (Boolean.getBoolean("KAF-LoginProtectionMod"))
+            Mixins.addConfigurations("mixins.KAllFix$KAF-LoginProtectionMod.json");
     }
 }
 

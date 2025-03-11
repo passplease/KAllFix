@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = VersionChecker.class, priority = 1100)
+@Deprecated
 public class VersionCheckerMixin {
     @Inject(method = "startVersionCheck", at = @At("HEAD"), cancellable = true, remap = false)
     private static void startVersionCheck(CallbackInfo ci) {

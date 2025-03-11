@@ -41,9 +41,9 @@ public class ModInit {
                     if (v.isEmpty())continue;
 
                     String name = v.replace("/", ".");
-                    try {
+                    //try {
                         TransformingClassLoader classLoader = (TransformingClassLoader) GetterClassFileCommand.class.getClassLoader();
-                        classLoader.loadClass(name);
+                        //classLoader.loadClass(name);
                         byte[] bytes = getclass.apply(classLoader, name);
                         try {
                             File file2 = new File("debug_save_"+(i++)+".class");
@@ -54,9 +54,9 @@ public class ModInit {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                    //} catch (ClassNotFoundException e) {
+                    //    e.printStackTrace();
+                    //}
                 }
                 fileInputStream.close();
             } catch (IOException e) {

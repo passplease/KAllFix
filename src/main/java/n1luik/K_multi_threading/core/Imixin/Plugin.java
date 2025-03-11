@@ -23,6 +23,13 @@ public class Plugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        return test(targetClassName, mixinClassName) && !Boolean.getBoolean("KAF-RemoveMixin:"+mixinClassName);
+    }
+    public boolean test(String targetClassName, String mixinClassName) {
+        String s1 = "n1luik.K_multi_threading.core.mixin.minecraftfix.loginMultiThreading.";
+        if (targetClassName.startsWith(s1)) {
+            return Boolean.getBoolean("KMT-LoginMultiThreading");
+        }
         return switch (mixinClassName) {
             case "n1luik.K_multi_threading.core.mixin.impl.MinecraftServerImpl2" -> UnsafeEnable.INSTANCE.IndependencePlayer;
             default -> true;

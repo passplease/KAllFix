@@ -7,19 +7,25 @@
   "server": [
   ],
   "mixins": [
+    "ex.Connection_1Mixin",
+    "ex.ConnectionMixin",
     "ex.EntityMixin",
+    "ex.ServerGamePacketListenerImplMixin",
+    "FixConfigAll.cupboard.CommonConfigurationMixin",
+    "mixinfix.LivingEntityMixin1",
     "mixinfix.MinecraftServerMixin2",
     "mixinfix.alexscaves.MagnetUtilMixin",
     "mixinfix.biolith.MinecraftServerMixin",
     "mixinfix.biolith.MultiNoiseBiomeSource2",
-    "mixinfix.biolith.terrablender.InitializationHandlerMixin",
     "mixinfix.biolith.MultiNoiseBiomeSourceMixin",
     "mixinfix.biolith.mod.TerramityModBiomesMixin",
+    "mixinfix.biolith.terrablender.InitializationHandlerMixin",
     "mixinfix.destroy.BadgeHandlerMixin",
     "mixinfix.fancyenchantments.EnchantmentEventsMixin",
-    "mixinfix.LivingEntityMixin1",
-    "unsafe.gtceu.MedicalConditionTrackerMixin",
     "unsafe.ChatPacket256Mixin",
-    "unsafe.NbtIoMixin_NotGZip"
+    "unsafe.NbtIoMixin_NotGZip",
+    "unsafe.RemoveClientboundKeepAlivePacket",
+    "unsafe.fix.asynchronous.ClientboundCustomQueryPacketMixin",
+    "unsafe.gtceu.MedicalConditionTrackerMixin"
   ]
 }

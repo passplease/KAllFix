@@ -35,7 +35,7 @@ public class GetterClassFileCommand {
         }
     }
     public static void register(CommandDispatcher<CommandSourceStack> p_214446_) {
-        p_214446_.register(Commands.literal("debug_GetterClassFile").requires((p_137777_) -> {
+            p_214446_.register(Commands.literal("debug_GetterClassFile").requires((p_137777_) -> {
                 return p_137777_.hasPermission(3);
             }).then(Commands.argument("name", StringArgumentType.string())
                     .executes(v->{

@@ -27,6 +27,7 @@
     "impl.LevelImpl1",
     "impl.LevelTicksImpl1",
     "impl.MinecraftServerImpl1",
+    "impl.MinecraftServerImpl2",
     "impl.ServerLevelImpl",
     "impl.WaitImplMinecraftServerMixin",
     "JProfiler.serverRunTick",
@@ -38,23 +39,24 @@
     "minecraftfix.CollectingNeighborUpdaterDebug",
     "minecraftfix.LevelChunkFix1",
     "minecraftfix.LevelFix1",
+    "minecraftfix.LevelFix2",
     "minecraftfix.MinecraftServerFix1",
     "minecraftfix.PersistentEntitySectionManagerFix1",
     "minecraftfix.ServerChunkCache_MainThreadExecutorFix2",
     "minecraftfix.ServerChunkCacheFix1",
     "minecraftfix.ServerLevel_EntityCallbacksFix1",
     "minecraftfix.ServerLevelFix1",
-    "minecraftfix.ServerPlayerGameModeFix1"
+    "minecraftfix.ServerPlayerGameModeFix1",
+    "minecraftfix.ServerWatchdogFix1",
+    "minecraftfix.loginMultiThreading.MinecraftServerImpl3",
+    "minecraftfix.loginMultiThreading.PacketUtilsFix1",
+    "minecraftfix.loginMultiThreading.ServerGamePacketListenerImplFix2",
+    "minecraftfix.loginMultiThreading.ServerLoginPacketListenerImplImpl1"
   ],
   "mixins": [
     "debug.NbtIoDebug",
-    "impl.MinecraftServerImpl2",
     "k.CommandsMixin",
-    "k.Connection_1Mixin",
-    "k.ConnectionMixin",
-    "k.VersionCheckerMixin",
-    "minecraftfix.LevelFix2",
-    "minecraftfix.ServerWatchdogFix1"
+    "minecraftfix.loginMultiThreading.DistanceManagerFix1"
   ],
   "error": [
     "debug.DistanceManagerDebug",
@@ -66,6 +68,9 @@
     "DynamicGraphMinFixedPointFix2",
     "ServerChunkCacheDebug",
     "fix.mod.MekanismStructureFix1",
-    "minecraftfix.StructureTemplateFix1"
+    "minecraftfix.StructureTemplateFix1",
+    "k.ClientboundStatusResponsePacketDebug",
+    "k.ConnectionDebug",
+    "k.ServerGamePacketListenerImplDebug"
   ]
 }

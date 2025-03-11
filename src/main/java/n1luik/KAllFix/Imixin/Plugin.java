@@ -23,6 +23,9 @@ public class Plugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        return test(targetClassName, mixinClassName) && !Boolean.getBoolean("KAF-RemoveMixin:"+mixinClassName);
+    }
+    public boolean test(String targetClassName, String mixinClassName) {
         String s = "n1luik.KAllFix.mixin.unsafe.";
         if (mixinClassName.startsWith(s)){
             return Boolean.getBoolean("KAF-"+mixinClassName.substring(s.length()));
@@ -33,6 +36,7 @@ public class Plugin implements IMixinConfigPlugin {
         //String s2 = "n1luik.KAllFix.mixin.mixinfix.biolith.test_else.";
         //String s3 = "n1luik.KAllFix.mixin.mixinfix.biolith.test_all.";
         String s4 = "n1luik.KAllFix.mixin.mixinfix.fancyenchantments.";
+        String s5 = "n1luik.KAllFix.mixin.FixConfigAll.";
         //boolean fixBiolithBugMode2 = Boolean.getBoolean("FixBiolithBugMode2");
         //if (!biolith && mixinClassName.startsWith(s2) && fixBiolithBugMode2) {
         //    return false;
@@ -42,6 +46,9 @@ public class Plugin implements IMixinConfigPlugin {
         //}
         if (mixinClassName.startsWith(s4)) {
             return isModLoaded("fancyenchantments");
+        }
+        if (!Boolean.getBoolean("KAF-FixConfigAuto") && mixinClassName.startsWith(s5)) {
+            return false;
         }
         //KAF-NbtAZ
         return switch (mixinClassName) {

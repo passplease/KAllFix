@@ -22,6 +22,8 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongListIterator;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSortedSet;
+import org.checkerframework.checker.units.qual.K;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class FastUtilHackUtil {
@@ -661,15 +663,15 @@ public class FastUtilHackUtil {
 		}
 	}
 
-	public static class ConvertingObjectSetFast<E, T> implements it.unimi.dsi.fastutil.longs.Long2ObjectMap.FastEntrySet<T> {
+	public static class ConvertingObjectSetFast_Long<E, T> implements it.unimi.dsi.fastutil.longs.Long2ObjectMap.FastEntrySet<T> {
 
 		Set<E> backing;
 		Function<E, it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry<T>> forward;
 		Function<it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry<T>, E> back;
 
-		public ConvertingObjectSetFast(Set<E> backing,
-									   Function<E, it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry<T>> forward,
-									   Function<it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry<T>, E> back) {
+		public ConvertingObjectSetFast_Long(Set<E> backing,
+											Function<E, it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry<T>> forward,
+											Function<it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry<T>, E> back) {
 			this.backing = backing;
 			this.forward = forward;
 			this.back = back;
@@ -796,6 +798,142 @@ public class FastUtilHackUtil {
 		}
 
 
+	}
+
+	public static class ConvertingObjectSetFast_Reference2Reference<E, K, V> implements Reference2ReferenceMap.FastEntrySet<K, V> {
+
+		Set<E> backing;
+		Function<E, Reference2ReferenceMap.Entry<K, V>> forward;
+		Function<Reference2ReferenceMap.Entry<K, V>, E> back;
+
+		public ConvertingObjectSetFast_Reference2Reference(Set<E> backing,
+											Function<E, Reference2ReferenceMap.Entry<K, V>> forward,
+											Function<Reference2ReferenceMap.Entry<K, V>, E> back) {
+			this.backing = backing;
+			this.forward = forward;
+			this.back = back;
+		}
+
+		@Override
+		public int size() {
+			return backing.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return backing.isEmpty();
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean contains(Object o) {
+			try {
+				return backing.contains(back.apply((Reference2ReferenceMap.Entry<K, V>) o));
+			} catch (ClassCastException cce) {
+				return false;
+			}
+		}
+
+		@Override
+		public Object[] toArray() {
+			return backing.stream().map(forward).toArray();
+		}
+
+		@Override
+		public <R> R[] toArray(R[] a) {
+			return backing.stream().map(forward).collect(Collectors.toSet()).toArray(a);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean remove(Object o) {
+			try {
+				return backing.remove(back.apply((Reference2ReferenceMap.Entry<K, V>) o));
+			} catch (ClassCastException cce) {
+				return false;
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean containsAll(Collection<?> c) {
+			try {
+				return backing.containsAll(c.stream()
+						.map(i -> back.apply((Reference2ReferenceMap.Entry<K, V>) i))
+						.collect(Collectors.toSet()));
+			} catch (ClassCastException cce) {
+				return false;
+			}
+
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			try {
+				return backing.removeAll(c.stream().map(i -> back
+								.apply((Reference2ReferenceMap.Entry<K, V>) i))
+						.collect(Collectors.toSet()));
+			} catch (ClassCastException cce) {
+				return false;
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean retainAll(Collection<?> c) {
+			try {
+				return backing.retainAll(c.stream()
+						.map(i -> back.apply((Reference2ReferenceMap.Entry<K, V>) i))
+						.collect(Collectors.toSet()));
+			} catch (ClassCastException cce) {
+				return false;
+			}
+		}
+
+		@Override
+		public void clear() {
+			backing.clear();
+
+		}
+
+		@Override
+		public ObjectIterator<Reference2ReferenceMap.Entry<K, V>> iterator() {
+			final Iterator<E> backg = backing.iterator();
+			return new ObjectIterator<Reference2ReferenceMap.Entry<K, V>>() {
+
+				@Override
+				public boolean hasNext() {
+					return backg.hasNext();
+				}
+
+				@Override
+				public Reference2ReferenceMap.Entry<K, V> next() {
+					return forward.apply(backg.next());
+				}
+
+				@Override
+				public void remove() {
+					backg.remove();
+				}
+			};
+		}
+
+		@Override
+		public boolean add(Reference2ReferenceMap.Entry<K, V> e) {
+			return backing.add(back.apply(e));
+		}
+
+		@Override
+		public boolean addAll(Collection<? extends Reference2ReferenceMap.Entry<K, V>> c) {
+			return backing.addAll(c.stream().map(back).collect(Collectors.toList()));
+		}
+
+
+		@Override
+		public ObjectIterator<Reference2ReferenceMap.Entry<K, V>> fastIterator() {
+			return iterator();
+		}
 	}
 
 	private static <T> Int2ObjectMap.Entry<T> intEntryForwards(Map.Entry<Integer, T> entry) {
@@ -928,7 +1066,7 @@ public class FastUtilHackUtil {
 	}
 
 	public static <T> it.unimi.dsi.fastutil.longs.Long2ObjectMap.FastEntrySet<T> entrySetLongWrapFast(Map<Long, T> map) {
-		return new ConvertingObjectSetFast<Map.Entry<Long, T>, T>(map.entrySet(), FastUtilHackUtil::longEntryForwards, FastUtilHackUtil::longEntryBackwards);
+		return new ConvertingObjectSetFast_Long<Map.Entry<Long, T>, T>(map.entrySet(), FastUtilHackUtil::longEntryForwards, FastUtilHackUtil::longEntryBackwards);
 	}
 
 	public static ObjectSet<Long2ByteMap.Entry> entrySetLongByteWrap(Map<Long, Byte> map) {

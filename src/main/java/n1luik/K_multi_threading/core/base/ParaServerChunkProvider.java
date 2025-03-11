@@ -117,6 +117,10 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         Unsafe.unsafe.putObject(this, initId.getLong("locks"), new ArrayList<>(256));
         Unsafe.unsafe.putObject(this, initId.getLong("threadBlacklist"), new ConcurrentHashMap<>());
         chunkCleaner = MarkerManager.getMarker("ChunkCleaner");
+
+        for (int i = 0; i < BuiltInRegistries.CHUNK_STATUS.size(); i++) {
+            locks.add(new Object());
+        }
     }
 
     /*@Override
