@@ -1,6 +1,7 @@
 package n1luik.KAllFix.forge.LoginProtectionMod.mixin;
 
 import n1luik.KAllFix.forge.LoginProtectionMod.LoginProtectionModEvent;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.ConnectScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,7 +15,7 @@ public class ConnectScreenMixin {
         LoginProtectionModEvent.LoginProtection = true;
     }
     @Inject(method = "lambda$init$0", at = @At("HEAD"))
-    public void impl1(CallbackInfo ci) {
+    public void impl1(Button b, CallbackInfo ci) {
         LoginProtectionModEvent.LoginProtection = false;
     }
 }
