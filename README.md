@@ -70,6 +70,10 @@
     - 建议开启
   - -DKMT-LoginMultiThreading.TaskSizeMax=[数字]设置最多运行多少登陆任务让其他的等待，默认8
 - -DKAF-LoginProtectionMod=true添加登陆保护功能，但是需要服务器和客户端都启用
+- -DKAF-FixAllPacket=true修复数据包[网络]，但是需要服务器和客户端都启用
+  - 目前修复的mod ：
+  - [通用机械：炸药]MekanismExplosives
+  - Create Sabers
 
 ## 问题
 - cupboard模组的logOffthreadEntityAdd功能可能不兼容，我不想直接让他直接消失而且被人发现，可以通过-DKAF-FixConfigAuto=true自动禁用

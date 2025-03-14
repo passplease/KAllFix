@@ -8,9 +8,13 @@
   ],
   "mixins": [
     "ex.Connection_1Mixin",
-    "ex.ConnectionMixin",
     "ex.EntityMixin",
     "ex.ServerGamePacketListenerImplMixin",
+    "ex.FixAllPacket.createsabers.all.CreateSabersModVariables_MapVariablesMixin",
+    "ex.FixAllPacket.createsabers.all.SabersoundprocProcedureMixin",
+    "ex.FixAllPacket.createsabers.inject.This",
+    "ex.FixAllPacket.mekanismexplosives.all.TimersProcedureMixin",
+    "ex.FixAllPacket.mekanismexplosives.inject.This",
     "FixConfigAll.cupboard.CommonConfigurationMixin",
     "mixinfix.LivingEntityMixin1",
     "mixinfix.MinecraftServerMixin2",
@@ -25,7 +29,12 @@
     "unsafe.ChatPacket256Mixin",
     "unsafe.NbtIoMixin_NotGZip",
     "unsafe.RemoveClientboundKeepAlivePacket",
+    "unsafe.debug.ConnectionMixin",
+    "unsafe.debug.packet.ConnectionMixin1",
     "unsafe.fix.asynchronous.ClientboundCustomQueryPacketMixin",
     "unsafe.gtceu.MedicalConditionTrackerMixin"
+  ],
+  "client": [
+    "ex.FixAllPacket.mekanismexplosives.client.MinecraftMixin"
   ]
 }

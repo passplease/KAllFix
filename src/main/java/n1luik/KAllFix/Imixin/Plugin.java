@@ -37,6 +37,8 @@ public class Plugin implements IMixinConfigPlugin {
         //String s3 = "n1luik.KAllFix.mixin.mixinfix.biolith.test_all.";
         String s4 = "n1luik.KAllFix.mixin.mixinfix.fancyenchantments.";
         String s5 = "n1luik.KAllFix.mixin.FixConfigAll.";
+        //String s6 = "n1luik.KAllFix.mixin.ex.CancelNio";
+        String s7 = "n1luik.KAllFix.mixin.ex.FixAllPacket.";
         //boolean fixBiolithBugMode2 = Boolean.getBoolean("FixBiolithBugMode2");
         //if (!biolith && mixinClassName.startsWith(s2) && fixBiolithBugMode2) {
         //    return false;
@@ -49,6 +51,12 @@ public class Plugin implements IMixinConfigPlugin {
         }
         if (!Boolean.getBoolean("KAF-FixConfigAuto") && mixinClassName.startsWith(s5)) {
             return false;
+        }
+        //if (mixinClassName.startsWith(s6)) {
+        //    return Boolean.getBoolean("KAF-CancelNio");
+        //}
+        if (mixinClassName.startsWith(s7)) {
+            return Boolean.getBoolean("KAF-FixAllPacket");
         }
         //KAF-NbtAZ
         return switch (mixinClassName) {

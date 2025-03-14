@@ -60,7 +60,8 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
             new AsmTarget("com.github.alexthe666.alexsmobs.event.ServerEvents", false),
             new AsmTarget("com.teammoeg.caupona.CPCommonBootStrap", false),
             new AsmTarget("me.jellysquid.mods.lithium.mixin.chunk.entity_class_groups.TypeFilterableListMixin", false),
-            new AsmTarget("net.minecraft.world.level.levelgen.structure.StructureCheck", false)
+            new AsmTarget("net.minecraft.world.level.levelgen.structure.StructureCheck", false),
+            new AsmTarget("net.minecraft.world.level.block.ComposterBlock", false)
     ));
     public final Map<String, AsmTarget> nameMap = new HashMap<>();
     public final Map<String, List<String>> fieldMappings = new HashMap<>();
