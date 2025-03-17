@@ -10,6 +10,7 @@ import asm.n1luik.K_multi_threading.asm.mod.createenchantmentindustry.FluidTankB
 import asm.n1luik.K_multi_threading.asm.mod.lithium.Lithium$TypeFilterableListMixin_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.lithium.LithiumGetChunkSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.mek.MekanismNetworkAcceptorCacheSynchronized_Asm;
+import asm.n1luik.K_multi_threading.asm.mod.noisium.NoiseChunkGeneratorMixinFix1_Asm;
 import cpw.mods.modlauncher.api.IEnvironment;
 import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.api.ITransformer;
@@ -131,6 +132,7 @@ public class ForgeAsm implements ITransformationService{
                 new CreateGeneratingKineticBlockEntity_Asm(),
                 new AddMapConcurrent_ASM(),
                 new NotErrorAddSynchronized_Asm(),
+                new NoiseChunkGeneratorMixinFix1_Asm(),
                 //new ChunkMapSynchronized_Asm(),
                 new FastUtilTransformerService()
         );

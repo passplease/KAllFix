@@ -31,6 +31,7 @@
     "impl.ServerLevelImpl",
     "impl.WaitImplMinecraftServerMixin",
     "JProfiler.serverRunTick",
+    "debug.ThreadingDetectorDebug",
     "minecraftfix.AvoidEntityGoalFix1",
     "minecraftfix.ChunkGeneratorFix1",
     "minecraftfix.ChunkGeneratorFix2",
@@ -48,6 +49,7 @@
     "minecraftfix.ServerLevelFix1",
     "minecraftfix.ServerPlayerGameModeFix1",
     "minecraftfix.ServerWatchdogFix1",
+    "minecraftfix.loginMultiThreading.DistanceManagerFix1",
     "minecraftfix.loginMultiThreading.MinecraftServerImpl3",
     "minecraftfix.loginMultiThreading.PacketUtilsFix1",
     "minecraftfix.loginMultiThreading.ServerGamePacketListenerImplFix2",
@@ -55,8 +57,7 @@
   ],
   "mixins": [
     "debug.NbtIoDebug",
-    "k.CommandsMixin",
-    "minecraftfix.loginMultiThreading.DistanceManagerFix1"
+    "k.CommandsMixin"
   ],
   "error": [
     "debug.DistanceManagerDebug",

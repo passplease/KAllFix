@@ -59,6 +59,7 @@
 
 ##  可开启
 - -DIndependencePlayer=true 开启玩家异步，这玩意大概率是负优化
+- -DKAF-ServerGamePacketListenerImplMixin2=true 移除服务器移动距离的安全检查，这个可能跟一个模组不兼容会让玩家进不去服务器
 - -DKAF-gtceu.MedicalConditionTrackerMixin=true 禁止添加gtm的辐射
 - -DKAF-RemoveClientboundKeepAlivePacket=true 禁用ClientboundKeepAlivePacket功能
 - -DKAF-Fix_fabric-object-builder-api.jar=true 修复信雅互联的fabric-object-builder-api不兼容47.3.27的问题，我因为这个问题让这个mod晚发了半个月他们还没有解决
@@ -81,3 +82,4 @@
 - 跟现代化修复(modernfix)的mixin.perf.cache_upgraded_structures可能冲突的，建议先试一试会不会出问题在关闭
   - 关闭方法：在config/modernfix-mixins.properties文件新增一行插入的mixin.perf.cache_upgraded_structures=false
 - 登陆多线程可能会导致服务器提前接受到ServerboundMovePlayerPacket导致报错一次
+- [跑酷！]ParCool在开启多线程登陆的时候需要进服务器之后死一下才可以使用

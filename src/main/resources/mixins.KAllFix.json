@@ -29,6 +29,7 @@
     "unsafe.ChatPacket256Mixin",
     "unsafe.NbtIoMixin_NotGZip",
     "unsafe.RemoveClientboundKeepAlivePacket",
+    "unsafe.ServerGamePacketListenerImplMixin2",
     "unsafe.debug.ConnectionMixin",
     "unsafe.debug.packet.ConnectionMixin1",
     "unsafe.fix.asynchronous.ClientboundCustomQueryPacketMixin",

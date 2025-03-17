@@ -54,6 +54,16 @@ import java.io.File;
 /* */
 //从mcmt复制并修改 1.18.2原码
 public class ParaServerChunkProvider extends ServerChunkCache implements IWorldChunkLockedConfig {
+    public static final Field currentlyLoading;
+
+    static {
+        try {
+            currentlyLoading = ChunkHolder.class.getDeclaredField("currentlyLoading");
+            currentlyLoading.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     protected Map<ChunkCacheAddress, ChunkCacheLine> chunkCache = new ConcurrentHashMap<ChunkCacheAddress, ChunkCacheLine>();
     protected AtomicInteger access = new AtomicInteger(Integer.MIN_VALUE);
@@ -307,12 +317,44 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
             return (LevelChunk) c;
         }
 
-        //log.debug("Missed chunk " + i + " now");
+        for(int j = 0; j < 4; ++j) {
+            if (i == lastChunkPos[j] && lastChunkStatus[j] == ChunkStatus.FULL) {
+                    ChunkAccess chunkaccess = lastChunk[j];
+                return chunkaccess instanceof LevelChunk ? (LevelChunk)chunkaccess : null;
+            }
+        }
+        ChunkHolder chunkholder = chunkMap.getVisibleChunkIfPresent(i);
+        if (chunkholder == null) {
+            return null;
+        } else {
+            try {
+                Object o = currentlyLoading.get(chunkholder);
+                if (o != null) return (LevelChunk)o; // Forge: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
+            } catch (IllegalAccessException e) {
+                return null;
+            }
+            Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure> either = chunkholder.getFutureIfPresent(ChunkStatus.FULL).getNow(null);
+            if (either == null) {
+                return null;
+            } else {
+                ChunkAccess chunkaccess1 = either.left().orElse(null);
+                if (chunkaccess1 != null) {
+                    //this.storeInCache(i, chunkaccess1, ChunkStatus.FULL);
+                    if (chunkaccess1 instanceof LevelChunk) {
+                        return (LevelChunk)chunkaccess1;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        /*//log.debug("Missed chunk " + i + " now");
         //synchronized (this){
             LevelChunk cl = super.getChunkNow(chunkX, chunkZ);
             cacheChunk(i, cl, ChunkStatus.FULL);
             return cl;
-        //}
+        //}*/
     }
 
     public ChunkAccess lookupChunk(long chunkPos, ChunkStatus status, boolean compute) {
