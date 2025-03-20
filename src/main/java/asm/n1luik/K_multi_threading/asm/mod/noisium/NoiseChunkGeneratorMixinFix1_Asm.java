@@ -57,6 +57,7 @@ public class NoiseChunkGeneratorMixinFix1_Asm implements ITransformer<ClassNode>
     @Override
     public @NotNull Set<Target> targets() {
         return Set.of(
-                Target.targetClass("io/github/steveplays28/noisium/mixin/NoiseChunkGeneratorMixin"));
+                Target.targetClass("io/github/steveplays28/noisium/mixin/NoiseChunkGeneratorMixin"),
+                Target.targetClass("io/github/steveplays28/noisium/mixin/compat/lithium/LithiumNoiseChunkGeneratorMixin"));
     }
 }

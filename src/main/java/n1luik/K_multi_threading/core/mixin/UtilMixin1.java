@@ -14,7 +14,7 @@ public class UtilMixin1 {
     @Inject(method = "makeExecutor", at = @At("HEAD"), cancellable = true)
     private static void makeExecutor1(String p_137478_, CallbackInfoReturnable<ExecutorService> cir) {
         if (p_137478_.equals("Main")) {
-            cir.setReturnValue(Base.getEx());
+            cir.setReturnValue(Base.getAsync() != null ? Base.getAsync(): Base.getEx());
         }
     }
 }

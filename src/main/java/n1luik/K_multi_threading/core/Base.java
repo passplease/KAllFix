@@ -12,6 +12,7 @@ import net.minecraft.Util;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -32,10 +33,12 @@ public class Base {
     public static MinecraftServer mcs;
     public static int threadTaskMax = 80;
     static ForkJoinPool_ ex;
+    @Nullable
+    static ForkJoinPool_ async = null;
     static AtomicBoolean isTicking = new AtomicBoolean();
     static AtomicInteger threadID = new AtomicInteger();
 
-    public static void setupThreadpool(int parallelism) {
+    public static void setupThreadpool(int parallelism, int threadSize, boolean asyncMode) {
         if (ex == null){
             threadID = new AtomicInteger();
             final ClassLoader cl = Base.class.getClassLoader();
@@ -53,8 +56,26 @@ public class Base {
             ex = new ForkJoinPool_(
                     parallelism,
                     fjpf,
-                    null, false);
+                    null, asyncMode, threadSize);
         }
+    }
+    public static ForkJoinPool_ createThreadpool2(int parallelism, int threadSize, boolean asyncMode, Map<Object, Object> dataMap) {
+            final ClassLoader cl = Base.class.getClassLoader();
+            ForkJoinPool.ForkJoinWorkerThreadFactory fjpf = p -> {
+                ForkJoinWorkerThread fjwt = new ForkJoinWorkerThread_(p/*,ex*/) {
+                    protected void onTermination(Throwable p_211561_) {
+                        super.onTermination(p_211561_);
+                    }
+                };
+                fjwt.setName("MCMT-Pool-Thread-" + threadID.getAndIncrement());
+                regThread("MCMT", fjwt);
+                fjwt.setContextClassLoader(cl);
+                return fjwt;
+            };
+            return new ForkJoinPool_(
+                    parallelism,
+                    fjpf,
+                    null, asyncMode, threadSize, dataMap);
     }
 
     static Map<String, Set<Thread>> mcThreadTracker = new ConcurrentHashMap<String, Set<Thread>>();
@@ -95,29 +116,40 @@ public class Base {
     }
 
     public static class ForkJoinPool_ extends ForkJoinPool implements GetterDataMap {
-        protected final Map<Object, Object> dataMap = new ConcurrentHashMap<>(){
-            @Override
-            public synchronized Object put(@NotNull Object key, @NotNull Object value) {
-                return value != null ? super.put(key, value) : null;
-            }
-
-            @Override
-            public synchronized boolean remove(Object key, Object value) {
-                return super.remove(key, value);
-            }
-
-            @Override
-            public synchronized Object get(Object key) {
-                return super.get(key);
-            }
-        };//new NodeHashMap<>();
+        protected final Map<Object, Object> dataMap;
 
         public ForkJoinPool_(int parallelism,
                             ForkJoinWorkerThreadFactory factory,
                             Thread.UncaughtExceptionHandler handler,
-                            boolean asyncMode) {
-            super(parallelism, factory, handler, asyncMode,0, (int)Math.min(0x7fff,parallelism * 4.5), 1, null, 20, TimeUnit.SECONDS);//20秒
+                            boolean asyncMode,
+                            int threadSize) {
+            super(parallelism, factory, handler, asyncMode,0, threadSize, 1, null, 60, TimeUnit.SECONDS);//20秒
+            dataMap = new ConcurrentHashMap<>(){
+                @Override
+                public synchronized Object put(@NotNull Object key, @NotNull Object value) {
+                    return value != null ? super.put(key, value) : null;
+                }
+
+                @Override
+                public synchronized boolean remove(Object key, Object value) {
+                    return super.remove(key, value);
+                }
+
+                @Override
+                public Object get(Object key) {
+                    return super.get(key);
+                }
+            };
         }
+        public ForkJoinPool_(int parallelism,
+                            ForkJoinWorkerThreadFactory factory,
+                            Thread.UncaughtExceptionHandler handler,
+                            boolean asyncMode,
+                            int threadSize, Map<Object, Object> dataMap) {
+            super(parallelism, factory, handler, asyncMode,0, threadSize, 1, null, 20, TimeUnit.SECONDS);//20秒
+            this.dataMap = dataMap;
+        }
+
 
         @Override
         public Map<Object, Object> getDataMap() {
@@ -195,10 +227,16 @@ public class Base {
     public static final int threadMax;
     public static final String thisRunTaskName = "Base.thisRunTaskName";
 
+    public static ForkJoinPool getAsync() {
+        return async;
+    }
 
     static {
         int max = threadMax = Integer.getInteger("KMT-threadMax", Math.max(2, (int)(Runtime.getRuntime().availableProcessors() * 0.9)));
-        Base.setupThreadpool(Base.threadMax);
+        Base.setupThreadpool(threadMax, threadMax, Boolean.getBoolean("KMT-threadpool-async"));
+        if (Boolean.getBoolean("KMT-asyncEx")) {
+            async = createThreadpool2(threadMax, threadMax, true, ex.getDataMap());
+        }
         Base.LOGGER.info("threadMax {}",threadMax);
         try {
             busID = EventBus.class.getDeclaredField("busID");

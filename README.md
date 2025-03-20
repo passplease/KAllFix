@@ -75,11 +75,21 @@
   - 目前修复的mod ：
   - [通用机械：炸药]MekanismExplosives
   - Create Sabers
+- -DKMT-asyncEx=true创建一个兼容池，可能会更不兼容
+- -DKMT-threadpool-async=true会崩
 
 ## 问题
+- 如果不手动设置-DKMT-threadMax=[cpu线程数]的话可能会导致地形生成莫名其妙卡死
 - cupboard模组的logOffthreadEntityAdd功能可能不兼容，我不想直接让他直接消失而且被人发现，可以通过-DKAF-FixConfigAuto=true自动禁用
 - 多线程会出现线程池拦截报错不会崩溃的情况，但是有一个拦截次数超过这个次数会报错，这个次数是可以设置的
 - 跟现代化修复(modernfix)的mixin.perf.cache_upgraded_structures可能冲突的，建议先试一试会不会出问题在关闭
   - 关闭方法：在config/modernfix-mixins.properties文件新增一行插入的mixin.perf.cache_upgraded_structures=false
 - 登陆多线程可能会导致服务器提前接受到ServerboundMovePlayerPacket导致报错一次
 - [跑酷！]ParCool在开启多线程登陆的时候需要进服务器之后死一下才可以使用
+- 盖亚宝典4 会有小概率报错Modifier is already applied on this attribute!
+
+## 故障纪录
+- 没有地狱，问题是因为测试模组导致数据包损坏，解决方法：
+  - 吧老备份的或者一样种子一样一样规则的level.dat替换
+- 问题：
+  - 不一点数据完全可能会出现数据偏差
