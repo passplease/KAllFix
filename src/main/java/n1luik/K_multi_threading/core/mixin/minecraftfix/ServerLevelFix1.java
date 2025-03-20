@@ -33,7 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 
 @Mixin(ServerLevel.class)
-public class ServerLevelFix1 {
+public abstract class ServerLevelFix1 {
     private final Object K_multi_threading$lockBlockEvents = new Object();
 
     @Unique
@@ -59,6 +59,8 @@ public class ServerLevelFix1 {
 
     //@Mutable
     @Shadow @Final private ObjectLinkedOpenHashSet<BlockEventData> blockEvents;
+
+    @Shadow protected abstract void runBlockEvents();
 
     @Inject(method = "<init>",at = @At("RETURN"))
     public void fix1(MinecraftServer p_214999_, Executor p_215000_, LevelStorageSource.LevelStorageAccess p_215001_, ServerLevelData p_215002_, ResourceKey p_215003_, LevelStem p_215004_, ChunkProgressListener p_215005_, boolean p_215006_, long p_215007_, List p_215008_, boolean p_215009_, RandomSequences p_288977_, CallbackInfo ci){
@@ -89,7 +91,7 @@ public class ServerLevelFix1 {
     @Redirect(method = "tick",at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;runBlockEvents()V"))
     public void fix4(ServerLevel instance){
         synchronized (K_multi_threading$lockBlockEvents) {
-            while (this.isUpdatingNavigations) Thread.onSpinWait();
+            runBlockEvents();
         }
     }
 }
