@@ -79,7 +79,7 @@
 - -DKMT-threadpool-async=true会崩
 
 ## 问题
-- 如果不手动设置-DKMT-threadMax=[cpu线程数]的话可能会导致地形生成莫名其妙卡死
+- 如果不手动设置-DKMT-threadMax=[cpu线程数]的话可能会导致地形生成莫名其妙卡死，还是的话继续调高这个
 - cupboard模组的logOffthreadEntityAdd功能可能不兼容，我不想直接让他直接消失而且被人发现，可以通过-DKAF-FixConfigAuto=true自动禁用
 - 多线程会出现线程池拦截报错不会崩溃的情况，但是有一个拦截次数超过这个次数会报错，这个次数是可以设置的
 - 跟现代化修复(modernfix)的mixin.perf.cache_upgraded_structures可能冲突的，建议先试一试会不会出问题在关闭
@@ -92,4 +92,4 @@
 - 没有地狱，问题是因为测试模组导致数据包损坏，解决方法：
   - 吧老备份的或者一样种子一样一样规则的level.dat替换
 - 问题：
-  - 不一点数据完全可能会出现数据偏差
+  - 不一定数据完全可能会出现数据偏差

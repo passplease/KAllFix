@@ -85,7 +85,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     //protected final IMainThreadExecutor iMainThreadExecutor;
     //protected ChunkLock loadingChunkLock = new ChunkLock();
     @Getter
-    protected Thread generatorThread1;
+    protected final List<Thread> generatorThread1 = new CopyOnWriteArrayList<>();
     @Getter
     protected Thread generatorThread2;
     static Logger log = LogManager.getLogger();
@@ -126,6 +126,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         Unsafe.unsafe.putObject(this, initId.getLong("generatorTasks"), new CopyOnWriteArrayList<>());
         Unsafe.unsafe.putObject(this, initId.getLong("locks"), new ArrayList<>(256));
         Unsafe.unsafe.putObject(this, initId.getLong("threadBlacklist"), new ConcurrentHashMap<>());
+        Unsafe.unsafe.putObject(this, initId.getLong("generatorThread1"), new CopyOnWriteArrayList<>());
         chunkCleaner = MarkerManager.getMarker("ChunkCleaner");
 
         for (int i = 0; i < BuiltInRegistries.CHUNK_STATUS.size(); i++) {
@@ -195,7 +196,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     @Override
     protected CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> getChunkFutureMainThread(int p_8457_, int p_8458_, ChunkStatus p_8459_, boolean p_8460_) {
         Thread value = Thread.currentThread();
-        synchronized ((value != generatorThread1 && threadBlacklist.containsValue(value)) ? threadBlacklist : this) {
+        synchronized ((!generatorThread1.contains(value) && threadBlacklist.containsValue(value)) ? threadBlacklist : this) {
             return super.getChunkFutureMainThread(p_8457_, p_8458_, p_8459_, p_8460_);
         }
     }
@@ -216,7 +217,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         }
 
         Thread thisThread = Thread.currentThread();
-        boolean isBlacklistThread = thisThread != generatorThread1 && threadBlacklist.containsValue(thisThread);
+        boolean isBlacklistThread = !generatorThread1.contains(thisThread) && threadBlacklist.containsValue(thisThread);
         //log.info("Thread: {}, threadBlacklist : {}", Thread.currentThread().getName(), Arrays.toString(threadBlacklist.values().stream().map(Thread::getId).toArray()));
         if (!Base.isThreadPooled() && !isBlacklistThread){
             return waitGetChunk(chunkX, chunkZ, requiredStatus, load);
@@ -245,14 +246,16 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
                     if (isBlacklistThread){
                         generatorThread2 = thisThread;
                     }else {
-                        generatorThread1 = thisThread;
+                        //generatorThread1 = thisThread;
+                        generatorThread1.add(thisThread);
                     }
                     cl = super.getChunk(chunkX, chunkZ, requiredStatus, load);
                     cacheChunk(i, cl, requiredStatus);
                     if (isBlacklistThread){
                         generatorThread2 = null;
                     }else {
-                        generatorThread1 = null;
+                        //generatorThread1 = null;
+                        generatorThread1.remove(thisThread);
                     }
                 //}
             }
@@ -435,7 +438,8 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     public void pushThread(long id) {
         Thread value = Thread.currentThread();
         if (threadBlacklist.containsKey(id)) throw new IllegalStateException("Thread " + id + " is already blacklisted");
-        if (value != generatorThread1) {
+        //if (value != generatorThread1) {
+        if (!generatorThread1.contains(value)) {
             threadBlacklist.put(id, value);
         }
     }
@@ -444,7 +448,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     public long pushThread() {
         Thread thread = Thread.currentThread();
         long l = thread.getId();
-        if (thread != generatorThread1 && !threadBlacklist.containsKey(l)) {
+        if (generatorThread1.contains(thread)|| threadBlacklist.containsKey(l)) {
             threadBlacklist.put(l, thread);
             return l;
         }
