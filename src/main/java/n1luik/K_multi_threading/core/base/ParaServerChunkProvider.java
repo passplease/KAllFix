@@ -47,6 +47,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.entity.ChunkStatusUpdateListener;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraft.world.level.storage.LevelStorageSource;
+import org.jetbrains.annotations.NotNull;
 /* */
 
 /* 1.15.2 code; AKA the only thing that changed
@@ -65,13 +66,13 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         }
     }
 
-    protected Map<ChunkCacheAddress, ChunkCacheLine> chunkCache = new ConcurrentHashMap<ChunkCacheAddress, ChunkCacheLine>();
-    protected AtomicInteger access = new AtomicInteger(Integer.MIN_VALUE);
     private static final Object2LongMap<String> initId = new Object2LongOpenHashMap<>();
     public static final UnsafeClone<ServerChunkCache, ParaServerChunkProvider> UnsafeClone = new UnsafeClone<>(ServerChunkCache.class, ParaServerChunkProvider.class);
     protected static final int CACHE_SIZE = 4096;
     protected static final boolean level_lock_mode = false;
     //protected Thread cacheThread;
+    protected Map<ChunkCacheAddress, ChunkCacheLine> chunkCache = new ConcurrentHashMap<ChunkCacheAddress, ChunkCacheLine>();
+    protected AtomicInteger access = new AtomicInteger(Integer.MIN_VALUE);
     protected long clearTime = 0;
     protected final Object lock = new Object();
     protected final Object lock2 = new Object();
@@ -266,12 +267,15 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         return cl;
     }
 
-    //@Override
-    //public CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> getChunkFuture(int p_8432_, int p_8433_, ChunkStatus p_8434_, boolean p_8435_) {
-    //    synchronized (locks.get(p_8434_.getIndex())) {
-    //        return super.getChunkFuture(p_8432_, p_8433_, p_8434_, p_8435_);
-    //    }
-    //}
+    @Override
+    public CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> getChunkFuture(int p_8432_, int p_8433_, @NotNull ChunkStatus p_8434_, boolean p_8435_) {
+        ChunkCacheLine chunkCacheLine = chunkCache.get(new ChunkCacheAddress(ChunkPos.asLong(p_8432_, p_8433_), p_8434_));
+        if (chunkCacheLine != null && chunkCacheLine.getChunk() != null) {
+            ChunkAccess chunk = chunkCacheLine.getChunk();
+            return CompletableFuture.completedFuture(Either.left(chunk));
+        }
+        return super.getChunkFuture(p_8432_, p_8433_, p_8434_, p_8435_);
+    }
 
     //@Override
     //public boolean runDistanceManagerUpdates() {
@@ -283,7 +287,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         //if (Util.getMillis() + 14246622 % 28 == 0) {
         List<ChunkCacheAddress> remove = new ArrayList<>();
         for (ChunkCacheAddress chunkCacheAddress : chunkCache.keySet()) {
-            if (distanceManager.getTickets(chunkCacheAddress.chunk).size() < 1) {
+            if (distanceManager.getTickets(chunkCacheAddress.chunk).isEmpty()) {
                 remove.add(chunkCacheAddress);
             }
         }
@@ -485,7 +489,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         generatorTasks.add(task);while (isCallGeneratorTick) Thread.onSpinWait();
     }
 
-    protected class ChunkCacheAddress {
+    protected static class ChunkCacheAddress {
 
         protected long chunk;
         protected ChunkStatus status;

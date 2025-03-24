@@ -1,5 +1,8 @@
 package n1luik.K_multi_threading.core.mixin.minecraftfix.loginMultiThreading;
 
+import n1luik.K_multi_threading.core.util.TruePacketThreadTest;
+import net.minecraft.network.PacketListener;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,7 +24,17 @@ public class ServerGamePacketListenerImplFix2 {
         });
     }
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;doTick()V"))
-    public void fix1(ServerPlayer instance){
+    public void fix2(ServerPlayer instance){
         server.execute(instance::doTick);
+    }
+
+
+    @Redirect(method = {
+            "handleUseItemOn",
+            "handleUseItem",
+            "handleMovePlayer"
+    }, at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V"))
+    public <T extends PacketListener> void fix3(Packet<T> p_131360_, T p_131361_, ServerLevel p_131362_){
+        TruePacketThreadTest.ensureRunningOnSameThread(p_131360_, p_131361_, p_131362_);
     }
 }
