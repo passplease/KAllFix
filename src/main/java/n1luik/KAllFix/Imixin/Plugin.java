@@ -56,7 +56,10 @@ public class Plugin implements IMixinConfigPlugin {
         //    return Boolean.getBoolean("KAF-CancelNio");
         //}
         if (mixinClassName.startsWith(s7)) {
-            return Boolean.getBoolean("KAF-FixAllPacket");
+            if (Boolean.getBoolean("KAF-FixAllPacket")) {
+                 return isModLoaded(mixinClassName.substring(s7.length()).split("\\.", 2)[0]);
+            }
+            return false;
         }
         //KAF-NbtAZ
         return switch (mixinClassName) {

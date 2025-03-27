@@ -53,6 +53,11 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/foundation/utility/WorldAttached.put(Lnet/minecraft/world/level/LevelAccessor;Ljava/lang/Object;)V"),
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/foundation/utility/WorldAttached.empty(Ljava/util/function/BiConsumer;)V"),
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/foundation/utility/WorldAttached.empty(Ljava/util/function/Consumer;)V"),
+            ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/logistics/depot/DepotBehaviour.applyToAllItems(FLjava/util/function/Function;)V"),
+            ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/logistics/depot/DepotBehaviour.read(Lnet/minecraft/nbt/CompoundTag;Z)V"),
+            ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/logistics/depot/DepotBehaviour.removeHeldItem()V"),
+            ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/logistics/depot/DepotBehaviour.handleBeltFunnelOutput()Z"),
+            ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/logistics/depot/DepotBehaviour.tick()Z"),
             //brandonscore
             ForgeAsm.minecraft_map.mapMethod("com/brandon3055/brandonscore/handlers/contributor/ContributorFetcher.onTick(Lnet/minecraftforge/event/TickEvent;)V"),
             ForgeAsm.minecraft_map.mapMethod("com/brandon3055/brandonscore/handlers/contributor/ContributorFetcher.queTask(Lcom/brandon3055/brandonscore/handlers/contributor/ContributorFetcher$ThreadedTask;)V"),

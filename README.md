@@ -75,6 +75,7 @@
   - 目前修复的mod ：
   - [通用机械：炸药]MekanismExplosives
   - Create Sabers
+  - [深渊：第二章]TATOS
 - -DKMT-asyncEx=true创建一个兼容池，可能会更不兼容
 - -DKMT-threadpool-async=true会崩
 

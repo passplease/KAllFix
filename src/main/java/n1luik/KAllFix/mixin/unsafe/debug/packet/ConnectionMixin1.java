@@ -28,13 +28,17 @@ public abstract class ConnectionMixin1 {
     @Inject(method = "sendPacket", at = @At("HEAD"))
     public void debug1(Packet<?> p_129521_, PacketSendListener p_243246_, CallbackInfo ci){
         if (p_129521_ instanceof ServerboundCustomPayloadPacket packet2){
-            k_multi_threading$logger.debug("name [{}], class [ServerboundCustomPayloadPacket]", packet2.getName(), new Exception());
+            k_multi_threading$logger.debug("len [{}], name [{}], class [ServerboundCustomPayloadPacket]", packet2.getData().array().length, packet2.getName(), new Exception());
         }else if (p_129521_ instanceof ClientboundCustomPayloadPacket packet2){
-            k_multi_threading$logger.debug("name [{}], class [ClientboundCustomPayloadPacket]", packet2.getName(), new Exception());
+            k_multi_threading$logger.debug("len [{}], name [{}], class [ClientboundCustomPayloadPacket]", packet2.getData().array().length, packet2.getName(), new Exception());
         }else if (p_129521_ instanceof ServerboundCustomQueryPacket packet2){
-            k_multi_threading$logger.debug("name [{}], class [ServerboundCustomQueryPacket]", packet2.getName(), new Exception());
+            if (packet2.getData() != null) {
+                k_multi_threading$logger.debug("name [{}], class [ServerboundCustomQueryPacket]", packet2.getName(), new Exception());
+            }else {
+                k_multi_threading$logger.debug("len [{}], name [{}], class [ServerboundCustomQueryPacket]", packet2.getData().array().length, packet2.getName(), new Exception());
+            }
         }else if (p_129521_ instanceof ClientboundCustomQueryPacket packet2){
-            k_multi_threading$logger.debug("name [{}], class [ClientboundCustomQueryPacket]", packet2.getName(), new Exception());
+            k_multi_threading$logger.debug("len [{}], name [{}], class [ClientboundCustomQueryPacket]", packet2.getData().array().length, packet2.getName(), new Exception());
         }else {
             k_multi_threading$logger.debug("class [{}]", p_129521_.getClass().getName(), new Exception());
         }

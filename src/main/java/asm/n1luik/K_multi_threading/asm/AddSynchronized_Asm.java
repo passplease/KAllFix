@@ -240,7 +240,7 @@ public class AddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/storage/SectionStorage.setDirty(J)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/LegacyRandomSource.setSeed(J)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/LegacyRandomSource.nextGaussian()D"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/LegacyRandomSource.next(I)I"),
+            //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/LegacyRandomSource.next(I)I"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/BitRandomSource.nextDouble()D"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/BitRandomSource.nextFloat()F"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/BitRandomSource.nextBoolean()Z"),
