@@ -7,14 +7,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-public class FalseReference2ReferenceConcurrentHashMap<K, V> extends AbstractReference2ReferenceMap<K, V> {
+public class FalseReference2ObjectOpenHashMap<K, V> extends Reference2ObjectOpenHashMap<K, V> {
     private final ConcurrentHashMap<K, V> map;
-    private FastUtilHackUtil.ConvertingObjectSortedSet<Map.Entry<K, V>, Entry<K, V>> reference2ReferenceEntrySet = null;
+    private FastUtilHackUtil.ConvertingObjectSetFast_Reference2ObjectMap<Map.Entry<K, V>, K, V> reference2ReferenceEntrySet = null;
 
-    public FalseReference2ReferenceConcurrentHashMap() {
+    public FalseReference2ObjectOpenHashMap() {
         map = new ConcurrentHashMap<K, V>();
     }
-    public FalseReference2ReferenceConcurrentHashMap(ConcurrentHashMap<K, V> map) {
+    public FalseReference2ObjectOpenHashMap(ConcurrentHashMap<K, V> map) {
         this.map = map;
     }
 
@@ -24,7 +24,7 @@ public class FalseReference2ReferenceConcurrentHashMap<K, V> extends AbstractRef
     }
 
     @Override
-    public V computeIfAbsent(K key, Reference2ReferenceFunction<? super K, ? extends V> mappingFunction) {
+    public V computeIfAbsent(K key, Reference2ObjectFunction<? super K, ? extends V> mappingFunction) {
         return map.computeIfAbsent(key, mappingFunction);
     }
 
@@ -49,8 +49,8 @@ public class FalseReference2ReferenceConcurrentHashMap<K, V> extends AbstractRef
     }
 
     @Override
-    public ReferenceCollection<V> values() {
-        return FastUtilHackUtil.wrapReference(map.values());
+    public ObjectCollection<V> values() {
+        return FastUtilHackUtil.wrap(map.values());
     }
 
     @Override
@@ -69,10 +69,10 @@ public class FalseReference2ReferenceConcurrentHashMap<K, V> extends AbstractRef
     }
 
     @Override
-    public ObjectSet<Entry<K, V>> reference2ReferenceEntrySet() {
-        ObjectSet<Entry<K, V>> es;
+    public FastEntrySet<K, V> reference2ObjectEntrySet() {
+        FastEntrySet<K, V> es;
         if ((es = reference2ReferenceEntrySet) != null) return es;
-        return reference2ReferenceEntrySet = new FastUtilHackUtil.ConvertingObjectSortedSet<>(map.entrySet(), FalseEntry::new, v->((FalseEntry)v).entry);
+        return reference2ReferenceEntrySet = new FastUtilHackUtil.ConvertingObjectSetFast_Reference2ObjectMap<>(map.entrySet(), FalseEntry::new, v->((FalseEntry<K, V>)v).entry);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class FalseReference2ReferenceConcurrentHashMap<K, V> extends AbstractRef
     public V get(Object key) {
         return map.get(key);
     }
-    public static class FixNull<K, V> extends FalseReference2ReferenceConcurrentHashMap<K, V>{
+    public static class FixNull<K, V> extends FalseReference2ObjectOpenHashMap<K, V> {
         public FixNull(){
             super(new FixNullConcurrentHashMap<>());
         }

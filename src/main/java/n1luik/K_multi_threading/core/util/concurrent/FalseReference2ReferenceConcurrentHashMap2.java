@@ -1,11 +1,11 @@
 package n1luik.K_multi_threading.core.util.concurrent;
 
-import it.unimi.dsi.fastutil.objects.AbstractReference2ReferenceMap;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
-import it.unimi.dsi.fastutil.objects.Reference2ReferenceArrayMap;
+import it.unimi.dsi.fastutil.objects.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 public class FalseReference2ReferenceConcurrentHashMap2<K, V> extends Reference2ReferenceArrayMap<K, V> {
     private final ConcurrentHashMap<K, V> map;
@@ -16,6 +16,46 @@ public class FalseReference2ReferenceConcurrentHashMap2<K, V> extends Reference2
     }
     public FalseReference2ReferenceConcurrentHashMap2(ConcurrentHashMap<K, V> map) {
         this.map = map;
+    }
+
+    @Override
+    public V computeIfAbsent(K key, @NotNull Function<? super K, ? extends V> mappingFunction) {
+        return map.computeIfAbsent(key, mappingFunction);
+    }
+
+    @Override
+    public V computeIfAbsent(K key, Reference2ReferenceFunction<? super K, ? extends V> mappingFunction) {
+        return map.computeIfAbsent(key, mappingFunction);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+
+    @Override
+    public boolean containsValue(Object v) {
+        return map.containsValue(v);
+    }
+
+    @Override
+    public void putAll(Map<? extends K, ? extends V> m) {
+        map.putAll(m);
+    }
+
+    @Override
+    public ReferenceSet<K> keySet() {
+        return new FalseAbstractReferenceSortedSet(map.keySet());
+    }
+
+    @Override
+    public ReferenceCollection<V> values() {
+        return FastUtilHackUtil.wrapReference(map.values());
+    }
+
+    @Override
+    public boolean containsKey(Object k) {
+        return map.containsKey(k);
     }
 
     @Override

@@ -63,7 +63,8 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
             new AsmTarget("net.minecraft.world.level.levelgen.structure.StructureCheck", false),
             new AsmTarget("net.minecraft.world.level.block.ComposterBlock", false),
             new AsmTarget("net.minecraft.world.entity.ai.attributes.AttributeInstance", false),
-            new AsmTarget("appeng.me.service.CraftingService", false)
+            new AsmTarget("appeng.me.service.CraftingService", false),
+            new AsmTarget("appeng.api.stacks.KeyCounter", true)
     ));
     public final Map<String, AsmTarget> nameMap = new HashMap<>();
     public final Map<String, List<String>> fieldMappings = new HashMap<>();
@@ -71,6 +72,8 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
     public final Map<String, String> typeMapping = new HashMap<>();
     {
         typeMapping.put("java/util/HashMap", "java/util/concurrent/ConcurrentHashMap");
+        //////////////////////////////////
+        typeMapping.put("it/unimi/dsi/fastutil/objects/Reference2ObjectOpenHashMap", "n1luik/K_multi_threading/core/util/concurrent/FalseReference2ObjectOpenHashMap");
         //////////////////////////////////
         typeMapping.put("it/unimi/dsi/fastutil/objects/Object2ObjectArrayMap", "java/util/concurrent/ConcurrentHashMap");
         //////////////////////////////////
