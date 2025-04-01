@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.RecursiveTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Mixin(value = ServerLoginPacketListenerImpl.class, priority = Integer.MAX_VALUE - 1000)
 public class ServerLoginPacketListenerImplImpl1 {
@@ -22,7 +23,7 @@ public class ServerLoginPacketListenerImplImpl1 {
     @Unique private static final Object K_multi_threading$lockLoginTaskGet = new Object();//防止在可能的一小段检测空白时间提交任务导致无法执行
     @Unique private static final Object K_multi_threading$lockLoginTaskRun = new Object();//在运行完执行等待的任务的时候防止执行出现问题
     @Unique private static final List<Runnable> K_multi_threading$waitTask = new CopyOnWriteArrayList<>();
-    @Unique private static int K_multi_threading$waitTaskSize = 0;
+    @Unique private static final AtomicInteger K_multi_threading$waitTaskSize = new AtomicInteger(0);
     @Unique private static final int K_multi_threading$waitTaskMax = Integer.getInteger("KMT-LoginMultiThreading.TaskSizeMax", 8);
     @Unique volatile boolean asynchronous = false;
     @Unique final Object lockLogin = new Object();
@@ -33,8 +34,8 @@ public class ServerLoginPacketListenerImplImpl1 {
 
     @Unique
     private static void K_multi_threading$runTask() {
-        if (K_multi_threading$waitTaskMax >= K_multi_threading$waitTaskSize) {
-            K_multi_threading$waitTaskSize++;
+        if (K_multi_threading$waitTaskMax >= K_multi_threading$waitTaskSize.get()) {
+            K_multi_threading$waitTaskSize.getAndAdd(1);
             Base.ForkJoinPool_ ex = Base.getEx();
             RecursiveTask<?> poolTask = new RecursiveTask<>() {
                 @Override
@@ -47,10 +48,10 @@ public class ServerLoginPacketListenerImplImpl1 {
                         remove = K_multi_threading$waitTask.remove(K_multi_threading$waitTask.size() - 1);
                     }
                     remove.run();
-                    K_multi_threading$waitTaskSize--;
+                    K_multi_threading$waitTaskSize.getAndDecrement();
                     synchronized (K_multi_threading$lockLoginTaskRun) {
-                        if (K_multi_threading$waitTaskMax >= K_multi_threading$waitTaskSize) {
-                            int size = K_multi_threading$waitTaskMax - K_multi_threading$waitTaskSize;
+                        if (K_multi_threading$waitTaskMax >= K_multi_threading$waitTaskSize.get()) {
+                            int size = K_multi_threading$waitTaskMax - K_multi_threading$waitTaskSize.get();
                             for (int i = 0; i < size; i++) {
                                 K_multi_threading$runTask();
                             }
