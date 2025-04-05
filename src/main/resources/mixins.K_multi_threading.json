@@ -39,6 +39,7 @@
     "minecraftfix.ChunkMapFix1",
     "minecraftfix.ClassInstanceMultiMapFix1",
     "minecraftfix.CollectingNeighborUpdaterDebug",
+    "minecraftfix.LegacyRandomSourceFix1",
     "minecraftfix.LevelChunkFix1",
     "minecraftfix.LevelChunkTicksFix1",
     "minecraftfix.LevelFix1",
@@ -51,7 +52,6 @@
     "minecraftfix.ServerLevelFix1",
     "minecraftfix.ServerPlayerGameModeFix1",
     "minecraftfix.ServerWatchdogFix1",
-    "minecraftfix.LegacyRandomSourceFix1",
     "minecraftfix.loginMultiThreading.DistanceManagerFix1",
     "minecraftfix.loginMultiThreading.MinecraftServerImpl3",
     "minecraftfix.loginMultiThreading.PacketUtilsFix1",
@@ -63,6 +63,7 @@
     "k.CommandsMixin"
   ],
   "error": [
+    "minecraftfix.ChunkGeneratorFix3",
     "debug.DistanceManagerDebug",
     "EntityLookupFix1",
     "ChunkHolderDebug",

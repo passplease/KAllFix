@@ -3,6 +3,7 @@ package n1luik.K_multi_threading.core;
 import asm.n1luik.K_multi_threading.asm.MappingImpl;
 import asm.n1luik.K_multi_threading.asm.MappingTsrgImpl;
 import com.mojang.logging.LogUtils;
+import n1luik.K_multi_threading.core.base.CalculateTask;
 import n1luik.K_multi_threading.core.sync.GetterDataMap;
 import n1luik.K_multi_threading.core.util.NodeHashMap;
 import n1luik.K_multi_threading.fix.FixGetterRoot;
@@ -30,6 +31,7 @@ public class Base {
     public static final String MOD_ID2 = "k_all_fix";
     /**整个顶性能有影响不建议开*/
     public static final boolean debugAE2Thread = false;
+    public static final long ThreadpoolKeepAliveTime =  Long.getLong("KMT-ThreadpoolKeepAliveTime", TimeUnit.SECONDS.toMillis(7));
     public static MinecraftServer mcs;
     public static int threadTaskMax = 80;
     static ForkJoinPool_ ex;
@@ -123,7 +125,7 @@ public class Base {
                             Thread.UncaughtExceptionHandler handler,
                             boolean asyncMode,
                             int threadSize) {
-            super(parallelism, factory, handler, asyncMode,0, threadSize, 1, null, 60, TimeUnit.SECONDS);//20秒
+            super(parallelism, factory, handler, asyncMode,0, threadSize, 1, null, ThreadpoolKeepAliveTime, TimeUnit.MILLISECONDS);//20秒
             dataMap = new ConcurrentHashMap<>(){
                 @Override
                 public synchronized Object put(@NotNull Object key, @NotNull Object value) {
@@ -146,7 +148,7 @@ public class Base {
                             Thread.UncaughtExceptionHandler handler,
                             boolean asyncMode,
                             int threadSize, Map<Object, Object> dataMap) {
-            super(parallelism, factory, handler, asyncMode,0, threadSize, 1, null, 20, TimeUnit.SECONDS);//20秒
+            super(parallelism, factory, handler, asyncMode,0, threadSize, 1, null, ThreadpoolKeepAliveTime, TimeUnit.MILLISECONDS);//20秒
             this.dataMap = dataMap;
         }
 
@@ -233,6 +235,7 @@ public class Base {
 
     static {
         int max = threadMax = Integer.getInteger("KMT-threadMax", Math.max(2, (int)(Runtime.getRuntime().availableProcessors() * 0.9)));
+        CalculateTask.callMax = Integer.getInteger("KMT-callMax", threadMax);
         Base.setupThreadpool(threadMax, threadMax, Boolean.getBoolean("KMT-threadpool-async"));
         if (Boolean.getBoolean("KMT-asyncEx")) {
             async = createThreadpool2(threadMax, threadMax, true, ex.getDataMap());

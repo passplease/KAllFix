@@ -233,8 +233,31 @@ processResources {
     }
 }
 
+sourceSets {
+    //main {
+    //    java {
+    //        srcDirs = ['src/main/java']
+    //    }
+    //    resources {
+    //        srcDirs = ['src/main/resources']
+    //    }
+    //}
+    fixpack {
+        java {
+            srcDirs = ['src/fixpack/java'] // 指定自定义源码目录
+        }
+        resources {
+            srcDirs = ['src/fixpack/resources']
+        }
+        compileClasspath += sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+    }
+}
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
+    if (Boolean.getBoolean("fixpack")) {
+        from sourceSets.fixpack.output
+    }
     manifest {
         attributes([
                 'MixinConnector': 'n1luik.K_multi_threading.core.Imixin.MixinConnector',

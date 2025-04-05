@@ -8,13 +8,14 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.IEventListener;
 
 import java.util.Objects;
+import java.util.concurrent.ForkJoinPool;
 
 public class EventUtil {
-    public static void runEvent(IEventBus eventBus, Event event){
-        runEvent(eventBus,event, true);
+    public static void runEvent(ForkJoinPool pool, IEventBus eventBus, Event event){
+        runEvent(pool, eventBus, event, true);
     }
 
-    public static void runEvent(IEventBus eventBus, Event event, boolean wait){
+    public static void runEvent(ForkJoinPool pool, IEventBus eventBus, Event event, boolean wait){
         IEventListener[] listeners;
         try {
             listeners = event.getListenerList().getListeners(Base.busID.getInt(eventBus));
@@ -23,7 +24,7 @@ public class EventUtil {
         }
 
         //Base.WaitInt waitInt = new Base.WaitInt();
-        Base.ForkJoinPool_ ex = Base.getEx();
+        //Base.ForkJoinPool_ ex = Base.getEx();
 
         //Base.getEx().getDataMap().put(Base.thisRunTaskName,name);
         //waitInt.size = listeners.length;
@@ -37,9 +38,9 @@ public class EventUtil {
         }));
 
         if (wait) {
-            submit.call(ex);
+            submit.call(pool);
         }else {
-            ex.submit(submit);//网上没有查到资料
+            pool.submit(submit);//网上没有查到资料
         }
 
 

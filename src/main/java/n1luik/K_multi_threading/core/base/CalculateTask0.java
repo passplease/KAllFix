@@ -2,47 +2,37 @@ package n1luik.K_multi_threading.core.base;
 
 import lombok.Getter;
 import n1luik.K_multi_threading.core.util.Unsafe;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.RecursiveTask;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class CalculateTask extends RecursiveTask<Object> {
+public class CalculateTask0 extends RecursiveTask<Object> {
     public static int callMax = Runtime.getRuntime().availableProcessors()-1;
-    private static final Logger LOGGER = LogManager.getLogger(CalculateTask.class);
     private final static Supplier<String> NullStringSupplier  = () -> "[null]";
     protected final Object sync1 = new Object();//防止在运行完之后等待
     private final int min;
     protected int start;
     protected int end;
-    protected BiConsumer<CalculateTask,Integer> run;
+    protected BiConsumer<CalculateTask0,Integer> run;
     //protected final ContainsMapList<T> ret;
     protected final int layer;
     protected volatile int size;
     protected volatile boolean stop = false;
     public boolean notCallMode = true;
-    public final CalculateTask root;//用于实现等待
+    public final CalculateTask0 root;//用于实现等待
     @Nullable
     public Thread wait;//用于实现等待
     public volatile Throwable throwable;//等待时的报错
     @Getter
-    protected final AtomicInteger nodeCompleted = new AtomicInteger(0);//等待时的报错
+    protected int taskCompleted;//等待时的报错
     public final Supplier<String> name;
-    protected final Object errorLock = new Object();
 
-    public void unsafeWaitThread(Thread wait){
-        unsafeWaitThread(t-> {
-            throw new RuntimeException("多线程异常", t);
-        }, wait);
-    }
     public void waitThread(Thread wait){
         waitThread(t-> {
             throw new RuntimeException("多线程异常", t);
@@ -50,18 +40,9 @@ public class CalculateTask extends RecursiveTask<Object> {
     }
 
     public <T> T waitThread(Function<Throwable, T> function, Thread wait){
-        if (wait instanceof ForkJoinWorkerThread)
-            synchronized (sync1){
-                if (this.stop) {
-                    return null;
-                }
-                join();
-            }
-        return unsafeWaitThread(function, wait);
-    }
-    public <T> T unsafeWaitThread(Function<Throwable, T> function, Thread wait){
         synchronized (sync1){
             if (stop || wait instanceof ForkJoinWorkerThread) {
+                //this.join();
                 return null;
             }
             this.wait = wait;
@@ -76,36 +57,15 @@ public class CalculateTask extends RecursiveTask<Object> {
     public void call(Thread wait){
         if (stop)return;
         fork();
-        unsafeWaitThread(wait);
+        waitThread(wait);
     }
 
     public void waitThread(){
         waitThread(Thread.currentThread());
     }
-    public void unsafeWaitThread(){
-        unsafeWaitThread(Thread.currentThread());
-    }
 
     public <T> T waitThread(Function<Throwable, T> function){
         return waitThread(function, Thread.currentThread());
-    }
-
-    public <T> T unsafeWaitThread(Function<Throwable, T> function){
-        return unsafeWaitThread(function, Thread.currentThread());
-    }
-
-    public <T> void call(Function<Throwable, T> function){
-        call(Thread.currentThread());
-    }
-
-    public <T> void call(ForkJoinPool pool, Function<Throwable, T> function){
-        Thread thread = Thread.currentThread();
-        if (thread instanceof ForkJoinWorkerThread){
-            compute();
-        }else {
-            pool.submit(this);
-            unsafeWaitThread(function, thread);
-        }
     }
 
     public void call(){
@@ -118,15 +78,15 @@ public class CalculateTask extends RecursiveTask<Object> {
             compute();
         }else {
             pool.submit(this);
-            unsafeWaitThread(thread);
+            waitThread(thread);
         }
     }
 
 
-    public CalculateTask(int start, int end, int min, Consumer<Integer> run) {
+    public CalculateTask0(int start, int end, int min, Consumer<Integer> run) {
         this(NullStringSupplier, start, end, min, run);
     }
-    public CalculateTask(Supplier<String> name, int start, int end, int min, Consumer<Integer> run) {
+    public CalculateTask0(Supplier<String> name, int start, int end, int min, Consumer<Integer> run) {
         this.start = start;
         this.end = end;
         this.run = (n,i)->run.accept(i);
@@ -136,18 +96,18 @@ public class CalculateTask extends RecursiveTask<Object> {
         this.root = this;
         this.name  = name;
     }
-    public CalculateTask(int start, int end, Consumer<Integer> run) {
+    public CalculateTask0(int start, int end, Consumer<Integer> run) {
         this(NullStringSupplier, start, end, run);
     }
-    public CalculateTask(Supplier<String> name, int start, int end, Consumer<Integer> run) {
-        this(name, start,end,1+((end-start) / CalculateTask.callMax),run);
+    public CalculateTask0(Supplier<String> name, int start, int end, Consumer<Integer> run) {
+        this(name, start,end,1+((end-start) / callMax),run);
     }
 
-    public CalculateTask(int start, int end, int max, BiConsumer<CalculateTask,Integer> run) {
+    public CalculateTask0(int start, int end, int max, BiConsumer<CalculateTask0,Integer> run) {
         this(NullStringSupplier, start, end, max, run);
     }
 
-    public CalculateTask(Supplier<String> name, int start, int end, int max, BiConsumer<CalculateTask,Integer> run) {
+    public CalculateTask0(Supplier<String> name, int start, int end, int max, BiConsumer<CalculateTask0,Integer> run) {
         this.start = start;
         this.end = end;
         this.run = run;
@@ -158,10 +118,10 @@ public class CalculateTask extends RecursiveTask<Object> {
         this.name  = name;
     }
 
-    public CalculateTask(int start, int end, int min, BiConsumer<CalculateTask,Integer> run/*, final ContainsMapList<T> ret*/, int layer, CalculateTask root) {
+    public CalculateTask0(int start, int end, int min, BiConsumer<CalculateTask0,Integer> run/*, final ContainsMapList<T> ret*/, int layer, CalculateTask0 root) {
         this(NullStringSupplier, start,end,min,run,layer,root);
     }
-    public CalculateTask(Supplier<String> name, int start, int end, int min, BiConsumer<CalculateTask,Integer> run/*, final ContainsMapList<T> ret*/, int layer, CalculateTask root) {
+    public CalculateTask0(Supplier<String> name, int start, int end, int min, BiConsumer<CalculateTask0,Integer> run/*, final ContainsMapList<T> ret*/, int layer, CalculateTask0 root) {
         this.start = start;
         this.end = end;
         this.run = run;
@@ -174,7 +134,7 @@ public class CalculateTask extends RecursiveTask<Object> {
 
 
     @Override
-    protected synchronized Object compute() {
+    protected Object compute() {
         if (stop) throw new RuntimeException("当前任务已运行");
         if (end - start < 1) return sync1;
         try {
@@ -190,20 +150,17 @@ public class CalculateTask extends RecursiveTask<Object> {
                 }
             } else {
                 if (notCallMode) {
-                    int rem = (end - start);
-                    boolean redundancy = rem % min != 0;
-                    int middle_i = rem / min;
-                    CallNode[] callNodes = new CallNode[redundancy ? middle_i + 1 : middle_i];
+                    boolean redundancy = (end - start) % min != 0;
+                    int middle_i = (end - start) / min;
+                    RecursiveTask<?>[] callNodes = new RecursiveTask[redundancy ? middle_i + 1 : middle_i];
 
                     int all = 0;
-                    double taskSize = (min * (rem / (double)min)) / ((int)(rem / (double)min));
-                    if (taskSize % 1 != 0) {
-                        taskSize = (double) ((int)taskSize)+1;
-                    }
+                    int rem = (end - start);
+                    double taskSize = (min * ((end - start) / (double)min)) / ((end - start) / (double)min);
                     for (int i = 0; i < callNodes.length; i++) {
                         //if (redundancy && i == callNodes.length - 1) {
-                        //    all += (start + (i * min)) - rem;
-                        //    callNodes[i] = new CallNode(start + (int)all, (start + (i * min)) - rem);
+                        //    all += (start + (i * min)) - (end - start);
+                        //    callNodes[i] = new CallNode(start + (int)all, (start + (i * min)) - (end - start));
                         //}else {
                         int add = min;
                         if ((taskSize * i) > all){
@@ -214,14 +171,13 @@ public class CalculateTask extends RecursiveTask<Object> {
                         //}
                     }
                     //size = callNodes.length;
-                    //System.out.printf("%s %s %s %s %s %n",taskSize,taskSize * callNodes.length, all, callNodes.length, rem);
+                    //System.out.printf("%s %s %s %s %s %n",taskSize,taskSize * callNodes.length,all,callNodes.length,(end - start));
 
                     for (int i = 1; i < callNodes.length; i++) {
                         callNodes[i].fork();
                     }
-                    (callNodes[0]).compute();
+                    ((CallNode)callNodes[0]).compute();
                     for (int i = 1; i < callNodes.length; i++) {
-                        if (callNodes[i].stop)continue;
                         callNodes[i].join();
                     }
                     //while (size > 0) Thread.onSpinWait();
@@ -229,8 +185,8 @@ public class CalculateTask extends RecursiveTask<Object> {
 
                 }else {
                     int middle = (start + end) / 2;
-                    CalculateTask firstTask = new CalculateTask(name, start, middle, min, run/*, ret*/, this.layer,root);
-                    CalculateTask secondTask = new CalculateTask(name, middle, end, min, run/*, ret*/, this.layer,root);
+                    CalculateTask0 firstTask = new CalculateTask0(name, start, middle, min, run/*, ret*/, this.layer,root);
+                    CalculateTask0 secondTask = new CalculateTask0(name, middle, end, min, run/*, ret*/, this.layer,root);
                     //invokeAll(firstTask,secondTask);
                     secondTask.fork();
                     firstTask.compute();
@@ -243,7 +199,8 @@ public class CalculateTask extends RecursiveTask<Object> {
         }finally {
             synchronized (sync1){
                 stop = true;
-                unWait();
+                if (wait != null && !(wait instanceof ForkJoinWorkerThread))
+                    Unsafe.unsafe.unpark(wait);
             }
 
         }
@@ -251,21 +208,15 @@ public class CalculateTask extends RecursiveTask<Object> {
         return sync1;
     }
 
-    protected void unWait(){
-        if (wait != null && !(wait instanceof ForkJoinWorkerThread))
-            Unsafe.unsafe.unpark(wait);
-    }
-
     @Override
     public String toString() {
-        return name+"-['Task size': "+(end - start)+", 'nodeCompleted': "+nodeCompleted.get()+", 'hash': "+super.toString()+"]";
+        return name+"-['Task size': "+(end - start)+", 'taskCompleted': "+taskCompleted+", 'hash': "+super.toString()+"]";
     }
 
     public class CallNode extends RecursiveTask<Object>{
 
         protected int pos = -1;
         protected int min = 0;
-        protected boolean stop = false;
 
         public CallNode(){
         }
@@ -282,24 +233,19 @@ public class CalculateTask extends RecursiveTask<Object> {
 
         @Override
         protected Object compute() {
-            BiConsumer<CalculateTask, Integer> run1 = run;
             try {
                 int max = (end - start);
                 for (int i = 0; i < min && max > i; i++) {
-                    run1.accept(CalculateTask.this, pos + i);
+                    run.accept(CalculateTask0.this, pos + i);
+                    CalculateTask0.this.taskCompleted++;
+                    //ret.put(pos + i, apply);
                 }
-                CalculateTask.this.nodeCompleted.getAndAdd(1);
+                //synchronized (CalculateTask.this) {
+                //    size--;
+                //}
             } catch (Throwable e) {
-                synchronized (CalculateTask.this.errorLock) {
-                    if (root.throwable != null) {
-                        LOGGER.error("Error in task: " + CalculateTask.this.name, e);
-                    }else {
-                        root.throwable = e;
-                    }
-                }
+                root.throwable = throwable = e;
                 throw e;
-            }finally {
-                stop = true;
             }
             return null;
         }

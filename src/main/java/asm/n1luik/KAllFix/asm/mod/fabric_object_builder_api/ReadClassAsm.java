@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.ClassNode;
 import java.io.IOException;
 import java.util.Set;
 
-public record ReadClassAsm(String file, String version, String target) implements ITransformer<ClassNode> {
+public record ReadClassAsm(String file, String version, String target, Set<Target> classs) implements ITransformer<ClassNode> {
     @Override
     public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
         try {
@@ -34,8 +34,6 @@ public record ReadClassAsm(String file, String version, String target) implement
 
     @Override
     public @NotNull Set<Target> targets() {
-        return Set.of(
-                Target.targetClass("net.fabricmc.fabric.mixin.object.builder.TradeOffersTypeAwareBuyForOneEmeraldFactoryMixin")
-        );
+        return classs;
     }
 }

@@ -15,21 +15,21 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class CalculateTask extends RecursiveTask<Object> {
+public class CalculateTask2 extends RecursiveTask<Object> {
     public static int callMax = Runtime.getRuntime().availableProcessors()-1;
-    private static final Logger LOGGER = LogManager.getLogger(CalculateTask.class);
+    private static final Logger LOGGER = LogManager.getLogger(CalculateTask2.class);
     private final static Supplier<String> NullStringSupplier  = () -> "[null]";
     protected final Object sync1 = new Object();//防止在运行完之后等待
     private final int min;
     protected int start;
     protected int end;
-    protected BiConsumer<CalculateTask,Integer> run;
+    protected BiConsumer<CalculateTask2,Integer> run;
     //protected final ContainsMapList<T> ret;
     protected final int layer;
     protected volatile int size;
     protected volatile boolean stop = false;
     public boolean notCallMode = true;
-    public final CalculateTask root;//用于实现等待
+    public final CalculateTask2 root;//用于实现等待
     @Nullable
     public Thread wait;//用于实现等待
     public volatile Throwable throwable;//等待时的报错
@@ -123,10 +123,10 @@ public class CalculateTask extends RecursiveTask<Object> {
     }
 
 
-    public CalculateTask(int start, int end, int min, Consumer<Integer> run) {
+    public CalculateTask2(int start, int end, int min, Consumer<Integer> run) {
         this(NullStringSupplier, start, end, min, run);
     }
-    public CalculateTask(Supplier<String> name, int start, int end, int min, Consumer<Integer> run) {
+    public CalculateTask2(Supplier<String> name, int start, int end, int min, Consumer<Integer> run) {
         this.start = start;
         this.end = end;
         this.run = (n,i)->run.accept(i);
@@ -136,18 +136,18 @@ public class CalculateTask extends RecursiveTask<Object> {
         this.root = this;
         this.name  = name;
     }
-    public CalculateTask(int start, int end, Consumer<Integer> run) {
+    public CalculateTask2(int start, int end, Consumer<Integer> run) {
         this(NullStringSupplier, start, end, run);
     }
-    public CalculateTask(Supplier<String> name, int start, int end, Consumer<Integer> run) {
+    public CalculateTask2(Supplier<String> name, int start, int end, Consumer<Integer> run) {
         this(name, start,end,1+((end-start) / CalculateTask.callMax),run);
     }
 
-    public CalculateTask(int start, int end, int max, BiConsumer<CalculateTask,Integer> run) {
+    public CalculateTask2(int start, int end, int max, BiConsumer<CalculateTask2,Integer> run) {
         this(NullStringSupplier, start, end, max, run);
     }
 
-    public CalculateTask(Supplier<String> name, int start, int end, int max, BiConsumer<CalculateTask,Integer> run) {
+    public CalculateTask2(Supplier<String> name, int start, int end, int max, BiConsumer<CalculateTask2,Integer> run) {
         this.start = start;
         this.end = end;
         this.run = run;
@@ -158,10 +158,10 @@ public class CalculateTask extends RecursiveTask<Object> {
         this.name  = name;
     }
 
-    public CalculateTask(int start, int end, int min, BiConsumer<CalculateTask,Integer> run/*, final ContainsMapList<T> ret*/, int layer, CalculateTask root) {
+    public CalculateTask2(int start, int end, int min, BiConsumer<CalculateTask2,Integer> run/*, final ContainsMapList<T> ret*/, int layer, CalculateTask2 root) {
         this(NullStringSupplier, start,end,min,run,layer,root);
     }
-    public CalculateTask(Supplier<String> name, int start, int end, int min, BiConsumer<CalculateTask,Integer> run/*, final ContainsMapList<T> ret*/, int layer, CalculateTask root) {
+    public CalculateTask2(Supplier<String> name, int start, int end, int min, BiConsumer<CalculateTask2,Integer> run/*, final ContainsMapList<T> ret*/, int layer, CalculateTask2 root) {
         this.start = start;
         this.end = end;
         this.run = run;
@@ -229,8 +229,8 @@ public class CalculateTask extends RecursiveTask<Object> {
 
                 }else {
                     int middle = (start + end) / 2;
-                    CalculateTask firstTask = new CalculateTask(name, start, middle, min, run/*, ret*/, this.layer,root);
-                    CalculateTask secondTask = new CalculateTask(name, middle, end, min, run/*, ret*/, this.layer,root);
+                    CalculateTask2 firstTask = new CalculateTask2(name, start, middle, min, run/*, ret*/, this.layer,root);
+                    CalculateTask2 secondTask = new CalculateTask2(name, middle, end, min, run/*, ret*/, this.layer,root);
                     //invokeAll(firstTask,secondTask);
                     secondTask.fork();
                     firstTask.compute();
@@ -282,17 +282,17 @@ public class CalculateTask extends RecursiveTask<Object> {
 
         @Override
         protected Object compute() {
-            BiConsumer<CalculateTask, Integer> run1 = run;
+            BiConsumer<CalculateTask2, Integer> run1 = run;
             try {
                 int max = (end - start);
                 for (int i = 0; i < min && max > i; i++) {
-                    run1.accept(CalculateTask.this, pos + i);
+                    run1.accept(CalculateTask2.this, pos + i);
                 }
-                CalculateTask.this.nodeCompleted.getAndAdd(1);
+                CalculateTask2.this.nodeCompleted.getAndAdd(1);
             } catch (Throwable e) {
-                synchronized (CalculateTask.this.errorLock) {
+                synchronized (CalculateTask2.this.errorLock) {
                     if (root.throwable != null) {
-                        LOGGER.error("Error in task: " + CalculateTask.this.name, e);
+                        LOGGER.error("Error in task: " + CalculateTask2.this.name, e);
                     }else {
                         root.throwable = e;
                     }

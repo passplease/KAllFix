@@ -13,7 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = ChunkGenerator.class, priority = Integer.MIN_VALUE + 1000)
 public class ChunkGeneratorFix2 {
-    @Inject(method = "applyBiomeDecoration", at = {@At("RETURN"),
+    @Inject(method = {
+            "applyBiomeDecoration"
+    }, at = {@At("RETURN"),
             @At(value = "INVOKE", target = "Lnet/minecraft/ReportedException;<init>(Lnet/minecraft/CrashReport;)V", ordinal = 2)})
     public void fix2(WorldGenLevel p_223087_, ChunkAccess p_223088_, StructureManager p_223089_, CallbackInfo ci){
         if (((IToLongData1) (Object)this).K_multi_threading$getIToLongData1() > 0 && p_223087_.getChunkSource() instanceof IWorldChunkLockedConfig iWorldChunkLockedConfig) {

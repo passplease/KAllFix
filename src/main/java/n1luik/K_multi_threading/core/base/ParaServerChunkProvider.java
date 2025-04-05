@@ -76,6 +76,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     protected long clearTime = 0;
     protected final Object lock = new Object();
     protected final Object lock2 = new Object();
+    protected final Object tasksRunLock = new Object();
     protected volatile boolean isCallTick = false;
     protected volatile boolean isCallGeneratorTick = false;
     protected final List<Runnable> tasks = new CopyOnWriteArrayList<>();
@@ -121,6 +122,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
 
         Unsafe.unsafe.putObject(this, initId.getLong("lock"), new Object());
         Unsafe.unsafe.putObject(this, initId.getLong("lock2"), new Object());
+        Unsafe.unsafe.putObject(this, initId.getLong("tasksRunLock"), new Object());
         isCallTick = false;
         isCallGeneratorTick = false;
         Unsafe.unsafe.putObject(this, initId.getLong("tasks"), new CopyOnWriteArrayList<>());
@@ -307,8 +309,10 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     public void tick(BooleanSupplier p_201913_, boolean p_201914_) {
         isCallTick = true;
         super.tick(p_201913_, p_201914_);
-        tasks.forEach(Runnable::run);
-        tasks.clear();
+        synchronized (tasksRunLock) {
+            tasks.forEach(Runnable::run);
+            tasks.clear();
+        }
 
         isCallTick = false;
 
@@ -476,6 +480,10 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
             generatorTasks.forEach(Runnable::run);
             generatorTasks.clear();
             isCallGeneratorTick = false;
+            synchronized (tasksRunLock) {
+                tasks.forEach(Runnable::run);
+                tasks.clear();
+            }
         }
     }
 

@@ -16,7 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ChunkGeneratorFix1 implements IToLongData1{
     long IToLongData1 = -1;
 
-    @Inject(method = "applyBiomeDecoration", at = @At("HEAD"))
+    @Inject(method = {
+            "applyBiomeDecoration"
+    }, at = @At("HEAD"))
     public void fix1(WorldGenLevel p_223087_, ChunkAccess p_223088_, StructureManager p_223089_, CallbackInfo ci){
         if (p_223087_.getChunkSource() instanceof IWorldChunkLockedConfig iWorldChunkLockedConfig) {
             IToLongData1 = iWorldChunkLockedConfig.pushThread();

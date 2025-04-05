@@ -79,7 +79,7 @@ public class MinecraftServerImpl1 implements IMinecraftServerTickMixin1 {
 
         K_multi_threading$taskListBuff.add(()->{
             TickEvent.LevelTickEvent levelTickEvent = new TickEvent.LevelTickEvent(level.isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER, TickEvent.Phase.START, level, haveTime);
-            EventUtil.runEvent(MinecraftForge.EVENT_BUS, levelTickEvent);
+            EventUtil.runEvent(Base.getEx(), MinecraftForge.EVENT_BUS, levelTickEvent);
         });
     }
 
@@ -115,7 +115,7 @@ public class MinecraftServerImpl1 implements IMinecraftServerTickMixin1 {
         K_multi_threading$taskListBuff.add(()->{
 
             TickEvent.LevelTickEvent levelTickEvent = new TickEvent.LevelTickEvent(level.isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER, TickEvent.Phase.END, level, haveTime);
-            EventUtil.runEvent(MinecraftForge.EVENT_BUS,levelTickEvent);
+            EventUtil.runEvent(Base.getEx(), MinecraftForge.EVENT_BUS,levelTickEvent);
         });
     }
 
@@ -141,7 +141,7 @@ public class MinecraftServerImpl1 implements IMinecraftServerTickMixin1 {
             }
         });
         Base.getEx().submit(submit);
-        WorldError worldError = submit.waitThread(t -> {
+        WorldError worldError = submit.unsafeWaitThread(t -> {
             if (K_multi_threading$removeErrorSize-- >= 0) {
                 Base.LOGGER.info("", t);
                 return null;
@@ -180,11 +180,11 @@ public class MinecraftServerImpl1 implements IMinecraftServerTickMixin1 {
     @Redirect(method = "tickServer", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/event/ForgeEventFactory;onPreServerTick(Ljava/util/function/BooleanSupplier;Lnet/minecraft/server/MinecraftServer;)V"), remap = false)
     public synchronized void forgeEvent3(BooleanSupplier haveTime, MinecraftServer server) {
 
-        EventUtil.runEvent(MinecraftForge.EVENT_BUS, new TickEvent.ServerTickEvent(TickEvent.Phase.START, haveTime, server));
+        EventUtil.runEvent(Base.getEx(), MinecraftForge.EVENT_BUS, new TickEvent.ServerTickEvent(TickEvent.Phase.START, haveTime, server));
     }
 
     @Redirect(method = "tickServer", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/event/ForgeEventFactory;onPostServerTick(Ljava/util/function/BooleanSupplier;Lnet/minecraft/server/MinecraftServer;)V"), remap = false)
     public synchronized void forgeEvent4(BooleanSupplier haveTime, MinecraftServer server) {
-        EventUtil.runEvent(MinecraftForge.EVENT_BUS, new TickEvent.ServerTickEvent(TickEvent.Phase.END, haveTime, server));
+        EventUtil.runEvent(Base.getEx(), MinecraftForge.EVENT_BUS, new TickEvent.ServerTickEvent(TickEvent.Phase.END, haveTime, server));
     }
 }

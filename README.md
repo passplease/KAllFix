@@ -41,21 +41,23 @@
 - (不安全)（需要开启-DKAF-NbtIoMixin_NotGZip=true)加一个try catch解决nbtio的gzip问题
 - 解决老destroy的数据库连不上就崩服问题
 - -DKMT-threadMax=[线程池的线程数] | 1.0.3
+- -KMT-callMax=[多线程任务默认分配最大使用线程] | 1.0.3
+- -KMT-ThreadpoolKeepAliveTime=[毫秒]多线程线程池停止不需要的线程的时间 | 1.0.3
 - 使用-DKAF-RemoveMixin:[类名]禁用指定的mixin，KMT也可以
 - -DKAF-ClientboundKeepAlivePacket_Max=[多少毫秒] 修改ClientboundKeepAlivePacket数据包的时间要求，默认15秒
   - ClientboundKeepAlivePacket包是需要小于15秒发送一次要不然就会被踢出服务器理由是连接超时
 - 通过-DKAF-ServerTimeout=[多少秒]设置服务器连接超时时间，不一定有用可以试试另一个方式
   - forge自带的另一个建议2个都设置: -Dforge.readTimeout=[多少秒]
-- 指令:
-  - debug_GetterClassFile 类名
-    - 获取游戏最终游戏运行的类型文件数据，会保存在游戏目录下面“保存时间的时间戳_save.class”
-  -  SetterWorldConfig [world, ClearErrorSize, RemoveRemoveErrorSize]
-    - 设置之后并不会保存
-      - world [维度的注册id]:
-        - setM2 [true, false] 设置维度的实现过程方式是另一种，但是可能会卡死
-        - setMultiThreading [数量] 默认0，设置多线程同时运行任务的数量，但是可能会卡死
-      - ClearErrorSize 直接清除报错导致服务器崩溃的次数
-      - RemoveRemoveErrorSize 让服务器不会纪录崩溃的次数，无限拦截
+  - 指令:
+    - debug_GetterClassFile 类名
+      - 获取游戏最终游戏运行的类型文件数据，会保存在游戏目录下面“保存时间的时间戳_save.class”
+    -  SetterWorldConfig [world, ClearErrorSize, RemoveRemoveErrorSize]
+      - 设置之后并不会保存
+        - world [维度的注册id]:
+          - setM2 [true, false] 设置维度的实现过程方式是另一种，但是可能会卡死
+          - setMultiThreading [数量] 默认0，设置多线程同时运行任务的数量，但是可能会卡死
+        - ClearErrorSize 直接清除报错导致服务器崩溃的次数
+        - RemoveRemoveErrorSize 让服务器不会纪录崩溃的次数，无限拦截
 
 ##  可开启
 - -DIndependencePlayer=true 开启玩家异步，这玩意大概率是负优化
@@ -78,6 +80,16 @@
   - [深渊：第二章]TATOS
 - -DKMT-asyncEx=true创建一个兼容池，可能会更不兼容
 - -DKMT-threadpool-async=true会崩
+- 多线程jei和emi：
+  - 操作
+    - -DKAF-MultiThreadingJEI=true只能在客户端使用，多线程jei不兼容emi
+    - -DKAF-MultiThreadingEMI=true只能在客户端使用，多线程jei必须有emi
+    - -DKAF-MultiThreadingJEICommon=true只能在客户端使用，基础修改，必须启用
+  - 自动获取的cpu最大线程数不一定准确，大概率是作者是虚拟机的问题需要手动设置-KAF-JeiMultiThreading-TasxMax=[cpu最大线程数win多百分之15 linux多百分之10 cpu线程越多设置越多]
+- -DKAF-UnsafeCinderscapesFix1=true修改[余烬奇景]cinderscapes的enableAshFall性能消耗函数限制在地狱
+- -DKAF-TooltipMultiThreading=true吧Tooltip事件改成多线程
+  - 这个非常不建议，这个有很多大题
+
 
 ## 问题
 - 如果不手动设置-DKMT-threadMax=[cpu线程数]的话可能会导致地形生成莫名其妙卡死，还是的话继续调高这个
@@ -88,6 +100,10 @@
 - 登陆多线程可能会导致服务器提前接受到ServerboundMovePlayerPacket导致报错一次
 - [跑酷！]ParCool在开启多线程登陆的时候需要进服务器之后死一下才可以使用
 - 盖亚宝典4 会有小概率报错Modifier is already applied on this attribute!
+- 1.20.1的[余烬奇景]cinderscapes我根本做不到优化enableAshFall功能只能禁用，做不到的是找到在那里生成的这个生物群系在生成这个的维度启用
+  - 浪费性能：中高
+  - 浪费原因：在所有时间的每一个区块获取128次获取区块
+  - 解决方法：添加一个不安全优化仅在地狱触发
 
 ## 故障纪录
 - 没有地狱，问题是因为测试模组导致数据包损坏，解决方法：

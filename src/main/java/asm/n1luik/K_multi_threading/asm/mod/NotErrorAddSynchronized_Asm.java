@@ -108,6 +108,7 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
             //ForgeAsm.minecraft_map.mapMethod("appeng/me/service/PathingService.onServerEndTick()V"),
             //ForgeAsm.minecraft_map.mapMethod("appeng/me/service/PathingService.repath()V"),
             ForgeAsm.minecraft_map.mapMethod("appeng/menu/me/common/MEStorageMenu.m_38946_()V"),
+            ForgeAsm.minecraft_map.mapMethod("appeng/hooks/ticking/TickHandler.addCallable(Lnet/minecraft/world/level/LevelAccessor;Lappeng/util/ILevelRunnable;)V"),
             ForgeAsm.minecraft_map.mapMethod("appeng/me/storage/NetworkStorage.isQueuedForRemoval(Lappeng/api/storage/MEStorage;)V"),
             ForgeAsm.minecraft_map.mapMethod("appeng/me/storage/NetworkStorage.getAvailableStacks(Lappeng/api/stacks/KeyCounter;)V"),
             ForgeAsm.minecraft_map.mapMethod("appeng/me/storage/NetworkStorage.extract(Lappeng/api/stacks/AEKey;JLappeng/api/config/Actionable;Lappeng/api/networking/security/IActionSource;)V"),

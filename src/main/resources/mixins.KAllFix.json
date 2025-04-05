@@ -42,6 +42,10 @@
     "unsafe.gtceu.MedicalConditionTrackerMixin"
   ],
   "client": [
-    "ex.FixAllPacket.mekanismexplosives.client.MinecraftMixin"
+    "ex.FixAllPacket.mekanismexplosives.client.MinecraftMixin",
+    "unsafe.path.MultiThreadingEMI.PluginCallerMixin",
+    "unsafe.path.MultiThreadingJEI.PluginCallerMixin",
+    "unsafe.path.MultiThreadingJEICommon.ErrorUtilMixin",
+    "unsafe.path.TooltipMultiThreading.ForgeEventFactoryImpl"
   ]
 }

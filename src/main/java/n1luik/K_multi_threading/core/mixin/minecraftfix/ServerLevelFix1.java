@@ -34,6 +34,7 @@ import java.util.concurrent.Executor;
 
 @Mixin(ServerLevel.class)
 public abstract class ServerLevelFix1 {
+    @Unique
     private final Object K_multi_threading$lockBlockEvents = new Object();
 
     @Unique

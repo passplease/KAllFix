@@ -30,6 +30,7 @@ public class ServerGamePacketListenerImplFix2 {
 
 
     @Redirect(method = {
+            "handleClientCommand",
             "handleUseItemOn",
             "handleUseItem",
             "handleMovePlayer"
