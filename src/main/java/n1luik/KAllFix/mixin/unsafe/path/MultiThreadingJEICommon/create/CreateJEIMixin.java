@@ -16,9 +16,9 @@ import java.util.function.Consumer;
 
 import static n1luik.KAllFix.util.Args.JEITaskMax;
 
-@Mixin(CreateJEI.class)
+@Mixin(value = CreateJEI.class, remap = false)
 public class CreateJEIMixin {
-    @Redirect(method = "registerRecipes", at = @At(value = "INVOKE", target = "Ljava/util/List;forEach(Ljava/util/function/Consumer;)V"))
+    @Redirect(method = "registerRecipes", at = @At(value = "INVOKE", target = "Ljava/util/List;forEach(Ljava/util/function/Consumer;)V", remap = false), remap = false)
     public <T> void impl1(List<T> list, Consumer<T> consumer) {
 
         if (Util.backgroundExecutor() instanceof ForkJoinPool pool) {

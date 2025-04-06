@@ -302,7 +302,7 @@ mixin {
 }
 
 // 创建一个自定义任务，用于生成 debug.jar
-tasks.register('copyDebugJar', Copy) {
+tasks.register('_copyDebugJar', Copy) {
     var t = tasks.getByName("reobfJar")
     dependsOn(t) // 确保在执行此任务前先执行 jar 任务
 
