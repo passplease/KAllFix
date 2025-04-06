@@ -38,8 +38,12 @@
     "unsafe.debug.ConnectionMixin",
     "unsafe.debug.RegionFileStorageDebug1",
     "unsafe.debug.packet.ConnectionMixin1",
+    "unsafe.debug.packet.PacketEncoderMixin1",
     "unsafe.fix.asynchronous.ClientboundCustomQueryPacketMixin",
-    "unsafe.gtceu.MedicalConditionTrackerMixin"
+    "unsafe.gtceu.MedicalConditionTrackerMixin",
+    "unsafe.path.packetOptimize.This",
+    "unsafe.path.packetOptimize.entity.attributes.LivingEntityMixin2",
+    "unsafe.path.packetOptimize.entity.attributes.ServerEntityMixin"
   ],
   "client": [
     "ex.FixAllPacket.mekanismexplosives.client.MinecraftMixin",

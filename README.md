@@ -89,6 +89,8 @@
 - -DKAF-UnsafeCinderscapesFix1=true修改[余烬奇景]cinderscapes的enableAshFall性能消耗函数限制在地狱
 - -DKAF-TooltipMultiThreading=true吧Tooltip事件改成多线程
   - 这个非常不建议，这个有很多大题
+- -DKAF-packetOptimize=true优化一部分原版数据包，最好客户端服务器一起开启，但是现在还是不需要客户端修复的
+  - -DKAF-packetOptimize.AttributesReOutputTime=[毫秒]设置强制重新发送的间隔时间，默认2分钟
 
 
 ## 问题
@@ -104,6 +106,8 @@
   - 浪费性能：中高
   - 浪费原因：在所有时间的每一个区块获取128次获取区块
   - 解决方法：添加一个不安全优化仅在地狱触发
+- 多线程jei问题：
+  - 因为emi的问题fusion的兼容根本不可能实现，但是目前我玩的时候没有影响
 
 ## 故障纪录
 - 没有地狱，问题是因为测试模组导致数据包损坏，解决方法：
