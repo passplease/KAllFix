@@ -300,3 +300,13 @@ mixin {
     add sourceSets.main, "mixins.K_multi_threading.refmap.json"
     //config "mixins.K_multi_threading.json"
 }
+
+// 创建一个自定义任务，用于生成 debug.jar
+tasks.register('copyDebugJar', Copy) {
+    var t = tasks.getByName("reobfJar")
+    dependsOn(t) // 确保在执行此任务前先执行 jar 任务
+
+    from jar.archiveFile // 获取默认 jar 文件的路径
+    into jar.destinationDirectory // 将文件复制到默认 jar 的输出目录
+    rename { "debug.jar" } // 将文件重命名为 debug.jar
+}

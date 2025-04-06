@@ -28,6 +28,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static n1luik.KAllFix.util.Args.JEITaskMax;
+
 
 @Mixin(value = PluginCaller.class, remap = false, priority = Integer.MAX_VALUE-3)
 public abstract class PluginCallerMixin {
@@ -38,6 +40,7 @@ public abstract class PluginCallerMixin {
     @Unique
     private static final Set<String> KAllFix$SKIPPED_MODS = JemiUtil.getHandledMods();
     @Shadow(remap = false) @Final private static Logger LOGGER;
+    @Unique
     private static final int KAllFix$taskMax = Integer.getInteger("KAF-JeiMultiThreading-TasxMax", CalculateTask.callMax);
 
     @Unique
@@ -71,7 +74,7 @@ public abstract class PluginCallerMixin {
             if (Util.backgroundExecutor() instanceof ForkJoinPool pool) {
                 CopyOnWriteArrayList<IModPlugin> erroredPlugins = new CopyOnWriteArrayList<>();
                 int length = plugins.size();
-                CalculateTask2 submit = (new CalculateTask2(()->"MultiThreadingJEI", 0, length, (i) -> {
+                CalculateTask2 submit = new CalculateTask2(()->"MultiThreadingJEI", 0, length, (i) -> {
                     if (i < length) {
                         IModPlugin plugin = plugins.get(i);
                         try {
@@ -84,7 +87,7 @@ public abstract class PluginCallerMixin {
                             erroredPlugins.add(plugin);
                         }
                     }
-                }));
+                }, JEITaskMax);
 
                 submit.call(pool);
                 plugins.removeAll(erroredPlugins);

@@ -13,10 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import org.apache.logging.log4j.Logger;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -31,8 +28,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 
+import static n1luik.KAllFix.util.Args.JEITaskMax;
+
 @Mixin(value = PluginCaller.class, remap = false)
 public abstract class PluginCallerMixin {
+    @Unique
     @Shadow(remap = false) @Final private static Logger LOGGER;
 
     //@Redirect(method = "callOnPlugins", at = @At(value = "INVOKE", target = "java/util/function/Consumer.accept(Ljava/lang/Object;)V"), remap = false)
@@ -58,7 +58,7 @@ public abstract class PluginCallerMixin {
             if (Util.backgroundExecutor() instanceof ForkJoinPool pool) {
                 CopyOnWriteArrayList<IModPlugin> erroredPlugins = new CopyOnWriteArrayList<>();
                 int length = plugins.size();
-                CalculateTask2 submit = (new CalculateTask2(()->"MultiThreadingJEI", 0, length, (i) -> {
+                CalculateTask2 submit = new CalculateTask2(() -> "MultiThreadingJEI", 0, length, (i) -> {
                     if (i < length) {
                         IModPlugin plugin = plugins.get(i);
                         try {
@@ -71,7 +71,7 @@ public abstract class PluginCallerMixin {
                             erroredPlugins.add(plugin);
                         }
                     }
-                }));
+                }, JEITaskMax);
 
                 submit.call(pool);
                 plugins.removeAll(erroredPlugins);

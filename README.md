@@ -89,6 +89,7 @@
 - -DKAF-UnsafeCinderscapesFix1=true修改[余烬奇景]cinderscapes的enableAshFall性能消耗函数限制在地狱
 - -DKAF-TooltipMultiThreading=true吧Tooltip事件改成多线程
   - 这个非常不建议，这个有很多大题
+    - 这个不应该被使用  
 - -DKAF-packetOptimize=true优化一部分原版数据包，最好客户端服务器一起开启，但是现在还是不需要客户端修复的
   - -DKAF-packetOptimize.AttributesReOutputTime=[毫秒]设置强制重新发送的间隔时间，默认2分钟
 

@@ -142,6 +142,9 @@ public class CalculateTask2 extends RecursiveTask<Object> {
     public CalculateTask2(Supplier<String> name, int start, int end, Consumer<Integer> run) {
         this(name, start,end,1+((end-start) / CalculateTask.callMax),run);
     }
+    public CalculateTask2(Supplier<String> name, int start, int end, Consumer<Integer> run, int core) {
+        this(name, start,end,1+((end-start) / core),run);
+    }
 
     public CalculateTask2(int start, int end, int max, BiConsumer<CalculateTask2,Integer> run) {
         this(NullStringSupplier, start, end, max, run);
