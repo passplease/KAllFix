@@ -18,6 +18,11 @@ import java.util.Set;
 @Slf4j
 public class JEI_NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
     public static final List<String[]> stringsList = new ArrayList<>(List.of(
+            ForgeAsm.minecraft_map.mapMethod("mezz/jei/library/load/registration/GuiHandlerRegistration.addGhostIngredientHandler((Ljava/lang/Class;Lmezz/jei/api/gui/handlers/IGhostIngredientHandler;)V"),
+            ForgeAsm.minecraft_map.mapMethod("mezz/jei/library/load/registration/GuiHandlerRegistration.addGuiScreenHandler((Ljava/lang/Class;Lmezz/jei/api/gui/handlers/IScreenHandler;)V"),
+            ForgeAsm.minecraft_map.mapMethod("mezz/jei/library/load/registration/GuiHandlerRegistration.addGlobalGuiHandler(Lmezz/jei/api/gui/handlers/IGuiContainerHandler;)V"),
+            ForgeAsm.minecraft_map.mapMethod("mezz/jei/library/load/registration/GuiHandlerRegistration.addGenericGuiContainerHandler(Ljava/lang/Class;Lmezz/jei/api/gui/handlers/IGuiContainerHandler;)V"),
+            ForgeAsm.minecraft_map.mapMethod("mezz/jei/library/load/registration/GuiHandlerRegistration.addGuiContainerHandler(Ljava/lang/Class;Lmezz/jei/api/gui/handlers/IGuiContainerHandler;)V"),
             ForgeAsm.minecraft_map.mapMethod("mezz/jei/library/gui/GuiContainerHandlers.add(Ljava/lang/Class;Lmezz/jei/api/gui/handlers/IGuiContainerHandler;)V"),
             ForgeAsm.minecraft_map.mapMethod("mezz/jei/core/collect/Table.computeIfAbsent(Ljava/lang/Object;Ljava/lang/Object;Ljava/util/function/Supplier;)Ljava/lang/Object;"),
             ForgeAsm.minecraft_map.mapMethod("mezz/jei/core/collect/Table.put(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"),

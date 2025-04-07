@@ -170,14 +170,13 @@ public class UtilKAF {
         int Hlen = 0;
         int Hwrite = 0;
         for (AttributeInstance attributeInstance : copy) {
-            Hlen += 2  + (attributeInstance.permanentModifiers.size() * 4);
+            Hlen += 1  + (attributeInstance.permanentModifiers.size() * 4);
         }
         long[] buf = new long[Hlen];
         for (AttributeInstance data : copy) {
-            buf[Hwrite] = data.getAttribute().getDescriptionId().hashCode();// & 0xFFFFFFFFL;
+            buf[Hwrite++] = data.getAttribute().getDescriptionId().hashCode();// & 0xFFFFFFFFL;
             //buf[Hlen] |= data.getAttribute().isClientSyncable() ? 0b1000000000000000000000000000000000000000000000000000000000000000L : 0L;
             //buf[Hlen+1] = data.modifiersByOperation.keySet().hashCode();
-            Hwrite += 1;
             for (AttributeModifier modifier : data.permanentModifiers) {
                 UUID id = modifier.getId();
                 buf[Hwrite] = Double.doubleToLongBits(modifier.getAmount());
