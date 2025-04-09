@@ -42,11 +42,13 @@ public class ZstdLib extends AutoLib<ConstOB2<Function<InputStream, InputStream>
         MethodHandles.Lookup lookup1 = MethodHandles.publicLookup();
         MethodType interfaceMethodType = MethodType.methodType(InputStream.class, InputStream.class);
         MethodType interfaceMethodType2 = MethodType.methodType(OutputStream.class, OutputStream.class);
+        MethodType interfaceMethodType3 = MethodType.methodType(Object.class, Object.class);
+        MethodType factoryType = MethodType.methodType(Function.class);
         instance = new ConstOB2<>(
                 (Function<InputStream, InputStream>)LambdaMetafactory.metafactory(
                         lookup,
                         "apply",
-                        MethodType.methodType(Function.class),
+                        factoryType,
                         interfaceMethodType,
                         lookup1.findConstructor(loadClass("com.github.luben.zstd.ZstdInputStream"), MethodType.methodType(void.class, InputStream.class)),
                         interfaceMethodType
@@ -54,12 +56,11 @@ public class ZstdLib extends AutoLib<ConstOB2<Function<InputStream, InputStream>
                 (Function<OutputStream, OutputStream>)LambdaMetafactory.metafactory(
                         lookup,
                         "apply",
-                        MethodType.methodType(Function.class),
+                        factoryType,
                         interfaceMethodType2,
                         lookup1.findConstructor(loadClass("com.github.luben.zstd.ZstdOutputStream"), MethodType.methodType(void.class, OutputStream.class)),
                         interfaceMethodType2
                 ).dynamicInvoker().invoke()
         );
-
     }
 }   
