@@ -148,7 +148,7 @@ public class Base {
                             Thread.UncaughtExceptionHandler handler,
                             boolean asyncMode,
                             int threadSize, Map<Object, Object> dataMap) {
-            super(parallelism, factory, handler, asyncMode,0, threadSize, threadSize, null, ThreadpoolKeepAliveTime, TimeUnit.MILLISECONDS);//20秒
+            super(parallelism, factory, handler, asyncMode,0, threadSize, 1, null, ThreadpoolKeepAliveTime, TimeUnit.MILLISECONDS);//20秒
             this.dataMap = dataMap;
         }
 
