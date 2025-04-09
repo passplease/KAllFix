@@ -125,7 +125,7 @@ public class Base {
                             Thread.UncaughtExceptionHandler handler,
                             boolean asyncMode,
                             int threadSize) {
-            super(parallelism, factory, handler, asyncMode,0, threadSize, threadSize, null, ThreadpoolKeepAliveTime, TimeUnit.MILLISECONDS);//20秒
+            super(parallelism, factory, handler, asyncMode,0, threadSize, 1, null, ThreadpoolKeepAliveTime, TimeUnit.MILLISECONDS);//20秒
             dataMap = new ConcurrentHashMap<>(){
                 @Override
                 public synchronized Object put(@NotNull Object key, @NotNull Object value) {
