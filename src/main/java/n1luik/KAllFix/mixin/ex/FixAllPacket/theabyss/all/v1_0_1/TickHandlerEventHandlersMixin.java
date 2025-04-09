@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(TickHandlerEventHandlers.class)
+@Deprecated
 public class TickHandlerEventHandlersMixin {
     @Redirect(method = {
             "execute(Lnet/minecraftforge/eventbus/api/Event;Lnet/minecraft/world/entity/Entity;)V",

@@ -31,6 +31,9 @@
 
 会生成k_multi_threading-base.jar和k_multi_threading-asm.jar两个文件
 
+有一些功能会下载一些库，如果下载失败可以手动放到./lib：
+- Zstd-jni 1.5.7-2 下载地址：https://repo1.maven.org/maven2/1.5.7-2/zstd-jni/com.github.luben"
+  
 ##  功能
 - 修复Biolith兼容问题(范围包括重新生成MultiNoiseBiomeSource的mod，例如所有的使用MCreator的所有有这个操作的mod)
 - 并不是修复了所有的使用MCreator的模组，小部使用分模组需要定制修复代码（例如）Terramity
@@ -88,10 +91,12 @@
   - 自动获取的cpu最大线程数不一定准确，大概率是作者是虚拟机的问题需要手动设置-KAF-JeiMultiThreading-TasxMax=[cpu最大线程数win多百分之15 linux多百分之10 cpu线程越多设置越多]
 - -DKAF-UnsafeCinderscapesFix1=true修改[余烬奇景]cinderscapes的enableAshFall性能消耗函数限制在地狱
 - -DKAF-TooltipMultiThreading=true吧Tooltip事件改成多线程
-  - 这个非常不建议，这个有很多大题
-    - 这个不应该被使用  
-- -DKAF-packetOptimize=true优化一部分原版数据包，最好客户端服务器一起开启，但是现在还是不需要客户端修复的
+  - 这个非常不建议，这个有很多大问题
+    - 这个不应该被使用
+- -DKAF-packetOptimize=true优化一部分原版数据包，需要客户端服务器一起开启
   - -DKAF-packetOptimize.AttributesReOutputTime=[毫秒]设置强制重新发送的间隔时间，默认2分钟
+  - -DKAF-packetOptimize.CompatibilityMode.ClientboundBlockEntityDataPacket=true更保守的ClientboundBlockEntityDataPacket压缩，但是会影响性能
+  - -DKAF-packetOptimize.CompatibilityMode.ClientboundSectionBlocksUpdatePacket=true更保守的ClientboundSectionBlocksUpdatePacket和ClientboundBlockUpdatePacket压缩，但是会影响性能
 
 
 ## 问题
@@ -109,6 +114,7 @@
   - 解决方法：添加一个不安全优化仅在地狱触发
 - 多线程jei问题：
   - 因为emi的问题fusion的兼容根本不可能实现，但是目前我玩的时候没有影响
+- NuclearCraft: Neoteric的裂变反应堆重启有小概率会导致冷却计算错误
 
 ## 故障纪录
 - 没有地狱，问题是因为测试模组导致数据包损坏，解决方法：

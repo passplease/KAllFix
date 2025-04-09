@@ -31,12 +31,13 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class ReflectionUtil {
-    public static <T,R> Function<T,R> field(Class<T> owner, Class<R> type, String... names) {
+    public static <T, R> Function<T, R> field(Class<T> owner, Class<R> type, String... names) {
         Field field = getField(owner, type, f -> contains(names, f.getName()));
         long l = Unsafe.unsafe.objectFieldOffset(field);
         return (obj)-> {
@@ -48,12 +49,11 @@ public class ReflectionUtil {
         };
     }
 
-    public static <T,S> BiFunction<T,S,Void> setter(Class<T> owner, Class<S> type, String... names) {
+    public static <T, S> BiConsumer<T, S> setter(Class<T> owner, Class<S> type, String... names) {
         Field field = getField(owner, type, f -> contains(names, f.getName()));
         long l = Unsafe.unsafe.objectFieldOffset(field);
         return (obj,set)-> {
             Unsafe.unsafe.putObject(obj, l, set);
-            return null;
         };
     }
 

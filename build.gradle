@@ -7,6 +7,7 @@ buildscript{
         maven { url = "https://papermc.io/repo/repository/maven-public/" }
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url = "https://google.bintray.com/tensorflow" }
+        maven { url = "https://repo1.maven.org/maven2" }
         maven {
             name = 'sponge'
             url = 'https://repo.spongepowered.org/maven'
@@ -188,6 +189,9 @@ dependencies {
     implementation 'org.projectlombok:lombok:1.18.26'
 
     implementation 'com.alibaba:fastjson:1.2.28'
+    implementation 'com.github.luben:zstd-jni:1.5.7-2'
+    //implementation 'com.github.luben:zstd-jni:1.5.7-2:win'
+    //implementation 'com.github.luben:zstd-jni:1.5.7-2:linux'
     // Specify the version of Minecraft to use.
     // Any artifact can be supplied so long as it has a "userdev" classifier artifact and is a compatible patcher artifact.
     // The "userdev" classifier will be requested and setup by ForgeGradle.

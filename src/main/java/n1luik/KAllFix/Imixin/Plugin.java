@@ -29,7 +29,13 @@ public class Plugin implements IMixinConfigPlugin {
         String s = "n1luik.KAllFix.mixin.unsafe.";
         String s8 = "n1luik.KAllFix.mixin.unsafe.path.";
         if (mixinClassName.startsWith(s8)){
-            return Boolean.getBoolean("KAF-"+mixinClassName.substring(s8.length()).split("\\.", 2)[0]);
+            if(Boolean.getBoolean("KAF-"+mixinClassName.substring(s8.length()).split("\\.", 2)[0])){
+                return switch (mixinClassName) {
+                    case "n1luik.KAllFix.mixin.unsafe.path.packetOptimize.blockEentity.ServerChunkCacheMixin2" -> Boolean.getBoolean("KMT_D");
+                    case "n1luik.KAllFix.mixin.unsafe.path.packetOptimize.blockEentity.mt.ServerChunkCacheMixin1" -> !Boolean.getBoolean("KMT_D");
+                    default -> true;
+                };
+            }
         }
         if (mixinClassName.startsWith(s)){
             return Boolean.getBoolean("KAF-"+mixinClassName.substring(s.length()));

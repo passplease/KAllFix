@@ -1,5 +1,6 @@
 package n1luik.KAllFix.mixin.ex.FixAllPacket.theabyss.all.v1_0_1;
 
+import n1luik.KAllFix.forge.fixpack.theabyss.TheabyssBuf;
 import n1luik.KAllFix.util.OB1;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -37,14 +38,19 @@ public class ConfigurationEventHandlersMixin {
                 capability1.ifPresent(o-> {
                     Tag t1 = o.getT1();
                     CompoundTag tag = (CompoundTag)capability.writeNBT();
-                    if (t1 == null) {
-                        capability.syncPlayerVariables(entity);
-                        o.setT1(tag);
-                    }else {
-                        if (!t1.equals(tag)){
+                    TheabyssBuf.optimize1.getAndAdd(1);
+                    try {
+                        if (t1 == null) {
                             capability.syncPlayerVariables(entity);
                             o.setT1(tag);
+                        } else {
+                            if (!t1.equals(tag)) {
+                                capability.syncPlayerVariables(entity);
+                                o.setT1(tag);
+                            }
                         }
+                    }finally {
+                        TheabyssBuf.optimize1.getAndAdd(-1);
                     }
                 });
             });

@@ -79,6 +79,12 @@ public class CalculateTask extends RecursiveTask<Object> {
         unsafeWaitThread(wait);
     }
 
+    public void callAuto(Thread wait){
+        if (stop)return;
+        fork();
+        unsafeWaitThread(wait);
+    }
+
     public void waitThread(){
         waitThread(Thread.currentThread());
     }
@@ -110,6 +116,15 @@ public class CalculateTask extends RecursiveTask<Object> {
 
     public void call(){
         call(Thread.currentThread());
+    }
+
+    public void callAuto(){
+        Thread thread = Thread.currentThread();
+        if (thread instanceof ForkJoinWorkerThread){
+            compute();
+        }else {
+            callAuto(thread);
+        }
     }
 
     public void call(ForkJoinPool pool){
