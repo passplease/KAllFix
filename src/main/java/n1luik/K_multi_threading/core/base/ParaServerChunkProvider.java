@@ -292,13 +292,13 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
             //    //}
             //}
             //测试
-            //if (isBlacklistThread){
-            //    synchronized(threadBlacklist) {
-            //        cl = KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, true);
-            //    }
-            //}else {
-                cl = KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, isBlacklistThread);
-            //}
+            if (isBlacklistThread){
+                synchronized(threadBlacklist) {
+                    cl = KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, true);
+                }
+            }else {
+                cl = KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, false);
+            }
         //}else {
         //    return waitGetChunk(chunkX, chunkZ, requiredStatus, load);
         //}
