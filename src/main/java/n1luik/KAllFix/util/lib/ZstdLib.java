@@ -37,9 +37,7 @@ public class ZstdLib extends AutoLib<ConstOB2<Function<InputStream, InputStream>
     @SuppressWarnings("all")
     public ZstdLib() throws Throwable {
         super("https://repo1.maven.org/maven2", "1.5.7-2", "zstd-jni", "com.github.luben");
-        Class.forName("com.github.luben.zstd.Zstd", true, this);
-        MethodHandles.Lookup lookup = MethodHandles.lookup();
-        MethodHandles.Lookup lookup1 = MethodHandles.publicLookup();
+        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(Class.forName("com.github.luben.zstd.Zstd", true, this), Unsafe.lookup);
         MethodType interfaceMethodType = MethodType.methodType(InputStream.class, InputStream.class);
         MethodType interfaceMethodType2 = MethodType.methodType(OutputStream.class, OutputStream.class);
         MethodType interfaceMethodType3 = MethodType.methodType(Object.class, Object.class);
@@ -50,7 +48,7 @@ public class ZstdLib extends AutoLib<ConstOB2<Function<InputStream, InputStream>
                         "apply",
                         factoryType,
                         interfaceMethodType3,
-                        lookup1.findConstructor(loadClass("com.github.luben.zstd.ZstdInputStream"), MethodType.methodType(void.class, InputStream.class)),
+                        lookup.findConstructor(loadClass("com.github.luben.zstd.ZstdInputStream"), MethodType.methodType(void.class, InputStream.class)),
                         interfaceMethodType
                 ).dynamicInvoker().invoke(),
                 (Function<OutputStream, OutputStream>)LambdaMetafactory.metafactory(
@@ -58,7 +56,7 @@ public class ZstdLib extends AutoLib<ConstOB2<Function<InputStream, InputStream>
                         "apply",
                         factoryType,
                         interfaceMethodType3,
-                        lookup1.findConstructor(loadClass("com.github.luben.zstd.ZstdOutputStream"), MethodType.methodType(void.class, OutputStream.class)),
+                        lookup.findConstructor(loadClass("com.github.luben.zstd.ZstdOutputStream"), MethodType.methodType(void.class, OutputStream.class)),
                         interfaceMethodType2
                 ).dynamicInvoker().invoke()
         );

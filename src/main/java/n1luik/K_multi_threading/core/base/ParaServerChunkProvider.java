@@ -270,35 +270,35 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         //    }
         //} else {
         //if (requiredStatus != ChunkStatus.FULL && !iMainThreadExecutor.isCall() && Thread.currentThread() != iMainThreadExecutor.getCallThread()){
-            //synchronized (isBlacklistThread ? threadBlacklist : this) {
-            //    //synchronized (locks.get(requiredStatus.getIndex())) {
-            //        if (chunkCache.containsKey(new ChunkCacheAddress(i, requiredStatus)) && (c = lookupChunk(i, requiredStatus, false)) != null) {
-            //            return c;
-            //        }
-            //        if (isBlacklistThread){
-            //            generatorThread2 = thisThread;
-            //        }else {
-            //            //generatorThread1 = thisThread;
-            //            generatorThread1.add(thisThread);
-            //        }
-            //        cl = super.getChunk(chunkX, chunkZ, requiredStatus, load);
-            //        cacheChunk(i, cl, requiredStatus);
-            //        if (isBlacklistThread){
-            //            generatorThread2 = null;
-            //        }else {
-            //            //generatorThread1 = null;
-            //            generatorThread1.remove(thisThread);
-            //        }
-            //    //}
-            //}
-            //测试
-            if (isBlacklistThread){
-                synchronized(threadBlacklist) {
-                    cl = KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, true);
-                }
-            }else {
-                cl = KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, false);
+            synchronized (isBlacklistThread ? threadBlacklist : this) {
+                //synchronized (locks.get(requiredStatus.getIndex())) {
+                    if (chunkCache.containsKey(new ChunkCacheAddress(i, requiredStatus)) && (c = lookupChunk(i, requiredStatus, false)) != null) {
+                        return c;
+                    }
+                    if (isBlacklistThread){
+                        generatorThread2 = thisThread;
+                    }else {
+                        //generatorThread1 = thisThread;
+                        generatorThread1.add(thisThread);
+                    }
+                    cl = super.getChunk(chunkX, chunkZ, requiredStatus, load);
+                    cacheChunk(i, cl, requiredStatus);
+                    if (isBlacklistThread){
+                        generatorThread2 = null;
+                    }else {
+                        //generatorThread1 = null;
+                        generatorThread1.remove(thisThread);
+                    }
+                //}
             }
+            ////测试
+            //if (isBlacklistThread){
+            //    synchronized(threadBlacklist) {
+            //        cl = KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, true);
+            //    }
+            //}else {
+            //    cl = KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, false);
+            //}
         //}else {
         //    return waitGetChunk(chunkX, chunkZ, requiredStatus, load);
         //}

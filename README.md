@@ -1,5 +1,9 @@
 
-##  状态 
+##  警告
+- K_multi_threading的多线程会受到windows系统实现方式的影响导致地形生成可能会卡死linux作者没有遇到过
+- 当然也有可能是因为作者用的windows server 2022数据中心版和kvm host或者cpu是e5 2690 v4*2的原因
+
+##  状态
 这个项目包含了2个mod     k_all_fix， K_multi_threading
 
 理论上1.17+ java11+都可以用但是需要改源码把没有的部分删除
