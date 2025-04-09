@@ -49,7 +49,7 @@ public class ZstdLib extends AutoLib<ConstOB2<Function<InputStream, InputStream>
                         lookup,
                         "apply",
                         factoryType,
-                        interfaceMethodType,
+                        interfaceMethodType3,
                         lookup1.findConstructor(loadClass("com.github.luben.zstd.ZstdInputStream"), MethodType.methodType(void.class, InputStream.class)),
                         interfaceMethodType
                 ).dynamicInvoker().invoke(),
@@ -57,7 +57,7 @@ public class ZstdLib extends AutoLib<ConstOB2<Function<InputStream, InputStream>
                         lookup,
                         "apply",
                         factoryType,
-                        interfaceMethodType2,
+                        interfaceMethodType3,
                         lookup1.findConstructor(loadClass("com.github.luben.zstd.ZstdOutputStream"), MethodType.methodType(void.class, OutputStream.class)),
                         interfaceMethodType2
                 ).dynamicInvoker().invoke()
