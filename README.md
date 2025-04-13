@@ -80,7 +80,6 @@
   - [通用机械：炸药]MekanismExplosives
   - Create Sabers
   - [深渊：第二章]TATOS
-- -DKMT-asyncEx=true创建一个兼容池，可能会更不兼容
 - -DKMT-threadpool-async=true会崩
 - 多线程jei和emi：
   - 操作
@@ -114,6 +113,8 @@
 - 多线程jei问题：
   - 因为emi的问题fusion的兼容根本不可能实现，但是目前我玩的时候没有影响
 - NuclearCraft: Neoteric的裂变反应堆重启有小概率会导致冷却计算错误
+- 1.0.3.3之后n1luik.K_multi_threading.core.base.ParaServerChunkProvider和n1luik.KAllFix.util.TaskRun还有一部分区块生成的代码多线程必须c2要不然性能很差（java会自动c2但是需要运行一会）
+- 数据包优化2个CompatibilityMode参数都是false在我500mod的环境无法正常工作
 
 ## 故障纪录
 - 没有地狱，问题是因为测试模组导致数据包损坏，解决方法：

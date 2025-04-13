@@ -27,7 +27,7 @@ import static n1luik.KAllFix.data.packetOptimize.ClientCompresPacketLoader.Empty
 public class CompatibilityMode3ClientCompresPacketLoader {
 
     public final FriendlyByteBuf pack;
-    public final DataInput in;
+    //public final DataInput in;
     public final List<Packet<ClientGamePacketListener>> out = new CopyOnWriteArrayList<>();//用于异步解压缩减少主线程卡顿
     @Getter
     public boolean stop = false;
@@ -36,15 +36,15 @@ public class CompatibilityMode3ClientCompresPacketLoader {
     public CompatibilityMode3ClientCompresPacketLoader(byte[] in) {
         ByteBuf pack1 = Unpooled.wrappedBuffer(in);
         pack = new FriendlyByteBuf(pack1);
-        this.in = new DataInputStream(new ByteBufInputStream(pack1));
+        //this.in = new DataInputStream(new ByteBufInputStream(pack1));
     }
 
     public void start() throws IOException, InstantiationException {
         try{
             while (true) {
-                switch (in.readByte()) {
+                switch (pack.readByte()) {
                     case 1 -> {
-                        switch (in.readByte()) {
+                        switch (pack.readByte()) {
                             case 1 -> readMoreBlockUp();
                             case 2 -> readBlockUp();
                             default -> throw new RuntimeException();
@@ -73,7 +73,7 @@ public class CompatibilityMode3ClientCompresPacketLoader {
     }
 
     protected void readMoreBlockEntityUp() throws IOException, InstantiationException {
-        int i = in.readShort();
+        int i = pack.readShortLE();
         for (int i1 = 0; i1 < i; i1++) {
             readBlockEntityUp();
         }

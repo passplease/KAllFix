@@ -35,6 +35,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -57,7 +58,7 @@ import java.util.function.BiConsumer;
  * <p>
  * --|-2：
  * <p>
- * --|-|-2字节最大32767（数据大小）
+ * --|-|-2字节最大32767（s16大小）
  *
  *
  * */
@@ -113,75 +114,81 @@ public abstract class ChunkHolderMixin implements IOptimizeBlockEntityPacket {
     }
 
     @Unique
-    private Packet<ClientGamePacketListener> KAllFix$writeBlockEntity_Compatibility(FriendlyByteBuf friendlyByteBuf, Level leve, BlockPos pos) throws IOException {
-        BlockEntity blockEntity = leve.getBlockEntity(pos);
+    private Packet<ClientGamePacketListener> KAllFix$getUpdatePacket(Level level, BlockPos pos, List<ClientboundBlockEntityDataPacket> list) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity != null) {
             Packet<ClientGamePacketListener> updatePacket = blockEntity.getUpdatePacket();
+            if (updatePacket == null) return null;
             if (updatePacket instanceof ClientboundBlockEntityDataPacket ep) {
-                //KAllFix$lockBlockEntityUpPacketSize++;
-                friendlyByteBuf.writerIndex(0);
-                friendlyByteBuf.readerIndex(0);
-                KAllFix$PacketDataTo.write(friendlyByteBuf.array(), 0, friendlyByteBuf.readableBytes());
+                list.add(ep);
             }else {
                 return updatePacket;
             }
         }
         return null;
+    }
 
+    @Unique
+    private void KAllFix$writeBlockEntity_Compatibility(FriendlyByteBuf friendlyByteBuf, ClientboundBlockEntityDataPacket ep) throws IOException {
+        //KAllFix$lockBlockEntityUpPacketSize++;
+        friendlyByteBuf.writerIndex(0);
+        friendlyByteBuf.readerIndex(0);
+        ep.write(friendlyByteBuf);
+        KAllFix$PacketDataTo.write(friendlyByteBuf.array(), 0, friendlyByteBuf.readableBytes());
     }
     @Unique
-    private Packet<ClientGamePacketListener> KAllFix$writeBlockEntity(Level leve, BlockPos pos) throws IOException {
-        BlockEntity blockEntity = leve.getBlockEntity(pos);
-        if (blockEntity != null) {
-            Packet<ClientGamePacketListener> updatePacket = blockEntity.getUpdatePacket();
-            if (updatePacket instanceof ClientboundBlockEntityDataPacket ep) {
-                //KAllFix$lockBlockEntityUpPacketSize++;
-                BlockPos pos2 = ep.pos;
+    private void KAllFix$writeBlockEntity(ClientboundBlockEntityDataPacket ep) throws IOException {
+        //KAllFix$lockBlockEntityUpPacketSize++;
+        BlockPos pos2 = ep.pos;
 
-                KAllFix$PacketDataTo.writeInt(pos2.getX());
-                KAllFix$PacketDataTo.writeInt(pos2.getY());
-                KAllFix$PacketDataTo.writeInt(pos2.getZ());
-                KAllFix$PacketDataTo.writeInt(BuiltInRegistries.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()));
-                if (ep.tag != null) {
-                    KAllFix$PacketDataTo.write(1);
-                    NbtIo.write(ep.tag, KAllFix$PacketDataTo);
-                }else {
-                    KAllFix$PacketDataTo.write(0);
-                    //out.add((byte) 0b0);
-                    //out.add((byte) 0b0);
-                    //out.add((byte) 0b0);
-                }
-            }else {
-                return updatePacket;
-            }
+        KAllFix$PacketDataTo.writeInt(pos2.getX());
+        KAllFix$PacketDataTo.writeInt(pos2.getY());
+        KAllFix$PacketDataTo.writeInt(pos2.getZ());
+        KAllFix$PacketDataTo.writeInt(BuiltInRegistries.BLOCK_ENTITY_TYPE.getId(ep.type));
+        if (ep.tag != null) {
+            KAllFix$PacketDataTo.write(1);
+            NbtIo.write(ep.tag, KAllFix$PacketDataTo);
+        }else {
+            KAllFix$PacketDataTo.write(0);
+            //out.add((byte) 0b0);
+            //out.add((byte) 0b0);
+            //out.add((byte) 0b0);
         }
-        return null;
     }
 
     @Redirect(method = "broadcastChanges", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ChunkHolder;broadcastBlockEntityIfNeeded(Ljava/util/List;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V"))
-    public void impl4(ChunkHolder instance, List<ServerPlayer> p_288982_, Level p_289011_, BlockPos p_288969_, BlockState p_288973_){
+    public void impl4(ChunkHolder instance, List<ServerPlayer> p_288982_, Level level, BlockPos p_288969_, BlockState p_288973_){
         try {
             KAllFix$writePlayer = p_288982_;
             KAllFix$PacketDataTo.write(2);
-            KAllFix$PacketDataTo.writeShort(1);
             //KAllFix$lockBlockUpPacketEndType = 2;
             if (p_288973_.hasBlockEntity()) {
-                FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer(1024));
-                if (KAllFix$CompatibilityMode_ClientboundBlockEntityDataPacket) {
-                    Packet<ClientGamePacketListener> clientGamePacketListenerPacket = KAllFix$writeBlockEntity_Compatibility(friendlyByteBuf, p_289011_, p_288969_);
-                    if (clientGamePacketListenerPacket != null){
-                        broadcast(p_288982_, clientGamePacketListenerPacket);
+                BlockEntity blockEntity = level.getBlockEntity(p_288969_);
+                if (blockEntity != null) {
+                    Packet<ClientGamePacketListener> updatePacket = blockEntity.getUpdatePacket();
+                    if (updatePacket == null) {
+                        KAllFix$PacketDataTo.writeShort(0);
+                    }else if (updatePacket instanceof ClientboundBlockEntityDataPacket ep) {
+                        KAllFix$PacketDataTo.writeShort(1);
+                        if (KAllFix$CompatibilityMode_ClientboundBlockEntityDataPacket) {
+                            FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer(648));
+                            KAllFix$writeBlockEntity_Compatibility(friendlyByteBuf, ep);
+                        } else {
+                            KAllFix$writeBlockEntity(ep);
+                        }
+                    }else {
+                        broadcast(p_288982_, updatePacket);
+                        KAllFix$PacketDataTo.writeShort(0);
                     }
-                } else {
-                    Packet<ClientGamePacketListener> clientGamePacketListenerPacket = KAllFix$writeBlockEntity(p_289011_, p_288969_);
-                    if (clientGamePacketListenerPacket != null){
-                        broadcast(p_288982_, clientGamePacketListenerPacket);
-                    }
-
+                }else{
+                    KAllFix$PacketDataTo.writeShort(0);
                 }
+            }else {
+                KAllFix$PacketDataTo.writeShort(0);
             }
             //KAllFix$lockBlockEntityUpPacketData = true;
-        } catch (IOException e) {
+        } catch (IOException | RuntimeException e) {
+            KAllFix$PacketDataRemove();
             throw new RuntimeException(e);
         }
     }
@@ -194,42 +201,37 @@ public abstract class ChunkHolderMixin implements IOptimizeBlockEntityPacket {
         try {
             KAllFix$writePlayer = list1;
             KAllFix$PacketDataTo.write(2);
-            //KAllFix$lockBlockUpPacketEndType = 2;
             SectionPos sectionPos = instance.sectionPos;
             short[] positions = instance.positions;
             BlockState[] states = instance.states;
-            BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-            int l = positions.length;
-            short s = 0;
-            for (int i1 = 0; i1 < l; i1++) {
+            int start = 0;
+            for (int i1 = 0; i1 < positions.length; i1++) {
                 if (states[i1].hasBlockEntity()) {
-                    s++;
+                    start++;
                 }
             }
-            KAllFix$PacketDataTo.writeShort(s);
-            if (KAllFix$CompatibilityMode_ClientboundBlockEntityDataPacket) {
-                FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer(1024));
-                for (int i1 = 0; i1 < l; i1++) {
-                    short position = positions[i1];
-                    blockpos$mutableblockpos.set(sectionPos.relativeToBlockX(position), sectionPos.relativeToBlockY(position), sectionPos.relativeToBlockZ(position));
-                    if (states[i1].hasBlockEntity()) {
-                        Packet<ClientGamePacketListener> clientGamePacketListenerPacket = KAllFix$writeBlockEntity_Compatibility(friendlyByteBuf, level, blockpos$mutableblockpos);
-                        if (clientGamePacketListenerPacket != null) {
-                            broadcast(list1, clientGamePacketListenerPacket);
-                        }
+            List<ClientboundBlockEntityDataPacket> send = new ArrayList<>(start);
+            //KAllFix$lockBlockUpPacketEndType = 2;
+            BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+            for (int i1 = 0; i1 < positions.length; i1++) {
+                short position = positions[i1];
+                blockpos$mutableblockpos.set(sectionPos.relativeToBlockX(position), sectionPos.relativeToBlockY(position), sectionPos.relativeToBlockZ(position));
+                if (states[i1].hasBlockEntity()) {
+                    Packet<ClientGamePacketListener> clientGamePacketListenerPacket = KAllFix$getUpdatePacket(level, blockpos$mutableblockpos, send);
+                    if (clientGamePacketListenerPacket != null) {
+                        broadcast(list1, clientGamePacketListenerPacket);
                     }
                 }
+            }
+            KAllFix$PacketDataTo.writeShort(send.size());
+            if (KAllFix$CompatibilityMode_ClientboundBlockEntityDataPacket) {
+                FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer(1024));
+                for (ClientboundBlockEntityDataPacket p : send) {
+                    KAllFix$writeBlockEntity_Compatibility(friendlyByteBuf, p);
+                }
             }else{
-                for (int i1 = 0; i1 < l; i1++) {
-                    short position = positions[i1];
-                    blockpos$mutableblockpos.set(sectionPos.relativeToBlockX(position), sectionPos.relativeToBlockY(position), sectionPos.relativeToBlockZ(position));
-                    if (states[i1].hasBlockEntity()) {
-                        Packet<ClientGamePacketListener> clientGamePacketListenerPacket = KAllFix$writeBlockEntity(level, blockpos$mutableblockpos);
-                        if (clientGamePacketListenerPacket != null) {
-                            broadcast(list1, clientGamePacketListenerPacket);
-                        }
-
-                    }
+                for (ClientboundBlockEntityDataPacket p : send) {
+                    KAllFix$writeBlockEntity(p);
                 }
             }
             //KAllFix$lockBlockEntityUpPacketData = true;
@@ -245,8 +247,8 @@ public abstract class ChunkHolderMixin implements IOptimizeBlockEntityPacket {
             KAllFix$writePlayer = p_288998_;
             DataOutputStream kAllFix$PacketData = KAllFix$PacketDataTo;
             //KAllFix$lockBlockUpPacketType = 2;
-            KAllFix$PacketDataTo.write(1);
-            KAllFix$PacketDataTo.write(2);
+            kAllFix$PacketData.write(1);
+            kAllFix$PacketData.write(2);
             //KAllFix$lockBlockUpPacketEndType = 1;
             if (KAllFix$CompatibilityMode_ClientboundSectionBlocksUpdatePacket) {
                 FriendlyByteBuf friendlyByteBuf = new FriendlyByteBuf(Unpooled.buffer(96));
@@ -258,24 +260,21 @@ public abstract class ChunkHolderMixin implements IOptimizeBlockEntityPacket {
                 if (p_289013_ instanceof ClientboundBlockUpdatePacket packet) {
                     {
                         BlockPos pos = packet.pos;
-                        int x = pos.getX();
-                        int y = pos.getY();
-                        int z = pos.getZ();
 
-                        kAllFix$PacketData.writeInt(x);
-                        kAllFix$PacketData.writeInt(y);
-                        kAllFix$PacketData.writeInt(z);
-                        int id = Block.getId(packet.blockState);
-                        kAllFix$PacketData.writeInt(id);
+                        kAllFix$PacketData.writeInt(pos.getX());
+                        kAllFix$PacketData.writeInt(pos.getY());
+                        kAllFix$PacketData.writeInt(pos.getZ());
+                        kAllFix$PacketData.writeInt(Block.getId(packet.blockState));
                     }
 
                 }else {
-                    throw new RuntimeException("Packet is not ClientboundSectionBlocksUpdatePacket");
+                    throw new RuntimeException("Packet is not ClientboundBlockUpdatePacket");
                 }
 
             }
             //KAllFix$lockBlockUpPacketData = true;
-        } catch (IOException e) {
+        } catch (IOException | RuntimeException e) {
+            KAllFix$PacketDataRemove();
             throw new RuntimeException(e);
         }
     }
@@ -307,8 +306,7 @@ public abstract class ChunkHolderMixin implements IOptimizeBlockEntityPacket {
                         kAllFix$PacketData.writeShort(position);
                     }
                     for (int i = 0; i < max; i++) {
-                        int id = Block.getId(states[i]);
-                        kAllFix$PacketData.writeInt(id);
+                        kAllFix$PacketData.writeInt(Block.getId(states[i]));
                     }
 
                 } else {
@@ -317,7 +315,8 @@ public abstract class ChunkHolderMixin implements IOptimizeBlockEntityPacket {
 
             }
             //KAllFix$lockBlockUpPacketData = true;
-        } catch (IOException e) {
+        } catch (IOException | RuntimeException e) {
+            KAllFix$PacketDataRemove();
             throw new RuntimeException(e);
         }
     }

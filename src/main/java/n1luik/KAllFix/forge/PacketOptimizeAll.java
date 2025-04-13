@@ -1,5 +1,6 @@
 package n1luik.KAllFix.forge;
 
+import n1luik.KAllFix.data.packetOptimize.ClientboundCompress1HashPacket;
 import n1luik.KAllFix.data.packetOptimize.ClientboundCompress1Packet;
 import n1luik.KAllFix.forge.LoginProtectionMod.packet.ClientboundRemoveLoginProtectionPacket;
 import n1luik.K_multi_threading.core.Base;
@@ -17,5 +18,6 @@ public class PacketOptimizeAll {
     );
     static {
         PACKET_INSTANCE.registerMessage(0x00, ClientboundCompress1Packet.class, ClientboundCompress1Packet::write, ClientboundCompress1Packet::new,ClientboundCompress1Packet::handle);
+        PACKET_INSTANCE.registerMessage(0x01, ClientboundCompress1HashPacket.class, ClientboundCompress1HashPacket::write, ClientboundCompress1HashPacket::new,ClientboundCompress1HashPacket::handle);
     }
 }

@@ -15,7 +15,8 @@ import java.util.*;
 @Mixin(Level.class)
 public abstract class LevelImpl1 {
     //Base.WaitInt waitInt;
-    List<TickingBlockEntity> taskBuff;
+    @Unique
+    List<TickingBlockEntity> K_multi_threading$taskBuff;
 
     //@Shadow public abstract ProfilerFiller getProfiler();
 
@@ -31,7 +32,7 @@ public abstract class LevelImpl1 {
     @Inject(method = "<init>", at = @At("RETURN"))
     public void init(CallbackInfo ci){
         //waitInt = new Base.WaitInt();
-        taskBuff = new ArrayList<>(3000);
+        K_multi_threading$taskBuff = new ArrayList<>(3000);
         //blockEntityTickers = new ContainsMapList<>();
     }
 
@@ -42,7 +43,7 @@ public abstract class LevelImpl1 {
     //提高兼容
     @Redirect(method = "tickBlockEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/entity/TickingBlockEntity;tick()V"))
     public void addTask(TickingBlockEntity tickingBlockEntity){
-        taskBuff.add(tickingBlockEntity);
+        K_multi_threading$taskBuff.add(tickingBlockEntity);
     }
     
     @Inject(method = "tickBlockEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;pop()V"))
@@ -50,8 +51,8 @@ public abstract class LevelImpl1 {
         //waitInt.size = tickingBlockEntities1.length;
 
         //Sync<GetterSyncNode<Void, ChunkPos, ChunkAccess>> blockTickSync = ((GetBlockTickSync)this).getBlockTickSync();
-        TickingBlockEntity[] tickingBlockEntities1 = taskBuff.toArray(new TickingBlockEntity[0]);
-        taskBuff.clear();
+        TickingBlockEntity[] tickingBlockEntities1 = K_multi_threading$taskBuff.toArray(new TickingBlockEntity[0]);
+        K_multi_threading$taskBuff.clear();
         if (tickingBlockEntities1.length >= 2) {
             CalculateTask submit = (new CalculateTask(()->"TickBlockEntities", 0, tickingBlockEntities1.length, (i) -> {
 
