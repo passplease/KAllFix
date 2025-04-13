@@ -8,6 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * 半兼容null的ConcurrentHashMap
+ * */
 public class FixNullConcurrentHashMap<K, V> extends ConcurrentHashMap<K, V> {
     public FixNullConcurrentHashMap() {
 

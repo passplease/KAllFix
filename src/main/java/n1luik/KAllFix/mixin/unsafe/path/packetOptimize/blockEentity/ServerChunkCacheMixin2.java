@@ -68,6 +68,7 @@ public class ServerChunkCacheMixin2 {
                         srcLen += integerOB2.t2;
                     }
                     apply.write(3);
+                    apply.flush();
                     apply.close();
                     byte[] byteArray = byteArrayOutputStream.getByteArray();
                     ServerPlayer player = array[i].getKey().player();

@@ -34,14 +34,14 @@ public class Base {
     public static final long ThreadpoolKeepAliveTime =  Long.getLong("KMT-ThreadpoolKeepAliveTime", TimeUnit.SECONDS.toMillis(7));
     public static MinecraftServer mcs;
     public static int threadTaskMax = 80;
-    static ForkJoinPool_ ex;
-    @Nullable
-    static ForkJoinPool_ async = null;
+    final static ForkJoinPool_ ex;
+    //@Nullable
+    final static ForkJoinPool_ async;// = null;
     static AtomicBoolean isTicking = new AtomicBoolean();
     static AtomicInteger threadID = new AtomicInteger();
 
-    public static void setupThreadpool(int parallelism, int threadSize, boolean asyncMode) {
-        if (ex == null){
+    public static ForkJoinPool_ setupThreadpool(int parallelism, int threadSize, boolean asyncMode) {
+        //if (ex == null){
             threadID = new AtomicInteger();
             final ClassLoader cl = Base.class.getClassLoader();
             ForkJoinPool.ForkJoinWorkerThreadFactory fjpf = p -> {
@@ -55,11 +55,11 @@ public class Base {
                 fjwt.setContextClassLoader(cl);
                 return fjwt;
             };
-            ex = new ForkJoinPool_(
+            return new ForkJoinPool_(
                     parallelism,
                     fjpf,
                     null, asyncMode, threadSize);
-        }
+       // }
     }
     public static ForkJoinPool_ createThreadpool2(int parallelism, int threadSize, boolean asyncMode, Map<Object, Object> dataMap) {
             final ClassLoader cl = Base.class.getClassLoader();
@@ -235,11 +235,11 @@ public class Base {
 
     static {
         int max = threadMax = Integer.getInteger("KMT-threadMax", Math.max(2, (int)(Runtime.getRuntime().availableProcessors() * 0.9)));
-        CalculateTask.callMax = Integer.getInteger("KMT-callMax", threadMax);
-        Base.setupThreadpool(threadMax, threadMax, Boolean.getBoolean("KMT-threadpool-async"));
-        if (Boolean.getBoolean("KMT-asyncEx")) {
+        CalculateTask.callMax = Integer.getInteger("KMT-callMax", Math.max(1, (int)(Runtime.getRuntime().availableProcessors() * 0.9)));
+        ex = Base.setupThreadpool(threadMax, threadMax, Boolean.getBoolean("KMT-threadpool-async"));
+        //if (Boolean.getBoolean("KMT-asyncEx")) {
             async = createThreadpool2(threadMax, threadMax, true, ex.getDataMap());
-        }
+        //}
         Base.LOGGER.info("threadMax {}",threadMax);
         try {
             busID = EventBus.class.getDeclaredField("busID");

@@ -31,7 +31,7 @@ import static n1luik.KAllFix.data.packetOptimize.ClientCompresPacketLoader.*;
 public class CompatibilityMode2ClientCompresPacketLoader {
 
     public final FriendlyByteBuf pack;
-    public final DataInput in;
+    //public final DataInput in;
     public final List<Packet<ClientGamePacketListener>> out = new CopyOnWriteArrayList<>();//用于异步解压缩减少主线程卡顿
     @Getter
     public boolean stop = false;
@@ -40,15 +40,15 @@ public class CompatibilityMode2ClientCompresPacketLoader {
     public CompatibilityMode2ClientCompresPacketLoader(byte[] in) {
         ByteBuf pack1 = Unpooled.wrappedBuffer(in);
         pack = new FriendlyByteBuf(pack1);
-        this.in = new DataInputStream(new ByteBufInputStream(pack1));
+        //this.in = new DataInputStream(new ByteBufInputStream(pack1));
     }
 
     public void start() throws IOException, InstantiationException {
         try{
             while (true) {
-                switch (in.readByte()) {
+                switch (pack.readByte()) {
                     case 1 -> {
-                        switch (in.readByte()) {
+                        switch (pack.readByte()) {
                             case 1 -> readMoreBlockUp();
                             case 2 -> readBlockUp();
                             default -> throw new RuntimeException();
@@ -69,22 +69,22 @@ public class CompatibilityMode2ClientCompresPacketLoader {
 
     protected void readBlockUp() throws IOException {
         out.add(new ClientboundBlockUpdatePacket(
-                new BlockPos(in.readInt(), in.readInt(), in.readInt()),
-                Block.BLOCK_STATE_REGISTRY.byId(in.readInt())
+                new BlockPos(pack.readIntLE(), pack.readIntLE(), pack.readIntLE()),
+                Block.BLOCK_STATE_REGISTRY.byId(pack.readIntLE())
         ));
     }
 
     protected void readMoreBlockUp() throws IOException, InstantiationException {
         ClientboundSectionBlocksUpdatePacket packet = (ClientboundSectionBlocksUpdatePacket) Unsafe.unsafe.allocateInstance(ClientboundSectionBlocksUpdatePacket.class);
-        SectionPos sectionPos = SectionPos.of(in.readLong());
-        int len = in.readInt();
+        SectionPos sectionPos = SectionPos.of(pack.readLongLE());
+        int len = pack.readIntLE();
         short[] positions = new short[len];
         BlockState[] states = new BlockState[len];
         for (int i = 0; i < len; i++) {
-            positions[i] = in.readShort();
+            positions[i] = pack.readShortLE();
         }
         for (int i = 0; i < len; i++) {
-            states[i] = Block.stateById(in.readInt());
+            states[i] = Block.stateById(pack.readIntLE());
         }
         packet.sectionPos = sectionPos;
         packet.positions = positions;
@@ -94,7 +94,7 @@ public class CompatibilityMode2ClientCompresPacketLoader {
     }
 
     protected void readMoreBlockEntityUp() throws IOException {
-        int i = in.readShort();
+        int i = pack.readShortLE();
         for (int i1 = 0; i1 < i; i1++) {
             readBlockEntityUp();
         }

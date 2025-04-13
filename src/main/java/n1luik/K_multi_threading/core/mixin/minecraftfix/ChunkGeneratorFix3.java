@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(value = ChunkGenerator.class)
-@Deprecated
 public class ChunkGeneratorFix3 {
     @Redirect(method = "getStructureGeneratingAt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/LevelReader;getChunk(IILnet/minecraft/world/level/chunk/ChunkStatus;)Lnet/minecraft/world/level/chunk/ChunkAccess;"))
     private static ChunkAccess fix1(LevelReader instance, int p_46820_, int p_46821_, ChunkStatus p_46822_){

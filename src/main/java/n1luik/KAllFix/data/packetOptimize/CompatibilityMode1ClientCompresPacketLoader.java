@@ -48,9 +48,9 @@ public class CompatibilityMode1ClientCompresPacketLoader {
     public void start() throws IOException, InstantiationException {
         try{
             while (true) {
-                switch (in.readByte()) {
+                switch (pack.readByte()) {
                     case 1 -> {
-                        switch (in.readByte()) {
+                        switch (pack.readByte()) {
                             case 1 -> readMoreBlockUp();
                             case 2 -> readBlockUp();
                             default -> throw new RuntimeException();
@@ -79,14 +79,14 @@ public class CompatibilityMode1ClientCompresPacketLoader {
     }
 
     protected void readMoreBlockEntityUp() throws IOException, InstantiationException {
-        int i = in.readShort();
+        int i = pack.readShortLE();
         for (int i1 = 0; i1 < i; i1++) {
             readBlockEntityUp();
         }
     }
     protected void readBlockEntityUp() throws IOException {
-        BlockPos pos = new BlockPos(in.readInt(), in.readInt(), in.readInt());
-        BlockEntityType<?> type = BuiltInRegistries.BLOCK_ENTITY_TYPE.byId(in.readInt());
+        BlockPos pos = new BlockPos(pack.readIntLE(), pack.readIntLE(), pack.readIntLE());
+        BlockEntityType<?> type = BuiltInRegistries.BLOCK_ENTITY_TYPE.byId(pack.readIntLE());
         CompoundTag tag;
         if (in.readByte() != 0) {
             tag = NbtIo.read(in);

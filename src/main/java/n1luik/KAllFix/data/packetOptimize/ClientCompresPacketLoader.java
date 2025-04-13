@@ -104,7 +104,7 @@ public class ClientCompresPacketLoader {
 
     protected void readMoreBlockEntityUp() throws IOException, InstantiationException {
         int i = in.readShort();
-        for (int i1 = 0; i1 < i; i1++) {
+        while (i-- > 0) {
             readBlockEntityUp();
         }
     }

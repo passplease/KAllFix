@@ -52,6 +52,7 @@
     "minecraftfix.ServerLevelFix1",
     "minecraftfix.ServerPlayerGameModeFix1",
     "minecraftfix.ServerWatchdogFix1",
+    "minecraftfix.ChunkGeneratorFix3",
     "minecraftfix.loginMultiThreading.DistanceManagerFix1",
     "minecraftfix.loginMultiThreading.MinecraftServerImpl3",
     "minecraftfix.loginMultiThreading.PacketUtilsFix1",
