@@ -7,8 +7,6 @@
 
 可以用-DKMT_D=false和-DKAllFix_D=false禁用独立mod
 
-当前版本1.0.3,正在开发目前还有很多问题，暂时没有jar
-
 
 ##  使用方法
 
@@ -31,7 +29,7 @@
 会生成k_multi_threading-base.jar和k_multi_threading-asm.jar两个文件
 
 有一些功能会下载一些库，如果下载失败可以手动放到./lib：
-- Zstd-jni 1.5.7-2 下载地址：https://repo1.maven.org/maven2/1.5.7-2/zstd-jni/com.github.luben"
+- Zstd-jni 1.5.7-2 下载地址：https://repo1.maven.org/maven2/com/github/luben/zstd-jni/1.5.7-2/
   
 ##  功能
 - 修复Biolith兼容问题(范围包括重新生成MultiNoiseBiomeSource的mod，例如所有的使用MCreator的所有有这个操作的mod)
@@ -47,7 +45,7 @@
 - -KMT-ThreadpoolKeepAliveTime=[毫秒]多线程线程池停止不需要的线程的时间 | 1.0.3
 - 使用-DKAF-RemoveMixin:[类名]禁用指定的mixin，KMT也可以
 - -DKAF-ClientboundKeepAlivePacket_Max=[多少毫秒] 修改ClientboundKeepAlivePacket数据包的时间要求，默认15秒
-  - ClientboundKeepAlivePacket包是需要小于15秒发送一次要不然就会被踢出服务器理由是连接超时
+  - ClientboundKeepAlivePacket包是需要小于30秒发送一次要不然就会被踢出服务器理由是连接超时
 - 通过-DKAF-ServerTimeout=[多少秒]设置服务器连接超时时间，不一定有用可以试试另一个方式
   - forge自带的另一个建议2个都设置: -Dforge.readTimeout=[多少秒]
   - 指令:
@@ -71,8 +69,8 @@
 - -DKAF-fix.asynchronous.ClientboundCustomQueryPacket=true握手异步，如果加的mod太多可能会导致握手的时候堵包导致不能玩服务器
 - -DKMT-LoginMultiThreading=true登陆多线程，防止模组过多在[net.minecraftforge.event.OnDatapackSyncEvent]的过程中出现bug
   - 多线程登录只能在原版的登录数据包才可以多线程其他模型需要适配目前只适配了[原版]
-  - -DKMT-LoginMultiThreading.ConnectionLock=true在tick结束的时候等待异步执行完成，建议关闭可以起到一定的优化效果但是会导致速度变慢
-    - 建议开启
+  - -DKMT-LoginMultiThreading.ConnectionLock=true在tick结束的时候等待异步执行完成，关闭可以起到一定的优化效果但是会导致登录速度变慢
+    - 必须开启
   - -DKMT-LoginMultiThreading.TaskSizeMax=[数字]设置最多运行多少登陆任务让其他的等待，默认8
 - -DKAF-LoginProtectionMod=true添加登陆保护功能，但是需要服务器和客户端都启用
 - -DKAF-FixAllPacket=true修复数据包[网络]，但是需要服务器和客户端都启用
@@ -105,7 +103,7 @@
   - 关闭方法：在config/modernfix-mixins.properties文件新增一行插入的mixin.perf.cache_upgraded_structures=false
 - 登陆多线程可能会导致服务器提前接受到ServerboundMovePlayerPacket导致报错一次
 - [跑酷！]ParCool在开启多线程登陆的时候需要进服务器之后死一下才可以使用
-- 盖亚宝典4 会有小概率报错Modifier is already applied on this attribute!
+- 盖亚魔典4 会有小概率报错Modifier is already applied on this attribute!
 - 1.20.1的[余烬奇景]cinderscapes我根本做不到优化enableAshFall功能只能禁用，做不到的是找到在那里生成的这个生物群系在生成这个的维度启用
   - 浪费性能：中高
   - 浪费原因：在所有时间的每一个区块获取128次获取区块
@@ -114,7 +112,6 @@
   - 因为emi的问题fusion的兼容根本不可能实现，但是目前我玩的时候没有影响
 - NuclearCraft: Neoteric的裂变反应堆重启有小概率会导致冷却计算错误
 - 1.0.3.3之后n1luik.K_multi_threading.core.base.ParaServerChunkProvider和n1luik.KAllFix.util.TaskRun还有一部分区块生成的代码多线程必须c2要不然性能很差（java会自动c2但是需要运行一会）
-- 数据包优化2个CompatibilityMode参数都是false在我500mod的环境无法正常工作
 
 ## 故障纪录
 - 没有地狱，问题是因为测试模组导致数据包损坏，解决方法：
