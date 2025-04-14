@@ -40,20 +40,23 @@ public abstract class LivingEntityMixin2 implements IPacketOptimize {
             KAllFix$hash_Attributes = 0;
         }
         if (!KAllFix$upAttributesPacketV) {
-            Set<AttributeInstance> dirtyAttributes = getAttributes().getDirtyAttributes();
-            if (KAllFix$size_Attributes == dirtyAttributes.size()){
-                return;
+            AttributeMap attributes = getAttributes();
+            synchronized (attributes){
+                Set<AttributeInstance> dirtyAttributes = attributes.getDirtyAttributes();
+                if (KAllFix$size_Attributes == dirtyAttributes.size()) {
+                    return;
+                }
+                if (KAllFix$sizeHash_Attributes == UtilKAF.hashAttributeInstanceSize(dirtyAttributes)) {
+                    return;
+                }
+                if (KAllFix$hash_Attributes == UtilKAF.hashAttributeInstanceList(dirtyAttributes)) {
+                    return;
+                }
+                KAllFix$upAttributesPacketV = true;
+                KAllFix$size_Attributes = dirtyAttributes.size();
+                KAllFix$sizeHash_Attributes = UtilKAF.hashAttributeInstanceSize(dirtyAttributes);
+                KAllFix$hash_Attributes = UtilKAF.hashAttributeInstanceList(dirtyAttributes);
             }
-            if (KAllFix$sizeHash_Attributes == UtilKAF.hashAttributeInstanceSize(dirtyAttributes)){
-                return;
-            }
-            if (KAllFix$hash_Attributes == UtilKAF.hashAttributeInstanceList(dirtyAttributes)){
-                return;
-            }
-            KAllFix$upAttributesPacketV = true;
-            KAllFix$size_Attributes = dirtyAttributes.size();
-            KAllFix$sizeHash_Attributes = UtilKAF.hashAttributeInstanceSize(dirtyAttributes);
-            KAllFix$hash_Attributes = UtilKAF.hashAttributeInstanceList(dirtyAttributes);
         }
     }
 
