@@ -38,7 +38,7 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
     private int multiThreadingSize = 0;
 
     @Override
-    public void pushThread() {
+    public void k_multi_threading$pushThread() {
         callThread = Thread.currentThread();
     }
 
@@ -52,7 +52,7 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
         }
     }
     @Override
-    public boolean notCallPollTask() {
+    public boolean k_multi_threading$notCallPollTask() {
         return super.pollTask();
     }
 
@@ -90,7 +90,7 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
     }
 
     @Override
-    public void setMultiThreading(int size) {
+    public void k_multi_threading$setMultiThreading(int size) {
         multiThreadingSize = size;
     }
 

@@ -3,28 +3,13 @@ package n1luik.K_multi_threading.debug;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import cpw.mods.modlauncher.TransformingClassLoader;
 import n1luik.K_multi_threading.core.Imixin.IMainThreadExecutor;
 import n1luik.K_multi_threading.core.Imixin.IMinecraftServerTickMixin1;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.DimensionArgument;
-import net.minecraft.commands.arguments.ResourceArgument;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.dimension.LevelStem;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.function.BiFunction;
 
 public class SetterWorldConfigCommand {
     public static void register(CommandDispatcher<CommandSourceStack> p_214446_, CommandBuildContext commandBuildContext) {
@@ -48,7 +33,7 @@ public class SetterWorldConfigCommand {
                                     Commands.argument("size", IntegerArgumentType.integer(0)).executes(v->{
                                         ServerLevel world = DimensionArgument.getDimension(v, "world");
                                         if (world.getChunkSource().mainThreadProcessor instanceof IMainThreadExecutor iMainThreadExecutor) {
-                                            iMainThreadExecutor.setMultiThreading(IntegerArgumentType.getInteger(v, "size"));
+                                            iMainThreadExecutor.k_multi_threading$setMultiThreading(IntegerArgumentType.getInteger(v, "size"));
                                             return 1;
                                         }else {
                                             return 0;
