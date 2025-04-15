@@ -111,7 +111,7 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
     //}
 
     @Override
-    public void managedBlock(BooleanSupplier p_18702_) {
+    public synchronized void managedBlock(BooleanSupplier p_18702_) {
         isCall = true;
         callThread = Thread.currentThread();
         super.managedBlock(p_18702_);
@@ -153,15 +153,17 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
         if (multiThreadingSize > 0) {
             int i = 0;
             Runnable[] runnables = new Runnable[multiThreadingSize];
-            Runnable r = this.pendingRunnables.peek();
-            re:{
+            while (true){
+                Runnable r = this.pendingRunnables.peek();
                 if (r == null) {
+                    if (i != 0) break;
                     return false;
                 } else if (this.blockingCount == 0 && !this.shouldRun(r)) {
+                    if (i != 0) break;
                     return false;
                 } else {
                     runnables[i++] = this.pendingRunnables.remove();
-                    break re;
+                    continue;
                 }
             }
             new CalculateTask(()->"ChunkLoader", 0, multiThreadingSize, i2->{
