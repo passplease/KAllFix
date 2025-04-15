@@ -44,6 +44,7 @@
 - -KMT-callMax=[多线程任务默认分配最大使用线程] | 1.0.3
 - -KMT-ThreadpoolKeepAliveTime=[毫秒]多线程线程池停止不需要的线程的时间 | 1.0.3
 - 使用-DKAF-RemoveMixin:[类名]禁用指定的mixin，KMT也可以
+- -DKMT-ChunkGeneratorMode2Start=[true, false]相当于自动在开始的执行 /SetterWorldConfig world setM2 %%KMT-ChunkGeneratorMode2Start%%
 - -DKAF-ClientboundKeepAlivePacket_Max=[多少毫秒] 修改ClientboundKeepAlivePacket数据包的时间要求，默认15秒
   - ClientboundKeepAlivePacket包是需要小于30秒发送一次要不然就会被踢出服务器理由是连接超时
 - 通过-DKAF-ServerTimeout=[多少秒]设置服务器连接超时时间，不一定有用可以试试另一个方式
@@ -93,6 +94,7 @@
   - -DKAF-packetOptimize.AttributesReOutputTime=[毫秒]设置强制重新发送的间隔时间，默认2分钟
   - -DKAF-packetOptimize.CompatibilityMode.ClientboundBlockEntityDataPacket=true更保守的ClientboundBlockEntityDataPacket压缩，但是会影响性能
   - -DKAF-packetOptimize.CompatibilityMode.ClientboundSectionBlocksUpdatePacket=true更保守的ClientboundSectionBlocksUpdatePacket和ClientboundBlockUpdatePacket压缩，但是会影响性能
+- 没有实现：-DKAF-PlainTextSearchTreeMultiThreading=true创造模式物品栏多线程，可以给emi启动加速
 
 
 ## 问题

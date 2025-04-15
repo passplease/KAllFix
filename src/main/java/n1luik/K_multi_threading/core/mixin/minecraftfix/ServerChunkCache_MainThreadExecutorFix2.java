@@ -20,6 +20,8 @@ import java.util.function.BooleanSupplier;
 
 @Mixin(ServerChunkCache.MainThreadExecutor.class)
 public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableEventLoop<Runnable> implements IMainThreadExecutor {
+    @Unique
+    private static final boolean K_multi_threading$StartMode2 = Boolean.getBoolean("KMT-ChunkGeneratorMode2Start");
     protected ServerChunkCache_MainThreadExecutorFix2(String p_18686_) {
         super(p_18686_);
     }
@@ -31,7 +33,7 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
     private boolean isCall;
     @Unique
     @Setter
-    private boolean m2 = true;
+    private boolean m2 = K_multi_threading$StartMode2;
     @Unique
     private int multiThreadingSize = 0;
 

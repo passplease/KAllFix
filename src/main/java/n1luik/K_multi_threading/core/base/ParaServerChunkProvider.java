@@ -100,6 +100,8 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     //protected final AtomicInteger ChunkGeneratorTest = new AtomicInteger();
     @Getter
     protected volatile int ChunkGeneratorTest = 0;
+    //@Getter
+    //protected volatile boolean thisGenerator = false;
 
     //protected final IMainThreadExecutor iMainThreadExecutor;
     //protected ChunkLock loadingChunkLock = new ChunkLock();
@@ -149,6 +151,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         Unsafe.unsafe.putObject(this, initId.getLong("lock5"), new ReentrantLock());
         Unsafe.unsafe.putObject(this, initId.getLong("tasksRunLock"), new Object());
         isCallTick = false;
+        //thisGenerator = false;
         isCallGeneratorTick = false;
         Unsafe.unsafe.putObject(this, initId.getLong("tasks"), new CopyOnWriteArrayList<>());
         Unsafe.unsafe.putObject(this, initId.getLong("generatorTasks"), new CopyOnWriteArrayList<>());
@@ -420,8 +423,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
 
     //@Override
     //public boolean runDistanceManagerUpdates() {
-    //    boolean b = super.runDistanceManagerUpdates();
-    //    return b;
+    //    return thisGenerator = super.runDistanceManagerUpdates();
     //}
 
     public void testChunkCache(){
@@ -455,6 +457,10 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
 
         isCallTick = false;
 
+    }
+
+    public void KMT$addTickRun(Runnable runnable){
+        tasks.add(runnable);
     }
 
     @Override
