@@ -25,6 +25,7 @@
     "fix.mek.TileEntityTransmitterFix1",
     "fix.mek.TransmitterNetworkRegistry_OrphanPathFinder",
     "fix.nuclearcraft.FluidCapabilityHandlerFix1",
+    "fix.create.CreateRegistrateFix1",
     "fix.nuclearcraft.FluidHandlerWrapperFix1",
     "impl.LevelImpl1",
     "impl.LevelTicksImpl1",
