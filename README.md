@@ -94,7 +94,9 @@
   - -DKAF-packetOptimize.AttributesReOutputTime=[毫秒]设置强制重新发送的间隔时间，默认2分钟
   - -DKAF-packetOptimize.CompatibilityMode.ClientboundBlockEntityDataPacket=true更保守的ClientboundBlockEntityDataPacket压缩，但是会影响性能
   - -DKAF-packetOptimize.CompatibilityMode.ClientboundSectionBlocksUpdatePacket=true更保守的ClientboundSectionBlocksUpdatePacket和ClientboundBlockUpdatePacket压缩，但是会影响性能
-- 没有实现：-DKAF-PlainTextSearchTreeMultiThreading=true创造模式物品栏多线程，可以给emi启动加速
+- -DKAF-PlainTextSearchTreeMultiThreading=true创造模式物品栏多线程，可以给emi启动加速
+  - 自动获取的cpu最大线程数不一定准确，大概率是作者是虚拟机的问题需要手动设置-DKAF-PlainTextSearchTreeMultiThreading-TasxMax=[cpu最大线程数win多百分之15 linux多百分之10 cpu线程越多设置越多]
+
 
 
 ## 问题
@@ -114,6 +116,7 @@
   - 因为emi的问题fusion的兼容根本不可能实现，但是目前我玩的时候没有影响
 - NuclearCraft: Neoteric的裂变反应堆重启有小概率会导致冷却计算错误
 - 1.0.3.3之后n1luik.K_multi_threading.core.base.ParaServerChunkProvider和n1luik.KAllFix.util.TaskRun还有一部分区块生成的代码多线程必须c2要不然性能很差（java会自动c2但是需要运行一会）
+- KAF-PlainTextSearchTreeMultiThreading没有使用JProfiler测试明确可以生效
 
 ## 故障纪录
 - 没有地狱，问题是因为测试模组导致数据包损坏，解决方法：

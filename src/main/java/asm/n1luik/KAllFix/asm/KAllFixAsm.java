@@ -4,17 +4,38 @@ import asm.n1luik.KAllFix.asm.mod.createdieselgenerators.EntityMixinAsm;
 import asm.n1luik.KAllFix.asm.mod.fabric_object_builder_api.ReadClassAsm;
 import asm.n1luik.KAllFix.asm.mod.jei.JEI_AddMapConcurrent_ASM;
 import asm.n1luik.KAllFix.asm.mod.jei.JEI_NotErrorAddSynchronized_Asm;
+import cpw.mods.modlauncher.TransformingClassLoader;
 import cpw.mods.modlauncher.api.IEnvironment;
 import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.IncompatibleEnvironmentException;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiFunction;
 
 public class KAllFixAsm implements ITransformationService {
+    public static BiFunction<TransformingClassLoader, String, byte[]> getclass;
+    static {
+        try {
+            Method buildTransformedClassNodeFor = TransformingClassLoader.class.getDeclaredMethod("buildTransformedClassNodeFor", String.class, String.class);
+            buildTransformedClassNodeFor.setAccessible(true);
+            getclass = (transformingClassLoader, s) ->
+            {
+                try {
+                    return (byte[]) buildTransformedClassNodeFor.invoke(transformingClassLoader, s, s);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            };
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
     @Override
     public @NotNull String name() {
         return "KAllFixAsm";

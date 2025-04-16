@@ -41,7 +41,8 @@
     "unsafe.gtceu.MedicalConditionTrackerMixin",
     "unsafe.path.MultiThreadingJEICommon.create.CreateJEIMixin",
     "unsafe.path.packetOptimize.This",
-    "unsafe.path.packetOptimize.blockEentity.ServerChunkCacheMixin2"
+    "unsafe.path.packetOptimize.blockEentity.ServerChunkCacheMixin2",
+    "unsafe.path.PlainTextSearchTreeMultiThreading.FullTextSearchTreeMixin"
   ],
   "client": [
     "ex.FixAllPacket.mekanismexplosives.client.MinecraftMixin",
