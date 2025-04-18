@@ -1,4 +1,4 @@
-package n1luik.K_multi_threading.core.impl.create;
+package n1luik.K_multi_threading.fix.create;
 
 import com.simibubi.create.content.kinetics.crafter.MechanicalCrafterBlockEntity;
 import com.simibubi.create.content.kinetics.crafter.RecipeGridHandler;
