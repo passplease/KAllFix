@@ -1,4 +1,4 @@
-package asm.n1luik.KAllFix.asm.mod.fabric_object_builder_api;
+package asm.n1luik.KAllFix.asm.util;
 
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;

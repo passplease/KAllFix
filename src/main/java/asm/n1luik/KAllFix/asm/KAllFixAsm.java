@@ -1,7 +1,8 @@
 package asm.n1luik.KAllFix.asm;
 
 import asm.n1luik.KAllFix.asm.mod.createdieselgenerators.EntityMixinAsm;
-import asm.n1luik.KAllFix.asm.mod.fabric_object_builder_api.ReadClassAsm;
+import asm.n1luik.KAllFix.asm.util.NoModuleReadClassAsm;
+import asm.n1luik.KAllFix.asm.util.ReadClassAsm;
 import asm.n1luik.KAllFix.asm.mod.jei.JEI_AddMapConcurrent_ASM;
 import asm.n1luik.KAllFix.asm.mod.jei.JEI_NotErrorAddSynchronized_Asm;
 import cpw.mods.modlauncher.TransformingClassLoader;
@@ -71,7 +72,7 @@ public class KAllFixAsm implements ITransformationService {
             transformers.add(new JEI_AddMapConcurrent_ASM());
         }
         if (Boolean.getBoolean("KAF-PlainTextSearchTreeMultiThreading")) {
-            transformers.add(new ReadClassAsm("quark", "1.20.1$all", "PotionUtilsMixin", Set.of(
+            transformers.add(new ReadClassAsm("quark", "1.20.1+all", "PotionUtilsMixin", Set.of(
                     ITransformer.Target.targetClass("org.violetmoon.quark.mixin.mixins.PotionUtilsMixin")
             )));
         }

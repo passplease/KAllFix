@@ -24,11 +24,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * 无法编译
  * 需要到夸克的源码里编译
  * */
-@Mixin(value = PotionUtils.class)
-public class PotionUtilsMixin {
+//@Mixin(value = PotionUtils.class)
+public class PotionUtilsMixin__ {//原名 [org.violetmoon.quark.mixin.mixins.PotionUtilsMixin]
 //
 //	@Unique
-//	private final static Map<Thread, ItemStack> stackActingOn = new ConcurrentHashMap<>();
+	private final static Map<Thread, ItemStack> stackActingOn = new ConcurrentHashMap<>();
 //
 //	@Inject(method = "addPotionTooltip(Lnet/minecraft/world/item/ItemStack;Ljava/util/List;F)V", at = @At("HEAD"))
 //	private static void setActingStack(ItemStack stack, List<Component> components, float durationMultiplier, CallbackInfo ci) {
