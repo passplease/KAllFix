@@ -70,6 +70,11 @@ public class KAllFixAsm implements ITransformationService {
             transformers.add(new JEI_NotErrorAddSynchronized_Asm());
             transformers.add(new JEI_AddMapConcurrent_ASM());
         }
+        if (Boolean.getBoolean("KAF-PlainTextSearchTreeMultiThreading")) {
+            transformers.add(new ReadClassAsm("quark", "1.20.1$all", "PotionUtilsMixin", Set.of(
+                    ITransformer.Target.targetClass("org.violetmoon.quark.mixin.mixins.PotionUtilsMixin")
+            )));
+        }
         return transformers;
     }
 }
