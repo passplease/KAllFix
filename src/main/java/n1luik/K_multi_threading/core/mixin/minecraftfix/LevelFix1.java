@@ -62,7 +62,7 @@ public abstract class LevelFix1 {
             K_multi_threading$lock_FreshBlockEntities.unlock();
         //}
     }
-
+    //待调整
     @Redirect(method = "tickBlockEntities",at = @At(value = "INVOKE", target = "Ljava/util/ArrayList;forEach(Ljava/util/function/Consumer;)V"))
     public <E> void fix9(ArrayList<E> instance, Consumer<? super E> consumer){
         //if (!K_multi_threading$isLock){
