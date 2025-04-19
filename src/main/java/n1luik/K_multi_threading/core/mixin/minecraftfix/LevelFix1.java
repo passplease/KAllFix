@@ -1,5 +1,7 @@
 package n1luik.K_multi_threading.core.mixin.minecraftfix;
 
+import n1luik.KAllFix.util.AsyncWait;
+import n1luik.KAllFix.util.VoidAsyncWait;
 import n1luik.K_multi_threading.core.base.ParaServerChunkProvider;
 import n1luik.K_multi_threading.core.util.concurrent.LockArrayList;
 import net.minecraft.core.Holder;
@@ -20,7 +22,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -33,6 +37,10 @@ public abstract class LevelFix1 {
     protected final Lock K_multi_threading$lock_FreshBlockEntities = new java.util.concurrent.locks.ReentrantLock();
     @Unique
     protected final Lock K_multi_threading$lock_FreshBlockEntities2 = new java.util.concurrent.locks.ReentrantLock();//用于保证tickBlockEntities是唯一的
+    @Unique
+    private ReentrantLock K_multi_threading$lock;
+    @Unique
+    private Condition K_multi_threading$condition;
     //@Unique
     //private boolean K_multi_threading$isLock = false;//用于保证tickBlockEntities是唯一的
 
@@ -74,7 +82,9 @@ public abstract class LevelFix1 {
                         //K_multi_threading$isLock = true;
                         instance.forEach(consumer);
                     }else {
-                        p.mainThreadProcessor.tell(()->instance.forEach(consumer));
+                        VoidAsyncWait task = new VoidAsyncWait(K_multi_threading$lock, K_multi_threading$condition, ()->instance.forEach(consumer));
+                        p.mainThreadProcessor.tell(task);
+                        task.waitTask();
                     }
                 }else {
                     //K_multi_threading$lock_FreshBlockEntities.lock();
