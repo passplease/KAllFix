@@ -1,10 +1,13 @@
 package n1luik.K_multi_threading.core.mixin.minecraftfix;
 
+import n1luik.K_multi_threading.core.base.ParaServerChunkProvider;
 import n1luik.K_multi_threading.core.util.concurrent.LockArrayList;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.WritableLevelData;
 import net.minecraftforge.common.util.BlockSnapshot;
@@ -18,15 +21,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @Mixin(Level.class)
-public class LevelFix1 {
+public abstract class LevelFix1 {
     @Shadow @Final private Thread thread;
 
     @Shadow public ArrayList<BlockSnapshot> capturedBlockSnapshots;
     @Unique
     protected final Lock K_multi_threading$lock_FreshBlockEntities = new java.util.concurrent.locks.ReentrantLock();
+    @Unique
+    protected final Lock K_multi_threading$lock_FreshBlockEntities2 = new java.util.concurrent.locks.ReentrantLock();//用于保证tickBlockEntities是唯一的
+    //@Unique
+    //private boolean K_multi_threading$isLock = false;//用于保证tickBlockEntities是唯一的
 
     @Redirect(method = "getBlockEntity",at = @At(value = "INVOKE",target = "Ljava/lang/Thread;currentThread()Ljava/lang/Thread;"))
     public Thread fix1(){
@@ -50,11 +58,64 @@ public class LevelFix1 {
 
     @Inject(method = "tickBlockEntities",at = @At(value = "INVOKE", target = "Ljava/util/List;isEmpty()Z"))
     public void fix5(CallbackInfo ci){
-        K_multi_threading$lock_FreshBlockEntities.unlock();
+        //if (K_multi_threading$isLock) {
+            K_multi_threading$lock_FreshBlockEntities.unlock();
+        //}
+    }
+    //待调整
+    @Redirect(method = "tickBlockEntities",at = @At(value = "INVOKE", target = "Ljava/util/ArrayList;forEach(Ljava/util/function/Consumer;)V"))
+    public <E> void fix9(ArrayList<E> instance, Consumer<? super E> consumer){
+        //if (!K_multi_threading$isLock){
+
+            if (((Object)this) instanceof ServerLevel serverLevel) {
+                if (serverLevel.getChunkSource() instanceof ParaServerChunkProvider p) {
+                    if (p.getChunkGeneratorTest() < 1) {
+                        //K_multi_threading$lock_FreshBlockEntities.lock();
+                        //K_multi_threading$isLock = true;
+                        instance.forEach(consumer);
+                    }else {
+                        p.mainThreadProcessor.tell(()->instance.forEach(consumer));
+                    }
+                }else {
+                    //K_multi_threading$lock_FreshBlockEntities.lock();
+                    //K_multi_threading$isLock = true;
+                    instance.forEach(consumer);
+                }
+            }else {
+                //K_multi_threading$lock_FreshBlockEntities.lock();
+                //K_multi_threading$isLock = true;
+                instance.forEach(consumer);
+            }
+        //}else {
+        //    K_multi_threading$lock_FreshBlockEntities.lock();
+        //    K_multi_threading$isLock = true;
+        //    instance.forEach(consumer);
+        //}
     }
     @Inject(method = "tickBlockEntities",at = @At(value = "INVOKE", target = "Ljava/util/ArrayList;isEmpty()Z", ordinal = 0))
     public void fix6(CallbackInfo ci){
-        K_multi_threading$lock_FreshBlockEntities.lock();
+        //if (((Object)this) instanceof ServerLevel serverLevel) {
+        //    if (serverLevel.getChunkSource() instanceof ParaServerChunkProvider p) {
+        //        if (p.getChunkGeneratorTest() < 1) {
+        //            K_multi_threading$lock_FreshBlockEntities.lock();
+        //            K_multi_threading$isLock = true;
+        //        }
+        //    }else {
+        //        K_multi_threading$lock_FreshBlockEntities.lock();
+        //        K_multi_threading$isLock = true;
+        //    }
+        //}else {
+            K_multi_threading$lock_FreshBlockEntities.lock();
+        //    K_multi_threading$isLock = true;
+        //}
+    }
+    @Inject(method = "tickBlockEntities",at = @At("RETURN"))
+    public void fix7(CallbackInfo ci){
+        K_multi_threading$lock_FreshBlockEntities2.unlock();
+    }
+    @Inject(method = "tickBlockEntities",at = @At("HEAD"))
+    public void fix8(CallbackInfo ci){
+        K_multi_threading$lock_FreshBlockEntities2.lock();
     }
 
 }
