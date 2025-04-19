@@ -5,7 +5,7 @@
 
 多线程只能在服务器使用客户端会进不去游戏
 
-可以用-DKMT_D=false和-DKAllFix_D=false禁用独立mod
+可以用-DKMT_D=[任意字符]和-DKAllFix_D=[任意字符]禁用独立mod
 
 
 ##  使用方法
