@@ -5,6 +5,7 @@ import n1luik.K_multi_threading.core.Imixin.IWorldChunkLockedConfig;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,6 +30,8 @@ public class ChunkMapFix1 {
     //    }
     //}
 
+    //@Shadow @Final private BlockableEventLoop<Runnable> mainThreadExecutor;
+
     @Redirect(method = "prepareTickingChunk", at = @At(value = "INVOKE", target = "Ljava/util/concurrent/CompletableFuture;thenApplyAsync(Ljava/util/function/Function;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;", ordinal = 1))
     public <T extends Either<LevelChunk, ChunkHolder. ChunkLoadingFailure>> CompletableFuture<Either<LevelChunk, ChunkHolder.ChunkLoadingFailure>>
     fix1(CompletableFuture<T> instance, Function<? super T, Either<LevelChunk, ChunkHolder.ChunkLoadingFailure>> fn, Executor executor){
@@ -44,4 +47,8 @@ public class ChunkMapFix1 {
             return instance.thenApplyAsync(fn, executor);
         }
     }
+    //@Redirect(method = "lambda$protoChunkToFullChunk$34", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/LevelChunk;registerAllBlockEntitiesAfterLevelLoad()V"))
+    //public void fix2(LevelChunk instance){
+    //    mainThreadExecutor.tell(instance::registerAllBlockEntitiesAfterLevelLoad);
+    //}
 }
