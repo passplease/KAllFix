@@ -13,7 +13,6 @@
     "fix.MinecraftServerMixin",
     "fix.ServerLevelMixin",
     "fix.ServerPlayerMixin",
-    "fix.ae2.PathingServiceFix1",
     "fix.ae2.PlatformFix1",
     "fix.ae2.TickHandlerFix1",
     "fix.alexscaves.CommonEventsFix1",

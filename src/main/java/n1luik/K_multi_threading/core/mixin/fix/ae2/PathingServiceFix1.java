@@ -14,7 +14,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-
+/**
+ * 我忘了这个是干什么的了，好像没用
+ * */
 @Mixin(value = PathingService.class,priority = 1100)
 public abstract class PathingServiceFix1 {
     @Shadow(remap = false) private ControllerState controllerState;
