@@ -5,19 +5,22 @@ import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 
 @Slf4j
-public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> {
+public class SafeIndependenceAddSynchronized_Asm implements ITransformer<ClassNode> {
     public static final List<String[]> stringsList = new ArrayList<>(List.<String[]>of(
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.startTickingChunk(Lnet/minecraft/world/level/chunk/LevelChunk;)V")
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.startTickingChunk(Lnet/minecraft/world/level/chunk/LevelChunk;)V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.addFreshBlockEntities(Ljava/util/Collection;)V")
+            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.tickBlockEntities()V")
     ));
 
     int posfilter = Opcodes.ACC_PUBLIC;
@@ -76,14 +79,19 @@ public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> 
                                 if ((input.access & Opcodes.ACC_INTERFACE) == 0) {
                                     log.info("add {} synchronized", Arrays.toString(strings));
 
+                                    Label rstart = new Label();
+                                    Label rend = new Label();
+                                    method.visitTryCatchBlock(rstart, rend, rend, null);
+                                    InsnList start;
+                                    InsnList end = null;
+
                                     if (!input.name.contains("$")) {
-                                        InsnList start;
-                                        InsnList end;
                                         if ((method.access & negfilter) == 0 && !method.name.equals("<init>")) {
                                             start = new InsnList();
                                             start.add(new VarInsnNode(Opcodes.ALOAD, 0));
                                             start.add(new FieldInsnNode(Opcodes.GETFIELD, input.name, name, "Ljava/lang/Object;"));
                                             start.add(new InsnNode(Opcodes.MONITORENTER));
+                                            start.add(new LabelNode(rstart));
                                             end = new InsnList();
                                             end.add(new VarInsnNode(Opcodes.ALOAD, 0));
                                             end.add(new FieldInsnNode(Opcodes.GETFIELD, input.name, name, "Ljava/lang/Object;"));
@@ -102,6 +110,7 @@ public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> 
                                                 }
                                                 ain = ain.getNext();
                                             }
+                                            method.visitTryCatchBlock(rstart, rend, rend, null);
                                             il.insertBefore(il.getFirst(), start);
                                             method.maxStack++;
                                         }
@@ -120,13 +129,12 @@ public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> 
                                             log.error("Inner class faliure; parent not found " + (parent == null ? "null" : parent) + " " + (map == null ? "null" : map) + " " + Arrays.toString(strings));
                                             return input;
                                         }
-                                        InsnList start;
-                                        InsnList end;
                                         if ((method.access & negfilter) == 0 && !method.name.equals("<init>")) {
                                             start = new InsnList();
                                             start.add(new VarInsnNode(Opcodes.ALOAD, 0));
                                             start.add(new FieldInsnNode(Opcodes.GETFIELD, input.name, map, parent));
                                             start.add(new InsnNode(Opcodes.MONITORENTER));
+                                            start.add(new LabelNode(rstart));
                                             end = new InsnList();
                                             end.add(new VarInsnNode(Opcodes.ALOAD, 0));
                                             end.add(new FieldInsnNode(Opcodes.GETFIELD, input.name, map, parent));
@@ -145,10 +153,18 @@ public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> 
                                                 }
                                                 ain = ain.getNext();
                                             }
+                                            method.visitTryCatchBlock(rstart, rend, rend, null);
                                             il.insertBefore(il.getFirst(), start);
                                         }
                                         log.info("sync_fu " + input.name + " InnerClass Transformer Complete");
                                     }
+                                    if (end != null) {
+                                        method.visitLabel(rend);
+                                        method.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[]{"java/lang/Throwable"});
+                                        method.instructions.add(end);
+                                        method.visitInsn(Opcodes.MONITOREXIT);
+                                    }
+
                                 } else {
                                     log.info("add {} synchronized", Arrays.toString(strings));
                                     InsnList start;
@@ -204,7 +220,7 @@ public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> 
     @Override
     public @NotNull Set<Target> targets() {
 
-        File f = new File("config/K_multi_threading-independence-sync-Method-list.txt");
+        File f = new File("config/K_multi_threading-安全-independence-sync-Method-list.txt");
         if (f.exists()) {
             try (BufferedReader r = new BufferedReader(new FileReader(f))) {
                 r.lines().filter(s -> !(s.startsWith("#") || s.startsWith("//") || s.equals("")))
