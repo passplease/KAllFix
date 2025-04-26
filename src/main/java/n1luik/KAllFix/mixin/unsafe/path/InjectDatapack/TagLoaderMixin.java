@@ -28,6 +28,7 @@ public class TagLoaderMixin implements ITagLoader {
     static {
         KAllFix$edirectoryMap.put("tags/functions", new ResourceLocation("minecraft", "functions"));
         KAllFix$edirectoryMap.put("tags/recipes", new ResourceLocation("minecraft", "recipes"));
+        KAllFix$edirectoryMap.put("tinkering/tags/modifiers", new ResourceLocation("tinkering", "modifiers"));
     }
 
     @Shadow @Final private String directory;
