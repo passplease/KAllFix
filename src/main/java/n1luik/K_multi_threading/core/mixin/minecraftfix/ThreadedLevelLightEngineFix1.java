@@ -23,6 +23,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Mixin(ThreadedLevelLightEngine.class)
+@Deprecated
 public abstract class ThreadedLevelLightEngineFix1 extends LevelLightEngine {
     @Shadow @Final private ChunkMap chunkMap;
     @Unique

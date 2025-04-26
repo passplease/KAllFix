@@ -65,6 +65,11 @@ public class AsyncWait<T> implements Runnable{
         this.condition = condition;
         this.task = task;
     }
+    public AsyncWait(Supplier<T> task) {
+        this.lock = new ReentrantLock();
+        this.condition = lock.newCondition();
+        this.task = task;
+    }
 
     @Override
     public void run() {

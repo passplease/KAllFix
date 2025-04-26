@@ -23,10 +23,10 @@ public abstract class MinecraftMixin {
 
     @Shadow public abstract void setScreen(@org.jetbrains.annotations.Nullable Screen p_91153_);
 
-    @Inject(method = "lambda$createSearchTrees$10", at = @At("HEAD"))
-    public void impl2(CallbackInfo ci){
-
-    }
+    //@Inject(method = "lambda$createSearchTrees$10", at = @At("HEAD"))
+    //public void impl2(CallbackInfo ci){
+//
+    //}
     @Inject(method = "tick", at = @At("HEAD"))
     public void impl1(CallbackInfo ci){
         if (LoginProtectionModEvent.LoginProtection) {

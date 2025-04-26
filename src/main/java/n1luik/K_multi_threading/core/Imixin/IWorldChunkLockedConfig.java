@@ -6,8 +6,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public interface IWorldChunkLockedConfig {
     void pushThread(long id);
     long pushThread();
+    void pushWaitThread(long id);
+    long pushWaitThread();
     void pop(long id);
     void pop();
+    void popWait(long id);
+    void popWait();
     List<Thread> getGeneratorThread1();
     Thread getGeneratorThread2();
     void execTasks();

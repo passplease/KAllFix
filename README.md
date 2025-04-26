@@ -96,7 +96,30 @@
   - -DKAF-packetOptimize.CompatibilityMode.ClientboundSectionBlocksUpdatePacket=true更保守的ClientboundSectionBlocksUpdatePacket和ClientboundBlockUpdatePacket压缩，但是会影响性能
 - -DKAF-PlainTextSearchTreeMultiThreading=true创造模式物品栏多线程，可以给emi启动加速
   - 自动获取的cpu最大线程数不一定准确，大概率是作者是虚拟机的问题需要手动设置-DKAF-PlainTextSearchTreeMultiThreading-TasxMax=[cpu最大线程数win多百分之15 linux多百分之10 cpu线程越多设置越多]
-
+- -DKAF-InjectDatapack=true会在游戏目录检测InjectDatapack文件夹并在加载完在这个文件夹打包的数据包数据包在加载完所有数据包之后加载，格式跟正常数据包不一样
+  - 不支持成就
+  - 无法通过任何方式在data数据里找到这些json
+  - 格式：
+  -  ./InjectDatapack/*.zip：
+  - config.json:
+    - ``` json
+       {
+         "data": [
+           {
+              "type": "注册表名",
+              "name": "注册名"
+              "file": "文件名"
+           }
+         ],
+         "tag": [
+           {
+              "type": "注册表名",
+              "tag": "标签名"
+              "file": "文件名"
+           }
+         ],
+      }
+  - 数据文件
 
 
 ## 问题

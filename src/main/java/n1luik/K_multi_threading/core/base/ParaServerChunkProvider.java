@@ -20,6 +20,7 @@ import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
+import n1luik.KAllFix.util.AsyncWait;
 import n1luik.KAllFix.util.TaskRun;
 import n1luik.K_multi_threading.core.Base;
 import n1luik.K_multi_threading.core.Imixin.IWorldChunkLockedConfig;
@@ -97,6 +98,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     protected final List<Runnable> generatorTasks = new CopyOnWriteArrayList<>();
     protected final List<Object> locks = new CopyOnWriteArrayList<>();
     protected final Map<Long, Thread> threadBlacklist = new ConcurrentHashMap<>();
+    protected final Map<Long, Thread> waitList = new ConcurrentHashMap<>();
     //protected final AtomicInteger ChunkGeneratorTest = new AtomicInteger();
     @Getter
     protected volatile int ChunkGeneratorTest = 0;
@@ -157,6 +159,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         Unsafe.unsafe.putObject(this, initId.getLong("generatorTasks"), new CopyOnWriteArrayList<>());
         Unsafe.unsafe.putObject(this, initId.getLong("locks"), new ArrayList<>(256));
         Unsafe.unsafe.putObject(this, initId.getLong("threadBlacklist"), new ConcurrentHashMap<>());
+        Unsafe.unsafe.putObject(this, initId.getLong("waitList"), new ConcurrentHashMap<>());
         //Unsafe.unsafe.putObject(this, initId.getLong("chunkTask"), new ConcurrentHashMap<>());
         Unsafe.unsafe.putObject(this, initId.getLong("generatorThread1"), new CopyOnWriteArrayList<>());
         Unsafe.unsafe.putObject(this, initId.getLong("condition4"), lock4.newCondition());
@@ -185,6 +188,27 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         //    return chunkAccessCompletableFuture.join();
         //}
         return getChunk(chunkX, chunkZ, requiredStatus, load);
+    }
+
+    //根waitGetChunk的区别是等待getChunk结束和tick运行
+    @Nullable
+    public ChunkAccess lockGetChunk(int chunkX, int chunkZ, ChunkStatus requiredStatus, boolean load) {
+        AsyncWait<ChunkAccess> wait = new AsyncWait<>(() -> {
+            //return this.getChunk(chunkX, chunkZ, requiredStatus, load);
+            return this.KMT$basePush(chunkX, chunkZ, requiredStatus, load, null, null);
+        });
+        KMT$addTickRun(wait);
+        wait.waitTask();
+        return wait.getRet();
+    }
+    //就是正常的不多线程非main线程执行的效果lockGetChunk是修复锁过多问题的
+    @Nullable
+    public ChunkAccess joinLockGetChunk(int chunkX, int chunkZ, ChunkStatus requiredStatus, boolean load) {
+        CompletableFuture<ChunkAccess> chunkAccessCompletableFuture = CompletableFuture.supplyAsync(() -> {
+            //return this.getChunk(chunkX, chunkZ, requiredStatus, load);
+            return this.getChunk(chunkX, chunkZ, requiredStatus, load);
+        }, tasks::add);
+        return chunkAccessCompletableFuture.join();
     }
     /*@Nullable
     public ChunkAccess LevelGetChunk(int chunkX, int chunkZ, ChunkStatus requiredStatus, boolean load) {
@@ -291,6 +315,9 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         }
 
         Thread thisThread = Thread.currentThread();
+        if (waitList.containsValue(thisThread)){
+            return joinLockGetChunk(chunkX, chunkZ, requiredStatus, load);
+        }
         if (thisThread == generatorAllThread){
             return KMT$basePush(chunkX, chunkZ, requiredStatus, load, null, null);
         }
@@ -616,6 +643,26 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         }
         return -1;
     }
+    @Override
+    public void pushWaitThread(long id) {
+        Thread value = Thread.currentThread();
+        if (waitList.containsKey(id)) throw new IllegalStateException("Thread " + id + " is already blacklisted");
+        //if (value != generatorThread1) {
+        if (!generatorThread1.contains(value)) {
+            waitList.put(id, value);
+        }
+    }
+
+    @Override
+    public long pushWaitThread() {
+        Thread thread = Thread.currentThread();
+        long l = thread.getId();
+        if (generatorThread1.contains(thread) || waitList.containsKey(l)) {
+            waitList.put(l, thread);
+            return l;
+        }
+        return -1;
+    }
 
     @Override
     public void pop(long id) {
@@ -628,16 +675,26 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     }
 
     @Override
+    public void popWait(long id) {
+        waitList.remove(id);
+    }
+
+    @Override
+    public void popWait() {
+        waitList.remove(Thread.currentThread().getId());
+    }
+
+    @Override
     public void execTasks() {
         synchronized (lock2){
             isCallGeneratorTick = true;
             generatorTasks.forEach(Runnable::run);
             generatorTasks.clear();
             isCallGeneratorTick = false;
-            synchronized (tasksRunLock) {
-                tasks.forEach(Runnable::run);
-                tasks.clear();
-            }
+            //synchronized (tasksRunLock) {
+            //    tasks.forEach(Runnable::run);
+            //    tasks.clear();
+            //}
         }
     }
 
