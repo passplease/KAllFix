@@ -6,6 +6,7 @@ import n1luik.K_multi_threading.core.util.Unsafe;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 public class VoidAsyncWait implements Runnable{
@@ -51,6 +52,12 @@ public class VoidAsyncWait implements Runnable{
     public VoidAsyncWait(Lock lock, Condition condition, Runnable task) {
         this.lock = lock;
         this.condition = condition;
+        this.task = task;
+    }
+
+    public VoidAsyncWait(Runnable task) {
+        this.lock = new ReentrantLock();
+        this.condition = lock.newCondition();
         this.task = task;
     }
 

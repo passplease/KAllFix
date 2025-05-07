@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
 
@@ -29,13 +30,18 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
     @Getter
     private Thread callThread;
     @Unique
-    @Getter
-    private boolean isCall;
+    //@Getter
+    private final AtomicInteger isCall = new AtomicInteger();
     @Unique
     @Setter
     private boolean m2 = K_multi_threading$StartMode2;
     @Unique
     private int multiThreadingSize = 0;
+
+    @Override
+    public boolean isCall() {
+        return isCall.get() != 0;
+    }
 
     @Override
     public void k_multi_threading$pushThread() {
@@ -51,10 +57,12 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
             LockSupport.unpark(this.getRunningThread());
         }
     }
+
     @Override
     public boolean k_multi_threading$notCallPollTask() {
         return super.pollTask();
     }
+
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void init(ServerChunkCache p_8493_, Level p_8494_, CallbackInfo ci) {
@@ -111,8 +119,8 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
     //}
 
     @Override
-    public synchronized void managedBlock(BooleanSupplier p_18702_) {
-        isCall = true;
+    public void managedBlock(BooleanSupplier p_18702_) {
+        isCall.getAndAdd(1);
         callThread = Thread.currentThread();
         super.managedBlock(p_18702_);
         //{
@@ -129,7 +137,7 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
         //        --this.blockingCount;
         //    }
         //}
-        isCall = false;
+        isCall.getAndAdd(-1);
     }
 
     /*

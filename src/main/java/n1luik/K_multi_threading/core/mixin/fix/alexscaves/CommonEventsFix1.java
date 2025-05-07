@@ -4,6 +4,7 @@ import com.github.alexmodguy.alexscaves.server.event.CommonEvents;
 import n1luik.K_multi_threading.core.Imixin.IWorldChunkLockedConfig;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -11,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(CommonEvents.class)
 public class CommonEventsFix1 {
 
+    @Unique
     boolean K_multi_threading$isChunkLocked;
 
     @Inject(method = "onEntityJoinWorld", at = @At("HEAD"), remap = false)

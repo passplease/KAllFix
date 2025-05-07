@@ -116,6 +116,8 @@ public class ForgeAsm implements ITransformationService{
                 //new SyncImplGetterChunk_ASM(),
                 new IndependenceAddSynchronized_Asm(),
                 new AddSynchronized_Asm(),
+                new SafeAddSynchronized_Asm(),
+                new SafeIndependenceAddSynchronized_Asm(),
                 //new MekanismStructureSynchronized_Asm(),//jvm检测过不了
                 //new MekanismVoxelPlaneSynchronized_Asm(),
                 new PathingCalculation_Asm(),

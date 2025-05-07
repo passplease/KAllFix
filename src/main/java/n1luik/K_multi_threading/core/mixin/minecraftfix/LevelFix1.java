@@ -3,6 +3,7 @@ package n1luik.K_multi_threading.core.mixin.minecraftfix;
 import n1luik.KAllFix.util.VoidAsyncWait;
 import n1luik.K_multi_threading.core.base.ParaServerChunkProvider;
 import n1luik.K_multi_threading.core.util.concurrent.LockArrayList;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
@@ -16,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +48,16 @@ public abstract class LevelFix1 {
     @Redirect(method = "getBlockEntity",at = @At(value = "INVOKE",target = "Ljava/lang/Thread;currentThread()Ljava/lang/Thread;"))
     public Thread fix1(){
         return thread;
+    }
+    @Inject(method = "getBlockEntity",at = @At("HEAD"), cancellable = true)
+    public void fix11(BlockPos p_46716_, CallbackInfoReturnable<BlockEntity> cir){
+        if (((Object)this) instanceof ServerLevel serverLevel){
+            if (serverLevel.getChunkSource() instanceof ParaServerChunkProvider paraServerChunkProvider) {
+                if (paraServerChunkProvider.lightChunk == Thread.currentThread()) {
+                    cir.setReturnValue(null);
+                }
+            }
+        }
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))
@@ -87,14 +99,14 @@ public abstract class LevelFix1 {
 
             if (((Object)this) instanceof ServerLevel serverLevel) {
                 if (serverLevel.getChunkSource() instanceof ParaServerChunkProvider p) {
-                    if (p.getChunkGeneratorTest() < 1) {
-                        //K_multi_threading$lock_FreshBlockEntities.lock();
-                        //K_multi_threading$isLock = true;
-                        instance.forEach(consumer);
-                    }else {
+                    if (p.isGeneratorWait()) {
                         VoidAsyncWait task = new VoidAsyncWait(K_multi_threading$lock, K_multi_threading$condition, ()->instance.forEach(consumer));
                         p.mainThreadProcessor.tell(task);
                         task.waitTask();
+                    }else {
+                        //K_multi_threading$lock_FreshBlockEntities.lock();
+                        //K_multi_threading$isLock = true;
+                        instance.forEach(consumer);
                     }
                 }else {
                     //K_multi_threading$lock_FreshBlockEntities.lock();
@@ -116,7 +128,7 @@ public abstract class LevelFix1 {
     public void fix6(CallbackInfo ci){
         //if (((Object)this) instanceof ServerLevel serverLevel) {
         //    if (serverLevel.getChunkSource() instanceof ParaServerChunkProvider p) {
-        //        if (p.getChunkGeneratorTest() < 1) {
+        //        if (!p.isGeneratorWait()) {
         //            K_multi_threading$lock_FreshBlockEntities.lock();
         //            K_multi_threading$isLock = true;
         //        }

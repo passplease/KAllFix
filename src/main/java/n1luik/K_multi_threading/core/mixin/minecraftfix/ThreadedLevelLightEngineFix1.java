@@ -1,6 +1,9 @@
 package n1luik.K_multi_threading.core.mixin.minecraftfix;
 
+import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import n1luik.KAllFix.util.AsyncWait;
+import n1luik.K_multi_threading.core.Base;
 import n1luik.K_multi_threading.core.base.ParaServerChunkProvider;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ThreadedLevelLightEngine;
@@ -17,8 +20,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -43,13 +46,25 @@ public abstract class ThreadedLevelLightEngineFix1 extends LevelLightEngine {
 
     @Redirect(method = "runUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/lighting/LevelLightEngine;runLightUpdates()I", opcode = Opcodes.INVOKESPECIAL))
     public int fix1(LevelLightEngine instance){
-        if (chunkMap.level.getChunkSource() instanceof ParaServerChunkProvider paraServerChunkProvider && paraServerChunkProvider.getChunkGeneratorTest() > 0) {
+        if (chunkMap.level.getChunkSource() instanceof ParaServerChunkProvider paraServerChunkProvider && paraServerChunkProvider.isGeneratorWait()) {
             AsyncWait<Integer> integerAsyncWait = new AsyncWait<>(K_multi_threading$lock, K_multi_threading$condition, super::runLightUpdates);
-            paraServerChunkProvider.mainThreadProcessor.tell(integerAsyncWait);
-            integerAsyncWait.waitTask();
+            Base.getEx().execute(integerAsyncWait);
+            integerAsyncWait.waitTask(
+            //        ()->{
+            //
+            //}
+            );
             return integerAsyncWait.getReturn_();
         }else {
             return super.runLightUpdates();
         }
     }
+    //@Inject(method = "runUpdate", at = @At(value = "INVOKE", target = "Ljava/lang/Runnable;run()V", ordinal = 0), locals = LocalCapture.CAPTURE_FAILHARD)
+    //public void fix2(CallbackInfo ci, int i, ObjectListIterator objectlistiterator, int j, Pair pair){
+    //    objectlistiterator.remove();
+    //}
+    //@Redirect(method = "runUpdate", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/objects/ObjectListIterator;back(I)I"))
+    //public int fix3(ObjectListIterator instance, int i){
+    //    return i;
+    //}
 }

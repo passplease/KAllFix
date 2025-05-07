@@ -121,4 +121,24 @@ public class AsyncWait<T> implements Runnable{
             status = 4;
         }
     }
+    public void waitTask(Runnable wait){
+        if (status == 4) throw new RuntimeException("任务已经完成");
+        lock.lock();
+        try {
+            synchronized (this){
+                if (getStatus() == 0) {
+                    setStatus_(1);
+                }
+            }
+            while (getStatus() < 2) {
+                condition.await(10, TimeUnit.MILLISECONDS); // 带超时的等待
+                wait.run();
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            lock.unlock();
+            status = 4;
+        }
+    }
 }

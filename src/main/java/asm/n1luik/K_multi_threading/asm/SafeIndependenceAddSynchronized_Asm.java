@@ -79,90 +79,42 @@ public class SafeIndependenceAddSynchronized_Asm implements ITransformer<ClassNo
                                 if ((input.access & Opcodes.ACC_INTERFACE) == 0) {
                                     log.info("add {} synchronized", Arrays.toString(strings));
 
-                                    Label rstart = new Label();
-                                    Label rend = new Label();
-                                    method.visitTryCatchBlock(rstart, rend, rend, null);
                                     InsnList start;
-                                    InsnList end = null;
+                                    InsnList end;
 
-                                    if (!input.name.contains("$")) {
-                                        if ((method.access & negfilter) == 0 && !method.name.equals("<init>")) {
-                                            start = new InsnList();
-                                            start.add(new VarInsnNode(Opcodes.ALOAD, 0));
-                                            start.add(new FieldInsnNode(Opcodes.GETFIELD, input.name, name, "Ljava/lang/Object;"));
-                                            start.add(new InsnNode(Opcodes.MONITORENTER));
-                                            start.add(new LabelNode(rstart));
-                                            end = new InsnList();
-                                            end.add(new VarInsnNode(Opcodes.ALOAD, 0));
-                                            end.add(new FieldInsnNode(Opcodes.GETFIELD, input.name, name, "Ljava/lang/Object;"));
-                                            end.add(new InsnNode(Opcodes.MONITOREXIT));
-                                            InsnList il = method.instructions;
-                                            AbstractInsnNode ain = il.getFirst();
-                                            while (ain != null) {
-                                                if (ain.getOpcode() == Opcodes.RETURN || ain.getOpcode() == Opcodes.ARETURN
-                                                        || ain.getOpcode() == Opcodes.DRETURN || ain.getOpcode() == Opcodes.FRETURN
-                                                        || ain.getOpcode() == Opcodes.IRETURN || ain.getOpcode() == Opcodes.LRETURN) {
-                                                    il.insertBefore(ain, end);
-                                                    end = new InsnList();
-                                                    end.add(new VarInsnNode(Opcodes.ALOAD, 0));
-                                                    end.add(new FieldInsnNode(Opcodes.GETFIELD, input.name, name, "Ljava/lang/Object;"));
-                                                    end.add(new InsnNode(Opcodes.MONITOREXIT));
-                                                }
-                                                ain = ain.getNext();
+                                    if ((method.access & negfilter) == 0 && !method.name.equals("<init>")) {
+                                        Label rstart = new Label();
+                                        Label rend = new Label();
+                                        method.visitTryCatchBlock(rstart, rend, rend, null);
+                                        start = new InsnList();
+                                        start.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                                        start.add(new FieldInsnNode(Opcodes.GETFIELD, input.name, name, "Ljava/lang/Object;"));
+                                        start.add(new InsnNode(Opcodes.MONITORENTER));
+                                        start.add((LabelNode) rstart.info);
+                                        end = new InsnList();
+                                        end.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                                        end.add(new FieldInsnNode(Opcodes.GETFIELD, input.name, name, "Ljava/lang/Object;"));
+                                        end.add(new InsnNode(Opcodes.MONITOREXIT));
+                                        InsnList il = method.instructions;
+                                        AbstractInsnNode ain = il.getFirst();
+                                        while (ain != null) {
+                                            if (ain.getOpcode() == Opcodes.RETURN || ain.getOpcode() == Opcodes.ARETURN
+                                                    || ain.getOpcode() == Opcodes.DRETURN || ain.getOpcode() == Opcodes.FRETURN
+                                                    || ain.getOpcode() == Opcodes.IRETURN || ain.getOpcode() == Opcodes.LRETURN) {
+                                                il.insertBefore(ain, end);
+                                                end = new InsnList();
+                                                end.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                                                end.add(new FieldInsnNode(Opcodes.GETFIELD, input.name, name, "Ljava/lang/Object;"));
+                                                end.add(new InsnNode(Opcodes.MONITOREXIT));
                                             }
-                                            method.visitTryCatchBlock(rstart, rend, rend, null);
-                                            il.insertBefore(il.getFirst(), start);
-                                            method.maxStack++;
+                                            ain = ain.getNext();
                                         }
-                                    } else {
-                                        String parent = null;
-                                        String map = null;
-                                        for (FieldNode fn : input.fields) {
-                                            if (fn.name.equals("this$0") || ForgeAsm.srg$Forge$_map.mapField(input.name + "." + fn.name)[1].equals("this$0")) {
-
-                                                map = fn.name;
-                                                parent = fn.desc;
-                                            }
-                                        }
-                                        if (parent == null || map == null) {
-                                            method.access |= Opcodes.ACC_SYNCHRONIZED;
-                                            log.error("Inner class faliure; parent not found " + (parent == null ? "null" : parent) + " " + (map == null ? "null" : map) + " " + Arrays.toString(strings));
-                                            return input;
-                                        }
-                                        if ((method.access & negfilter) == 0 && !method.name.equals("<init>")) {
-                                            start = new InsnList();
-                                            start.add(new VarInsnNode(Opcodes.ALOAD, 0));
-                                            start.add(new FieldInsnNode(Opcodes.GETFIELD, input.name, map, parent));
-                                            start.add(new InsnNode(Opcodes.MONITORENTER));
-                                            start.add(new LabelNode(rstart));
-                                            end = new InsnList();
-                                            end.add(new VarInsnNode(Opcodes.ALOAD, 0));
-                                            end.add(new FieldInsnNode(Opcodes.GETFIELD, input.name, map, parent));
-                                            end.add(new InsnNode(Opcodes.MONITOREXIT));
-                                            InsnList il = method.instructions;
-                                            AbstractInsnNode ain = il.getFirst();
-                                            while (ain != null) {
-                                                if (ain.getOpcode() == Opcodes.RETURN || ain.getOpcode() == Opcodes.ARETURN
-                                                        || ain.getOpcode() == Opcodes.DRETURN || ain.getOpcode() == Opcodes.FRETURN
-                                                        || ain.getOpcode() == Opcodes.IRETURN || ain.getOpcode() == Opcodes.LRETURN) {
-                                                    il.insertBefore(ain, end);
-                                                    end = new InsnList();
-                                                    end.add(new VarInsnNode(Opcodes.ALOAD, 0));
-                                                    end.add(new FieldInsnNode(Opcodes.GETFIELD, input.name, map, parent));
-                                                    end.add(new InsnNode(Opcodes.MONITOREXIT));
-                                                }
-                                                ain = ain.getNext();
-                                            }
-                                            method.visitTryCatchBlock(rstart, rend, rend, null);
-                                            il.insertBefore(il.getFirst(), start);
-                                        }
-                                        log.info("sync_fu " + input.name + " InnerClass Transformer Complete");
-                                    }
-                                    if (end != null) {
+                                        il.insertBefore(il.getFirst(), start);
                                         method.visitLabel(rend);
                                         method.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[]{"java/lang/Throwable"});
                                         method.instructions.add(end);
-                                        method.visitInsn(Opcodes.MONITOREXIT);
+                                        method.visitInsn(Opcodes.ATHROW);
+                                        method.maxStack++;
                                     }
 
                                 } else {
