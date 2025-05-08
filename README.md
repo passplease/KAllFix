@@ -140,6 +140,8 @@
 - NuclearCraft: Neoteric的裂变反应堆重启有小概率会导致冷却计算错误
 - 1.0.3.3之后n1luik.K_multi_threading.core.base.ParaServerChunkProvider和n1luik.KAllFix.util.TaskRun还有一部分区块生成的代码多线程必须c2要不然性能很差（java会自动c2但是需要运行一会）
 - KAF-PlainTextSearchTreeMultiThreading没有使用JProfiler测试明确可以生效
+- 我输入/polymorph conflicts之后无没有任何输出无法测试InjectDatapack功能
+- 不兼容[火花]spark他无法显示几百上千个线程
 
 ## 故障纪录
 - 没有地狱，问题是因为测试模组导致数据包损坏，解决方法：

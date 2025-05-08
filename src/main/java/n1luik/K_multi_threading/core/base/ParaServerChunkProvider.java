@@ -23,6 +23,7 @@ import lombok.Getter;
 import n1luik.KAllFix.util.AsyncWait;
 import n1luik.KAllFix.util.TaskRun;
 import n1luik.K_multi_threading.core.Base;
+import n1luik.K_multi_threading.core.Imixin.IMainThreadExecutor;
 import n1luik.K_multi_threading.core.Imixin.IWorldChunkLockedConfig;
 import n1luik.K_multi_threading.core.util.*;
 import n1luik.K_multi_threading.core.util.concurrent.FixNullConcurrentHashMap;
@@ -517,6 +518,27 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     }
     public void KMT$addRun(Runnable runnable){
         tasks.add(runnable);
+    }
+    /**
+     * 用于兼容在生成区块时运行任务
+     * */
+    public void KMT$genTestTickRun(Runnable runnable){
+        if (mainThreadProcessor instanceof IMainThreadExecutor iMainThreadExecutor){
+            boolean b;
+            synchronized (iMainThreadExecutor.getLockCall()) {
+                if (iMainThreadExecutor.isCall()) {
+                    mainThreadProcessor.execute(runnable);
+                    b = false;
+                }else {
+                    b = true;
+                }
+            }
+            if (b) {
+                runnable.run();
+            }
+        }else {
+            tasks.add(runnable);
+        }
     }
 
     @Override

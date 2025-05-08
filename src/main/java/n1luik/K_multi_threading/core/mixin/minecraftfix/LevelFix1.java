@@ -101,7 +101,7 @@ public abstract class LevelFix1 {
                 if (serverLevel.getChunkSource() instanceof ParaServerChunkProvider p) {
                     if (p.isGeneratorWait()) {
                         VoidAsyncWait task = new VoidAsyncWait(K_multi_threading$lock, K_multi_threading$condition, ()->instance.forEach(consumer));
-                        p.mainThreadProcessor.tell(task);
+                        p.KMT$genTestTickRun(task);
                         task.waitTask();
                     }else {
                         //K_multi_threading$lock_FreshBlockEntities.lock();

@@ -7,4 +7,5 @@ public interface IMainThreadExecutor {
     void setM2(boolean m2);
     void k_multi_threading$setMultiThreading(int size);
     Thread getCallThread();
+    Object getLockCall();
 }

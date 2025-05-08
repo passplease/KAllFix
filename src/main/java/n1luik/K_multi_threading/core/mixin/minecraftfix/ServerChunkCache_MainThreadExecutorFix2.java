@@ -30,8 +30,12 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
     @Getter
     private Thread callThread;
     @Unique
+    @Getter
+    public final Object lockCall = new Object();
+    @Unique
     //@Getter
-    private final AtomicInteger isCall = new AtomicInteger();
+    //private final AtomicInteger isCall = new AtomicInteger();
+    private volatile int isCall = 0;
     @Unique
     @Setter
     private boolean m2 = K_multi_threading$StartMode2;
@@ -40,7 +44,7 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
 
     @Override
     public boolean isCall() {
-        return isCall.get() != 0;
+        return isCall != 0;//return isCall.get() != 0;//
     }
 
     @Override
@@ -88,6 +92,13 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
     //    p_18706_.run();
     //}
 
+
+    //@Override
+    //protected void runAllTasks() {
+    //    while(this.K_multi_threading$pollTask_2()) {
+    //    }
+    //}
+
     /**
      * @author
      * @reason
@@ -120,7 +131,10 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
 
     @Override
     public void managedBlock(BooleanSupplier p_18702_) {
-        isCall.getAndAdd(1);
+        synchronized (lockCall) {
+            isCall++;
+        }
+        //isCall.getAndAdd(1);
         callThread = Thread.currentThread();
         super.managedBlock(p_18702_);
         //{
@@ -137,7 +151,16 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
         //        --this.blockingCount;
         //    }
         //}
-        isCall.getAndAdd(-1);
+        //修复LevelFix1的代码有概率在处理地形生成后运行任务导致无法运行
+        //isCall.getAndAdd(-1);
+        synchronized (lockCall){
+            isCall--;
+        }
+        if (multiThreadingSize > 0) {
+            K_multi_threading$pollTask_2();
+        }else{
+            runAllTasks();
+        }
     }
 
     /*
@@ -158,6 +181,10 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
     */
     @Redirect(method = "pollTask", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/thread/BlockableEventLoop;pollTask()Z"))
     public boolean pollTask_2(BlockableEventLoop<Runnable> eventLoop) {
+        return K_multi_threading$pollTask_2();
+    }
+    @Unique
+    public boolean K_multi_threading$pollTask_2() {
         if (multiThreadingSize > 0) {
             int i = 0;
             Runnable[] runnables = new Runnable[multiThreadingSize];

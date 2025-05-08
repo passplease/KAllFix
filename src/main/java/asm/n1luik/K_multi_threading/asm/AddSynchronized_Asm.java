@@ -20,6 +20,8 @@ public class AddSynchronized_Asm implements ITransformer<ClassNode> {
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.getEntities(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.getEntities(Lnet/minecraft/world/level/entity/EntityTypeTest;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;Ljava/util/List;I)V"),
             ////////
+            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/entity/PersistentEntitySectionManager.updateChunkStatus(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/world/level/entity/Visibility;)V"),
+            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/entity/PersistentEntitySectionManager.processUnloads()V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/behavior/LongJumpToRandomPos.getJumpCandidate(Lnet/minecraft/server/level/ServerLevel;)Ljava/util/Optional;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/behavior/LongJumpToRandomPos.pickCandidate(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/Mob;J)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/behavior/LongJumpToRandomPos.start(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/Mob;J)V"),
