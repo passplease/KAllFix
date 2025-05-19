@@ -1,6 +1,9 @@
 package n1luik.K_multi_threading.core.util.concurrent;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -2389,6 +2392,28 @@ public class FastUtilHackUtil {
 
 	public static  ObjectSortedSet concurrentObjectSet() {
 		return new WrappingObjectSortedSet(new CopyOnWriteArraySet());
+	}
+
+	public static <E> CopyOnWriteArrayList<E> concurrentList(Collection<? extends E> v) {
+		return new CopyOnWriteArrayList(v);
+	}
+
+	public static <K, V> ConcurrentHashMap<K, V> concurrentMap(Map<? extends K, ? extends V> v) {
+		return new ConcurrentHashMap(v);
+	}
+
+	public static <K> ConcurrentHashMap.KeySetView<K,Boolean> concurrentSet(Set<? extends K> v) {
+		ConcurrentHashMap.KeySetView<K, Boolean> objects = ConcurrentHashMap.newKeySet();
+		objects.addAll(v);
+		return objects;
+	}
+
+	public static <V> ConcurrentInt2ObjectOpenHashMap<V> concurrentInt2ObjectMap(Int2ObjectMap<? extends V> v) {
+		return new ConcurrentInt2ObjectOpenHashMap<>(v);
+	}
+
+	public static <V> ConcurrentLinkedQueue<V> concurrentQueue(Collection<? extends V> v) {
+		return new ConcurrentLinkedQueue<>(v);
 	}
 
 

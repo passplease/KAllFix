@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.Supplier;
 
 @Mixin(value = Level.class, priority = Integer.MAX_VALUE)
+@Deprecated
 public class LevelFix2 {
     @Mutable
     @Shadow @Final public NeighborUpdater neighborUpdater;

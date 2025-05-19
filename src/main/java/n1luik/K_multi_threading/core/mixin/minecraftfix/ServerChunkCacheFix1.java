@@ -3,6 +3,7 @@ package n1luik.K_multi_threading.core.mixin.minecraftfix;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
 import n1luik.K_multi_threading.core.Imixin.IWorldChunkLockedConfig;
+import n1luik.K_multi_threading.core.util.Unsafe;
 import net.minecraft.server.level.*;
 import net.minecraft.server.level.progress.ChunkProgressListener;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -73,6 +74,11 @@ public abstract class ServerChunkCacheFix1 {
     @Inject(method = "<init>", at = @At("RETURN"))
     public void init(ServerLevel p_214982_, LevelStorageSource.LevelStorageAccess p_214983_, DataFixer p_214984_, StructureTemplateManager p_214985_, Executor p_214986_, ChunkGenerator p_214987_, int p_214988_, int p_214989_, boolean p_214990_, ChunkProgressListener p_214991_, ChunkStatusUpdateListener p_214992_, Supplier p_214993_, CallbackInfo ci){
         //iMainThreadExecutor = (IMainThreadExecutor) mainThreadProcessor;
+        //try {
+        //    Unsafe.setfinal(ServerLevel.class.getDeclaredField("f_8547_"), p_214982_, this);
+        //} catch (NoSuchFieldException e) {
+        //    throw new RuntimeException(e);
+        //}
     }
 
     @Inject(method = "runDistanceManagerUpdates", at = @At(value = "INVOKE",target = "Lnet/minecraft/server/level/ChunkMap;promoteChunkMap()Z"))

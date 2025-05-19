@@ -53,8 +53,8 @@ public abstract class ServerLevelImpl implements GetBlockTickSync {
 
     @Shadow public abstract <T extends Entity> List<? extends T> getEntities(EntityTypeTest<Entity, T> p_143281_, Predicate<? super T> p_143282_);
 
-    @Mutable
-    @Shadow @Final private ServerChunkCache chunkSource;
+    //@Mutable
+    //@Shadow @Final private ServerChunkCache chunkSource;
     private Sync<GetterSyncNode<Void, ChunkPos, ChunkAccess>> sync;
     //static volatile int min;//防止同时访问爆炸
 
@@ -64,18 +64,18 @@ public abstract class ServerLevelImpl implements GetBlockTickSync {
     //    return new ParaServerChunkProvider(p_214982_, p_214983_, p_214984_, p_214985_, p_214986_, p_214987_, p_214988_, p_214989_, p_214990_, p_214991_, p_214992_, p_214993_);
     //}
 
-    @Inject(method = "<init>", at = @At("RETURN"))
-    public void initParaServerChunkProvider(MinecraftServer p_214999_, Executor p_215000_, LevelStorageSource.LevelStorageAccess p_215001_, ServerLevelData p_215002_, ResourceKey p_215003_, LevelStem p_215004_, ChunkProgressListener p_215005_, boolean p_215006_, long p_215007_, List p_215008_, boolean p_215009_, RandomSequences p_288977_, CallbackInfo ci){
-        ServerChunkCache chunkSource1 = chunkSource;
-        ParaServerChunkProvider clone;
-        try {
-            clone = ParaServerChunkProvider.UnsafeClone.clone(chunkSource1);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        }
-        chunkSource = clone;
-        clone.UnsafeInit();
-    }
+    //@Redirect(method = "<init>", at = @At("RETURN"))
+    //public void initParaServerChunkProvider(MinecraftServer p_214999_, Executor p_215000_, LevelStorageSource.LevelStorageAccess p_215001_, ServerLevelData p_215002_, ResourceKey p_215003_, LevelStem p_215004_, ChunkProgressListener p_215005_, boolean p_215006_, long p_215007_, List p_215008_, boolean p_215009_, RandomSequences p_288977_, CallbackInfo ci){
+    //    ServerChunkCache chunkSource1 = chunkSource;
+    //    ParaServerChunkProvider clone;
+    //    try {
+    //        clone = ParaServerChunkProvider.UnsafeClone.clone(chunkSource1);
+    //    } catch (InstantiationException e) {
+    //        throw new RuntimeException(e);
+    //    }
+    //    chunkSource = clone;
+    //    clone.UnsafeInit();
+    //}
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void init(MinecraftServer p_214999_, Executor p_215000_, LevelStorageSource.LevelStorageAccess p_215001_, ServerLevelData p_215002_, ResourceKey p_215003_, LevelStem p_215004_, ChunkProgressListener p_215005_, boolean p_215006_, long p_215007_, List p_215008_, boolean p_215009_, RandomSequences p_288977_, CallbackInfo ci){

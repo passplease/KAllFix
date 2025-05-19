@@ -17,6 +17,7 @@ public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> 
     public static final List<String[]> stringsList = new ArrayList<>(List.<String[]>of(
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.startTickingChunk(Lnet/minecraft/world/level/chunk/LevelChunk;)V")
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.startTickingChunk(Lnet/minecraft/world/level/chunk/LevelChunk;)V"),
+            ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkHolder.broadcastChanges(Lnet/minecraft/world/level/chunk/LevelChunk;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.addFreshBlockEntities(Ljava/util/Collection;)V")
     ));
 

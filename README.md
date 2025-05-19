@@ -30,6 +30,7 @@
 
 有一些功能会下载一些库，如果下载失败可以手动放到./lib：
 - Zstd-jni 1.5.7-2 下载地址：https://repo1.maven.org/maven2/com/github/luben/zstd-jni/1.5.7-2/
+- 在启用调试模式的时候需要[火花]spark 任意版本（没有测试过低版本但是最好不要低于1.10.53要不然可能不能生成保存成火花的格式）放入mods
   
 ##  功能
 - 修复Biolith兼容问题(范围包括重新生成MultiNoiseBiomeSource的mod，例如所有的使用MCreator的所有有这个操作的mod)
@@ -61,6 +62,7 @@
         - RemoveRemoveErrorSize 让服务器不会纪录崩溃的次数，无限拦截
 
 ##  可开启
+- -DKMT-Debug=true 启用多线程同步
 - -DIndependencePlayer=true 开启玩家异步，这玩意大概率是负优化
 - -DKAF-ServerGamePacketListenerImplMixin2=true 移除服务器移动距离的安全检查，这个可能跟一个模组不兼容会让玩家进不去服务器
 - -DKAF-gtceu.MedicalConditionTrackerMixin=true 禁止添加gtm的辐射
@@ -141,7 +143,7 @@
 - 1.0.3.3之后n1luik.K_multi_threading.core.base.ParaServerChunkProvider和n1luik.KAllFix.util.TaskRun还有一部分区块生成的代码多线程必须c2要不然性能很差（java会自动c2但是需要运行一会）
 - KAF-PlainTextSearchTreeMultiThreading没有使用JProfiler测试明确可以生效
 - 我输入/polymorph conflicts之后无没有任何输出无法测试InjectDatapack功能
-- 不兼容[火花]spark他无法显示几百上千个线程
+- 无法使用[火花]spark他无法显示几百上千个线程，但是可以作为补充获取自带调试无法获取的线程，自带的只能对多线程的一部分生效
 
 ## 故障纪录
 - 没有地狱，问题是因为测试模组导致数据包损坏，解决方法：

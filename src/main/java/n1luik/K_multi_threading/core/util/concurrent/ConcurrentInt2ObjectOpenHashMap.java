@@ -1,9 +1,6 @@
 package n1luik.K_multi_threading.core.util.concurrent;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
-import it.unimi.dsi.fastutil.ints.IntSortedSet;
+import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.ObjectCollection;
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -16,6 +13,10 @@ public class ConcurrentInt2ObjectOpenHashMap<V> extends Int2ObjectOpenHashMap<V>
 
     public ConcurrentInt2ObjectOpenHashMap() {
         backing = new ConcurrentHashMap<Integer, V>();
+    }
+
+    public ConcurrentInt2ObjectOpenHashMap(Int2ObjectMap<? extends V> v) {
+        backing = new ConcurrentHashMap<Integer, V>(v);
     }
 
     @Override

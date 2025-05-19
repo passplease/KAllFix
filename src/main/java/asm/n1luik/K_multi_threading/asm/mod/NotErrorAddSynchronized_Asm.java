@@ -104,6 +104,12 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_183574_()I"),
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_183237_(JLjava/util/function/Function;)Lnet/minecraft/nbt/ListTag;"),
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_193171_(J)V"),
+            //Mowzie的生物
+            ForgeAsm.minecraft_map.mapMethod("com/bobmowzie/mowziesmobs/server/capability/AbilityCapability$AbilityCapabilityImp.instanceAbilities(Lnet/minecraft/world/entity/LivingEntity;)V"),
+            ForgeAsm.minecraft_map.mapMethod("com/bobmowzie/mowziesmobs/server/capability/AbilityCapability$AbilityCapabilityImp.tick(Lnet/minecraft/world/entity/LivingEntity;)V"),
+            ForgeAsm.minecraft_map.mapMethod("com/bobmowzie/mowziesmobs/server/capability/AbilityCapability$AbilityCapabilityImp.activateAbility(Lnet/minecraft/world/entity/LivingEntity;Lcom/bobmowzie/mowziesmobs/server/ability/AbilityType;)V"),
+            ForgeAsm.minecraft_map.mapMethod("com/bobmowzie/mowziesmobs/server/capability/AbilityCapability$AbilityCapabilityImp.getAbilityFromType(Lcom/bobmowzie/mowziesmobs/server/ability/AbilityType;)Lcom/bobmowzie/mowziesmobs/server/ability/Ability;"),
+            ForgeAsm.minecraft_map.mapMethod("com/bobmowzie/mowziesmobs/server/capability/AbilityCapability$AbilityCapabilityImp.setActiveAbility(Lcom/bobmowzie/mowziesmobs/server/ability/Ability;)V"),
             //ae2
             //ForgeAsm.minecraft_map.mapMethod("appeng/me/service/PathingService.onServerEndTick()V"),
             //ForgeAsm.minecraft_map.mapMethod("appeng/me/service/PathingService.repath()V"),

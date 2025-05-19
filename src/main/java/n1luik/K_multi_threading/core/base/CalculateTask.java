@@ -28,7 +28,7 @@ public class CalculateTask extends RecursiveTask<Object> {
     protected final int layer;
     protected volatile int size;
     protected volatile boolean stop = false;
-    public boolean notCallMode = true;
+    //public boolean notCallMode = true;
     public final CalculateTask root;//用于实现等待
     @Nullable
     public Thread wait;//用于实现等待
@@ -204,7 +204,7 @@ public class CalculateTask extends RecursiveTask<Object> {
                     throw e;
                 }
             } else {
-                if (notCallMode) {
+                //if (notCallMode) {
                     int rem = (end - start);
                     boolean redundancy = rem % min != 0;
                     int middle_i = rem / min;
@@ -242,17 +242,17 @@ public class CalculateTask extends RecursiveTask<Object> {
                     //while (size > 0) Thread.onSpinWait();
 
 
-                }else {
-                    int middle = (start + end) / 2;
-                    CalculateTask firstTask = new CalculateTask(name, start, middle, min, run/*, ret*/, this.layer,root);
-                    CalculateTask secondTask = new CalculateTask(name, middle, end, min, run/*, ret*/, this.layer,root);
-                    //invokeAll(firstTask,secondTask);
-                    secondTask.fork();
-                    firstTask.compute();
-                    secondTask.join();
-                    if (secondTask.throwable != null) root.throwable = secondTask.throwable;
-                    if (firstTask.throwable != null) root.throwable = firstTask.throwable;
-                }
+                //}else {
+                //    int middle = (start + end) / 2;
+                //    CalculateTask firstTask = new CalculateTask(name, start, middle, min, run/*, ret*/, this.layer,root);
+                //    CalculateTask secondTask = new CalculateTask(name, middle, end, min, run/*, ret*/, this.layer,root);
+                //    //invokeAll(firstTask,secondTask);
+                //    secondTask.fork();
+                //    firstTask.compute();
+                //    secondTask.join();
+                //    if (secondTask.throwable != null) root.throwable = secondTask.throwable;
+                //    if (firstTask.throwable != null) root.throwable = firstTask.throwable;
+                //}
 
             }
         }finally {
@@ -278,21 +278,21 @@ public class CalculateTask extends RecursiveTask<Object> {
 
     public class CallNode extends RecursiveTask<Object>{
 
-        protected int pos = -1;
-        protected int min = 0;
+        protected final int pos;// = -1;
+        protected final int min;// = 0;
         protected boolean stop = false;
 
-        public CallNode(){
-        }
+        //public CallNode(){
+        //}
 
-        public CallNode(int pos,int min){
+        public CallNode(int pos, int min){
             this.pos = pos;
             this.min = min;
         }
 
-        public CallNode(int pos){
-            this.pos = pos;
-        }
+        //public CallNode(int pos){
+        //    this.pos = pos;
+        //}
 
 
         @Override

@@ -27,6 +27,10 @@ public class ConcurrentCollectingNeighborUpdater extends CollectingNeighborUpdat
         super(p_230643_, p_230644_);
     }
 
+    public static ConcurrentCollectingNeighborUpdater toConcurrent(CollectingNeighborUpdater updater) {
+        return new ConcurrentCollectingNeighborUpdater(updater.level, updater.maxChainedNeighborUpdates);
+    }
+
     //留一线
     @Override
     protected void runUpdates() {

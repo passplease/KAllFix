@@ -29,6 +29,8 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+
+    //id 'com.google.protobuf' version '0.8.16'
 }
 
 apply plugin: 'org.spongepowered.mixin'
@@ -183,6 +185,7 @@ repositories {
 }*/
 
 dependencies {
+//    implementation 'com.google.protobuf:protobuf-javalite:3.15.6'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.26'
@@ -314,3 +317,22 @@ tasks.register('_copyDebugJar', Copy) {
     into jar.destinationDirectory // 将文件复制到默认 jar 的输出目录
     rename { "debug.jar" } // 将文件重命名为 debug.jar
 }
+//
+//protobuf {
+//    protoc {
+//        if (System.getProperty("os.name") == "Mac OS X" && System.getProperty("os.arch") == "aarch64") {
+//            path = '/opt/homebrew/bin/protoc'
+//        } else {
+//            artifact = 'com.google.protobuf:protoc:3.15.6'
+//        }
+//    }
+//    generateProtoTasks {
+//        all().each { task ->
+//            task.builtins {
+//                java {
+//                    option 'lite'
+//                }
+//            }
+//        }
+//    }
+//}

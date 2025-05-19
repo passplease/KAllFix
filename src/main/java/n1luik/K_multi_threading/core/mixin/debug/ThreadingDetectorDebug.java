@@ -26,11 +26,11 @@ import java.util.concurrent.locks.*;
 
 @Mixin(value = ThreadingDetector.class, priority = Integer.MAX_VALUE)
 public class ThreadingDetectorDebug /*implements ThreadingDetectorDebugImpl*/ {
-    @Shadow @Final private Lock stackTraceLock;
-    @Mutable
-    @Shadow @Final private Semaphore lock;
-    @Shadow @Nullable private volatile Thread threadThatFailedToAcquire;
-    @Shadow @Nullable private volatile ReportedException fullException;
+    //@Shadow @Final private Lock stackTraceLock;
+    //@Mutable
+    //@Shadow @Final private Semaphore lock;
+    //@Shadow @Nullable private volatile Thread threadThatFailedToAcquire;
+    //@Shadow @Nullable private volatile ReportedException fullException;
     @Unique
     public Throwable K_multi_threading$lockPos = null;
     @Unique

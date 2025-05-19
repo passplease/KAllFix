@@ -3,10 +3,12 @@ package asm.n1luik.K_multi_threading.asm;
 import asm.n1luik.K_multi_threading.asm.mod.*;
 import asm.n1luik.K_multi_threading.asm.mod.Modernfix.ModernfixGetChunkSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.ae2.PathingCalculation_Asm;
+import asm.n1luik.K_multi_threading.asm.mod.biolith.FixMixinServerWorld1_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateGeneratingKineticBlockEntity_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateTrackBlockSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateTrackGraphSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.createenchantmentindustry.FluidTankBlockIsNullFix1_Asm;
+import asm.n1luik.K_multi_threading.asm.mod.gtceu.ImplMetaMachine1_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.lithium.Lithium$TypeFilterableListMixin_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.lithium.LithiumGetChunkSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.mek.MekanismNetworkAcceptorCacheSynchronized_Asm;
@@ -115,6 +117,11 @@ public class ForgeAsm implements ITransformationService{
         return List.of(
                 //new SyncImplGetterChunk_ASM(),
                 new IndependenceAddSynchronized_Asm(),
+                new ImplLevel1_Asm(),
+                new ImplMetaMachine1_Asm(),
+                new FixMixinServerWorld1_Asm(),
+                new ImplServerLevel1_Asm(),
+                new ImplLevelChunkTicks1_Asm(),
                 new AddSynchronized_Asm(),
                 new SafeAddSynchronized_Asm(),
                 new SafeIndependenceAddSynchronized_Asm(),

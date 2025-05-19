@@ -67,4 +67,8 @@ public class TaskRun implements Executor {
             }
         }
     }
+
+    public void start() {
+        TaskRun.start();
+    }
 }

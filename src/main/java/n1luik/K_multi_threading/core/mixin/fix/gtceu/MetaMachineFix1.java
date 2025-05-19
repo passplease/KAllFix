@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Mixin(value = MetaMachine.class, priority = 1001)
+@Deprecated
 public class MetaMachineFix1 {
 
     @Mutable

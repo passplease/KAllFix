@@ -127,6 +127,23 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         }
     }
 
+    public static ParaServerChunkProvider toPara(ServerChunkCache chunkSource){
+        ParaServerChunkProvider clone;
+        try {
+            if (chunkSource instanceof ParaServerChunkProvider) {
+                clone = (ParaServerChunkProvider)chunkSource;
+            }else {
+                clone = ParaServerChunkProvider.UnsafeClone.clone(chunkSource);
+                //Unsafe.setfinal(ServerLevel.class.getDeclaredField("f_8547_"), chunkSource.level, clone);
+            }
+
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        }
+        clone.UnsafeInit();
+        return clone;
+    }
+
     public ParaServerChunkProvider(ServerLevel worldIn, LevelStorageSource.LevelStorageAccess worldDirectory, DataFixer dataFixer, StructureTemplateManager templateManagerIn, Executor executorIn, ChunkGenerator chunkGeneratorIn, int viewDistance, int simDistance, boolean spawnHostiles, ChunkProgressListener p_143236_, ChunkStatusUpdateListener p_143237_, Supplier<DimensionDataStorage> p_143238_) {
         super(worldIn, worldDirectory, dataFixer, templateManagerIn, executorIn, chunkGeneratorIn, viewDistance,
                 simDistance, spawnHostiles, p_143236_, p_143237_, p_143238_);

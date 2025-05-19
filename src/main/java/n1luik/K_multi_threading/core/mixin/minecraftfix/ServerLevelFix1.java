@@ -37,16 +37,14 @@ public abstract class ServerLevelFix1 {
     @Unique
     private final Object K_multi_threading$lockBlockEvents = new Object();
 
-    @Unique
-    ParaServerChunkProvider paraServerChunkProvider;
+    //@Unique
+    //ParaServerChunkProvider paraServerChunkProvider;
 
-    @Mutable
-    @Shadow @Final private List<ServerPlayer> players;
+    //@Mutable
+    //@Shadow @Final private List<ServerPlayer> players;
 
-    @Mutable
-    @Shadow @Final private Set<Mob> navigatingMobs;
-
-    @Shadow @Final private ServerChunkCache chunkSource;
+    //@Mutable
+    //@Shadow @Final private Set<Mob> navigatingMobs;
 
     @Shadow private volatile boolean isUpdatingNavigations;
 
@@ -55,24 +53,24 @@ public abstract class ServerLevelFix1 {
     //    return new ConcurrentInt2ObjectOpenHashMap();
     //}
 
-    @Mutable
-    @Shadow @Final private Int2ObjectMap<PartEntity<?>> dragonParts;
+    //@Mutable
+    //@Shadow @Final private Int2ObjectMap<PartEntity<?>> dragonParts;
 
     //@Mutable
     @Shadow @Final private ObjectLinkedOpenHashSet<BlockEventData> blockEvents;
 
     @Shadow protected abstract void runBlockEvents();
 
-    @Inject(method = "<init>",at = @At("RETURN"))
-    public void fix1(MinecraftServer p_214999_, Executor p_215000_, LevelStorageSource.LevelStorageAccess p_215001_, ServerLevelData p_215002_, ResourceKey p_215003_, LevelStem p_215004_, ChunkProgressListener p_215005_, boolean p_215006_, long p_215007_, List p_215008_, boolean p_215009_, RandomSequences p_288977_, CallbackInfo ci){
-        players = new CopyOnWriteArrayList();
-        navigatingMobs = ConcurrentHashMap.newKeySet();
-        paraServerChunkProvider = (ParaServerChunkProvider) chunkSource;
-        dragonParts = new ConcurrentInt2ObjectOpenHashMap<>();
-        ConcurrentHashMap.KeySetView<BlockEventData, Boolean> blockEventData = ConcurrentHashMap.newKeySet();
-        //blockEventData.addAll(blockEvents);
-        //blockEvents = new FalseObjectLinkedOpenHashSet<>(blockEventData);
-    }
+    //@Inject(method = "<init>",at = @At("RETURN"))
+    //public void fix1(MinecraftServer p_214999_, Executor p_215000_, LevelStorageSource.LevelStorageAccess p_215001_, ServerLevelData p_215002_, ResourceKey p_215003_, LevelStem p_215004_, ChunkProgressListener p_215005_, boolean p_215006_, long p_215007_, List p_215008_, boolean p_215009_, RandomSequences p_288977_, CallbackInfo ci){
+    //    //players = new CopyOnWriteArrayList();
+    //    //navigatingMobs = ConcurrentHashMap.newKeySet();
+    //    //paraServerChunkProvider = (ParaServerChunkProvider) chunkSource;
+    //    //dragonParts = new ConcurrentInt2ObjectOpenHashMap<>();
+    //    //ConcurrentHashMap.KeySetView<BlockEventData, Boolean> blockEventData = ConcurrentHashMap.newKeySet();
+    //    //blockEventData.addAll(blockEvents);
+    //    //blockEvents = new FalseObjectLinkedOpenHashSet<>(blockEventData);
+    //}
     @Redirect(method = "sendBlockUpdated",at = @At(value = "INVOKE", target = "Lnet/minecraft/Util;logAndPauseIfInIde(Ljava/lang/String;Ljava/lang/Throwable;)V"))
     public void fix2(String p_200891_, Throwable p_200892_){
         while (this.isUpdatingNavigations) Thread.onSpinWait();

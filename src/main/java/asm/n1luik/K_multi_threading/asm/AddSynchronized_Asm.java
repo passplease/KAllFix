@@ -57,7 +57,7 @@ public class AddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkHolder.setTicketLevel(I)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkHolder.blockChanged(Lnet/minecraft/core/BlockPos;)V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkHolder.replaceProtoChunk(Lnet/minecraft/world/level/chunk/ImposterProtoChunk;)V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkHolder.broadcastChanges(Lnet/minecraft/world/level/chunk/LevelChunk;)V"),
+            //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkHolder.broadcastChanges(Lnet/minecraft/world/level/chunk/LevelChunk;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunkSection.setBlockState(IIILnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/level/block/state/BlockState;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunkSection.read(Lnet/minecraft/network/FriendlyByteBuf;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunkSection.write(Lnet/minecraft/network/FriendlyByteBuf;)V"),

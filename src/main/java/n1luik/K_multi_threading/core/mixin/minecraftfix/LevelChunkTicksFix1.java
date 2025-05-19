@@ -14,15 +14,16 @@ import java.util.function.BiConsumer;
 @Mixin(LevelChunkTicks.class)
 public class LevelChunkTicksFix1<T> {
 
-    @Mutable
+    //@Mutable
     @Shadow @Final private Queue<ScheduledTick<T>> tickQueue;
 
-    @Shadow @Nullable private BiConsumer<LevelChunkTicks<T>, ScheduledTick<T>> onTickAdded;
+    @Shadow// @Nullable
+    private BiConsumer<LevelChunkTicks<T>, ScheduledTick<T>> onTickAdded;
 
-    @Inject(method = "<init>*", at = @At("RETURN"))
-    public void fix2() {
-        tickQueue = new ConcurrentLinkedQueue<>(tickQueue);
-    }
+    //@Inject(method = "<init>*", at = @At("RETURN"))
+    //public void fix2() {
+    //    tickQueue = new ConcurrentLinkedQueue<>(tickQueue);
+    //}
     /**
      * @author
      * @reason

@@ -1,11 +1,6 @@
 package n1luik.K_multi_threading.core.util;
 
-
-import org.checkerframework.checker.units.qual.C;
-
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import java.lang.invoke.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -140,6 +135,12 @@ public class Unsafe {
         field.setAccessible(true);
         return field.get(var);
     }
+    @SuppressWarnings("unchecked")
+    public static boolean _publicJavaBool(Class<?> cl, String name, Object var) throws NoSuchFieldException, IllegalAccessException {
+        Field field = cl.getDeclaredField(name);
+        field.setAccessible(true);
+        return field.getBoolean(var);
+    }
 
     @SuppressWarnings("unchecked")
     public static <T> void _publicJava(Class<T> cl, String name, Object var, Object setvar) throws NoSuchFieldException, IllegalAccessException {
@@ -151,6 +152,10 @@ public class Unsafe {
     @SuppressWarnings("unchecked")
     public static void setfinal(Field field, Object in, Object put) {
         unsafe.putObject(put, unsafe.objectFieldOffset(field), in);
+    }
+    @SuppressWarnings("unchecked")
+    public static void setfinalBool(Field field, boolean in, Object put) {
+        unsafe.putBoolean(put, unsafe.objectFieldOffset(field), in);
     }
 
     //瞎改的能用就行
@@ -316,6 +321,44 @@ public class Unsafe {
     public static Class defineClass(String name, byte[] b) {
         return  defineClass(name, b, new CodeSource(null, (java.security.cert.Certificate[])null));
     }
+    /**
+     * 这个开销大
+     * @param loader MethodHandles.Lookup只能使用class读取他的类加载器
+     * @param implType 打包的类型
+     * */
+    public static CallSite metafactory(Class<?> loader, Method impl, MethodHandle call) throws IllegalAccessException, LambdaConversionException {
+        MethodHandles.Lookup lookup1 = MethodHandles.privateLookupIn(loader, Unsafe.lookup);
+        MethodType type = call.type();
+        MethodType methodType = MethodType.methodType(impl.getDeclaringClass());
+
+        return LambdaMetafactory.metafactory(
+                lookup1,
+                impl.getName(),
+                methodType,
+                MethodType.methodType(impl.getReturnType(), impl.getParameterTypes()),
+                call,
+                type);
+    }
+    /**
+     * 这个开销大
+     * @param loader MethodHandles.Lookup只能使用class读取他的类加载器
+     * @param implType 打包的类型
+     * */
+    public static CallSite metafactory(MethodHandles.Lookup loader, Method impl, MethodHandle call) throws LambdaConversionException {
+        MethodType type = call.type();
+        MethodType methodType = MethodType.methodType(impl.getDeclaringClass());
+
+        return LambdaMetafactory.metafactory(
+                loader,
+                impl.getName(),
+                methodType,
+                MethodType.methodType(impl.getReturnType(), impl.getParameterTypes()),
+                call,
+                type);
+    }
 
 
+    public static MethodHandles.Lookup privateLookupIn(Class<?> loader) throws IllegalAccessException {
+        return MethodHandles.privateLookupIn(loader, Unsafe.lookup);
+    }
 }
