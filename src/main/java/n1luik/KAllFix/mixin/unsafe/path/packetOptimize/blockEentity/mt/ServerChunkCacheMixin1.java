@@ -7,6 +7,7 @@ import n1luik.KAllFix.forge.PacketOptimizeAll;
 import n1luik.KAllFix.util.ServerPlayerKey;
 import n1luik.KAllFix.util.UnsafeByteArrayOutputStream;
 import n1luik.KAllFix.util.lib.ZstdLib;
+import n1luik.KAllFix.util.ob.OBbyteArrayInt;
 import n1luik.K_multi_threading.core.base.CalculateTask;
 import n1luik.K_multi_threading.core.util.OB2;
 import net.minecraft.Util;
@@ -43,7 +44,7 @@ public class ServerChunkCacheMixin1 {
             synchronized (KAllFix$broadcastLock) {
                 Function<ServerPlayerKey, List<ChunkPos>> serverPlayerKeyListFunction = v -> new ArrayList<>();
                 Map<ServerPlayerKey, List<ChunkPos>> map = new HashMap<>();
-                Map<ChunkPos, OB2<byte[], Integer>> map2 = new HashMap<>();
+                Map<ChunkPos, OBbyteArrayInt> map2 = new HashMap<>();
                 for (ServerChunkCache.ChunkAndHolder chunkAndHolder : instance) {
                     if (chunkAndHolder.holder() instanceof IOptimizeBlockEntityPacket ip) {
                         if (ip.KAllFix$writePlayer() == null){
@@ -53,7 +54,7 @@ public class ServerChunkCacheMixin1 {
                         ChunkPos pos = chunkAndHolder.holder().getPos();
                         if (!ip.KAllFix$writePlayer().isEmpty()) {
                             UnsafeByteArrayOutputStream unsafeByteArrayOutputStream = ip.KAllFix$PacketData();
-                            map2.put(pos, new OB2<>(unsafeByteArrayOutputStream.getByteArray(), unsafeByteArrayOutputStream.arrayMax()));
+                            map2.put(pos, new OBbyteArrayInt(unsafeByteArrayOutputStream.getByteArray(), unsafeByteArrayOutputStream.arrayMax()));
                         }
                         for (ServerPlayer serverPlayer : ip.KAllFix$writePlayer()) {
                             map.computeIfAbsent(new ServerPlayerKey(serverPlayer), serverPlayerKeyListFunction).add(pos);
@@ -71,7 +72,7 @@ public class ServerChunkCacheMixin1 {
                             OutputStream apply = ZstdLib.out.apply(byteArrayOutputStream);
                             int srcLen = 1;
                             for (ChunkPos chunkPos : array[i].getValue()) {
-                                OB2<byte[], Integer> integerOB2 = map2.get(chunkPos);
+                                OBbyteArrayInt integerOB2 = map2.get(chunkPos);
                                 apply.write(integerOB2.t1, 0 , integerOB2.t2);
                                 srcLen += integerOB2.t2;
                             }

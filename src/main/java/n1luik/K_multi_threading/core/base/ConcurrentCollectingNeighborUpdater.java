@@ -1,5 +1,6 @@
 package n1luik.K_multi_threading.core.base;
 
+import n1luik.KAllFix.util.ob.OBListDeque;
 import n1luik.K_multi_threading.core.util.OB2;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -17,10 +18,10 @@ public class ConcurrentCollectingNeighborUpdater extends CollectingNeighborUpdat
     //public Deque<NeighborUpdates> getTasks() {
     //    return tasks.computeIfAbsent(Thread.currentThread(), k -> new ArrayDeque<>()/*new ConcurrentLinkedDeque<>()*/);
     //}
-    protected final Map<Thread, OB2<List<NeighborUpdates>, Deque<NeighborUpdates>>> tasks = new ConcurrentHashMap<>();
+    protected final Map<Thread, OBListDeque<NeighborUpdates, NeighborUpdates>> tasks = new ConcurrentHashMap<>();
 
-    public OB2<List<NeighborUpdates>, Deque<NeighborUpdates>> getTasks() {
-        return tasks.computeIfAbsent(Thread.currentThread(), k -> new OB2<>(new ArrayList<>(), new ArrayDeque<>())/*new ConcurrentLinkedDeque<>()*/);
+    public OBListDeque<NeighborUpdates, NeighborUpdates> getTasks() {
+        return tasks.computeIfAbsent(Thread.currentThread(), k -> new OBListDeque<>(new ArrayList<>(), new ArrayDeque<>())/*new ConcurrentLinkedDeque<>()*/);
     }
 
     public ConcurrentCollectingNeighborUpdater(Level p_230643_, int p_230644_) {
@@ -36,7 +37,7 @@ public class ConcurrentCollectingNeighborUpdater extends CollectingNeighborUpdat
     protected void runUpdates() {
         runUpdates(getTasks());
     }
-    protected void runUpdates(OB2<List<NeighborUpdates>, Deque<NeighborUpdates>> v) {
+    protected void runUpdates(OBListDeque<NeighborUpdates, NeighborUpdates> v) {
         List<NeighborUpdates> t1 = v.t1;
         Deque<NeighborUpdates> t2 = v.t2;
         try {
@@ -62,7 +63,7 @@ public class ConcurrentCollectingNeighborUpdater extends CollectingNeighborUpdat
     }
 
     protected void addAndRun(BlockPos p_230661_, CollectingNeighborUpdater.NeighborUpdates p_230662_) {
-        OB2<List<NeighborUpdates>, Deque<NeighborUpdates>> tasks1 = getTasks();
+        OBListDeque<NeighborUpdates, NeighborUpdates> tasks1 = getTasks();
         boolean flag = !tasks1.t2.isEmpty();
         boolean flag1 = this.maxChainedNeighborUpdates >= 0 && tasks1.t2.size() >= this.maxChainedNeighborUpdates;
         if (!flag1) {

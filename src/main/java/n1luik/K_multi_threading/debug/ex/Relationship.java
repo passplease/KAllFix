@@ -7,20 +7,25 @@ import n1luik.K_multi_threading.debug.ex.data.NodeSave;
 import n1luik.K_multi_threading.debug.ex.data.RelationshipSave;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
+import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
 public class Relationship implements BooleanSupplier {
+    public static final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
     static final Logger LOGGER = LogUtils.getLogger();
     public long track = 0;
     public String trackName = null;
     public long trackTime = 0;
     public volatile long stop = 0;
     public volatile ThreadInfo tag = null;
-    public Node[] nodes = null;
-    public Node[] nodeCall = null;
+    public @Nullable Node[] nodes = null;
+    public @Nullable Node[] nodeCall = null;
 
 
     public void initNode(int size){
@@ -32,11 +37,14 @@ public class Relationship implements BooleanSupplier {
     }
 
     public boolean isStop(){
-        return stop >= nodes.length;
+        if (nodeCall != null) {
+            return stop >= nodeCall.length;
+        }
+        return false;
     }
 
     public void setTag(){
-        tag = DebugLog.threadMXBean.getThreadInfo(Thread.currentThread().getId());
+        tag = threadMXBean.getThreadInfo(Thread.currentThread().getId(), Integer.MAX_VALUE);
     }
 
     public RelationshipSave save(){
@@ -45,14 +53,16 @@ public class Relationship implements BooleanSupplier {
         relationshipSave.stopTime = stop;
         relationshipSave.startTime = trackTime;
         saveTrack(relationshipSave);
-        List<NodeSave> nodeSaves = new ArrayList<>(nodes.length);
-        for (Node node : nodes) {
-            if (node == null) continue;
-            nodeSaves.add(node.save());
+        if (nodes != null) {
+            List<NodeSave> nodeSaves = new ArrayList<>(nodes.length);
+            for (Node node : nodes) {
+                if (node == null) continue;
+                nodeSaves.add(node.save());
+            }
+            relationshipSave.data = nodeSaves;
+        }else {
+            relationshipSave.data = List.of();
         }
-
-        relationshipSave.data = nodeSaves;
-        relationshipSave.emptyTag = true;
 
         return relationshipSave;
     }
@@ -60,25 +70,33 @@ public class Relationship implements BooleanSupplier {
     public void saveTrack(RelationshipSave save){
         if (tag == null) {
             save.tag = null;
-            save.emptyTag = false;
+            save.emptyTag = true;
             save.track = "not found";
+            save.trackId = -1;
+            save.trackTime = -1;
             return;
         }
         save.track = trackName;
+        save.trackId = track;
+        save.trackTime = trackTime;
         StackTraceElement[] stackTrace = tag.getStackTrace();
         List<JvmCallLogData> out = new ArrayList<>(stackTrace.length);
-        for (StackTraceElement stackTraceElement : stackTrace) {
+        //System.out.println(Arrays.toString(stackTrace));
+        for (int i = stackTrace.length - 1; i >= 0; i--) {
+            StackTraceElement stackTraceElement = stackTrace[i];
             if (stackTraceElement.getClassName().equals(Relationship.class.getName())
                     && stackTraceElement.getMethodName().equals("setTag")
             ) break;
             out.add(new JvmCallLogData(stackTraceElement.getClassName(), stackTraceElement.getMethodName(), stackTraceElement.getLineNumber()));
+
         }
         save.tag = out;
-        save.emptyTag = true;
+        save.emptyTag = false;
     }
 
     public void call(){
         if (nodes == null) return;
+        if (nodeCall == null) return;
         for (int i = 0; i < nodeCall.length; i++) {
             Node node = nodeCall[i];
             if (node == null)continue;
@@ -98,9 +116,17 @@ public class Relationship implements BooleanSupplier {
         return isStop();
     }
 
+    public void stop() {
+        if (nodeCall == null) return;
+        for (Node node : nodeCall) {
+            if (node == null) continue;
+            node.testStop();
+        }
+    }
+
     public static class Node {
         public volatile Thread thread;
-        public volatile long threadId;
+        public volatile long threadId = -1;
         public String threadNane;
         public volatile boolean stop = false;
         public volatile long startTime = -1;
@@ -123,7 +149,7 @@ public class Relationship implements BooleanSupplier {
 
         public NodeSave save(){
             DataBase save = root.save();
-            return new NodeSave(save, threadNane, time, startTime, endTime, threadId);
+            return new NodeSave(save, threadNane == null ? "" : threadNane, time, startTime, endTime, threadId);
         }
         
         public void start(Thread thread){
@@ -136,7 +162,7 @@ public class Relationship implements BooleanSupplier {
 
         public void tick() {
             if (thread != null) {
-                ThreadInfo threadInfo = DebugLog.threadMXBean.getThreadInfo(threadId);
+                ThreadInfo threadInfo = threadMXBean.getThreadInfo(threadId, Integer.MAX_VALUE);
                 if (threadInfo != null) {
                     try {
                         StackTraceElement[] stack = threadInfo.getStackTrace();
@@ -162,6 +188,11 @@ public class Relationship implements BooleanSupplier {
         }
 
 
+        public void testStop() {
+            if (thread != null && !stop) {
+                stop();
+            }
+        }
     }
 }
  

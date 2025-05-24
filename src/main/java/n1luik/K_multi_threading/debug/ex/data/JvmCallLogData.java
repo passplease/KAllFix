@@ -31,11 +31,11 @@ public class JvmCallLogData {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof JvmCallLogData that)) return false;
-        return lineNumber == that.lineNumber && parentLineNumber == that.parentLineNumber && Objects.equals(declaringClass, that.declaringClass) && Objects.equals(method, that.method);
+        return lineNumber == that.lineNumber && Objects.equals(declaringClass, that.declaringClass) && Objects.equals(method, that.method);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(declaringClass, method, lineNumber, parentLineNumber);
+        return Objects.hash(declaringClass, method, lineNumber);
     }
 }

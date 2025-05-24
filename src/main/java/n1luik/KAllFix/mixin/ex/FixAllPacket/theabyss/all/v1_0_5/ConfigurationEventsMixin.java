@@ -2,6 +2,7 @@ package n1luik.KAllFix.mixin.ex.FixAllPacket.theabyss.all.v1_0_5;
 
 import n1luik.KAllFix.forge.fixpack.theabyss.TheabyssBuf;
 import n1luik.KAllFix.util.OB1;
+import n1luik.KAllFix.util.ob.OBCompoundTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
@@ -34,7 +35,7 @@ public class ConfigurationEventsMixin {
             entity.getCapability(TheabyssModVariables.PLAYER_VARIABLES_CAPABILITY, null).ifPresent((capability) -> {
                 capability.HudX = _setval;
                 capability.HudY = _setval2;
-                LazyOptional<OB1<CompoundTag>> capability1 = entity.getCapability(PLAYER_VARIABLES_CAPABILITY_OLD, null);
+                LazyOptional<OBCompoundTag> capability1 = entity.getCapability(PLAYER_VARIABLES_CAPABILITY_OLD, null);
                 capability1.ifPresent(o-> {
                     Tag t1 = o.getT1();
                     CompoundTag tag = (CompoundTag)capability.writeNBT();

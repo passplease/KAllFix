@@ -5,6 +5,8 @@ import java.util.List;
 public class RelationshipSave {
     public boolean emptyTag;
     public String track;
+    public long trackId;
+    public long trackTime;
     public List<JvmCallLogData> tag;
     public List<NodeSave> data;
     public long stopTime;

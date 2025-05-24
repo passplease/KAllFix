@@ -1,6 +1,7 @@
 package n1luik.KAllFix.forge.fixpack.theabyss;
 
 import n1luik.KAllFix.util.OB1;
+import n1luik.KAllFix.util.ob.OBCompoundTag;
 import n1luik.K_multi_threading.core.Base;
 import net.mcreator.mekanismexplosives.MekanismexplosivesMod;
 import net.mcreator.mekanismexplosives.network.MekanismexplosivesModVariables;
@@ -22,14 +23,16 @@ import net.yezon.theabyss.network.TheabyssModVariables;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class All {
     //用于备份检查是否修改
     public static final ResourceLocation PLAYER_VARIABLES_CAPABILITY_OLD_ID = new ResourceLocation(Base.MOD_ID2, "theabyss/player_variables_old");
-    public static final Capability<OB1<CompoundTag>> PLAYER_VARIABLES_CAPABILITY_OLD = CapabilityManager.get(new CapabilityToken<>() {
+    public static final Capability<OBCompoundTag> PLAYER_VARIABLES_CAPABILITY_OLD = CapabilityManager.get(new CapabilityToken<>() {
     });
     private static class ImplClass implements ICapabilitySerializable<Tag> {
-        public final OB1<CompoundTag> tag = new OB1<>(null);
-        public final LazyOptional<OB1<CompoundTag>> tag2 = LazyOptional.of(()->tag);
+        public final OBCompoundTag tag = new OBCompoundTag(null);
+        public final LazyOptional<OBCompoundTag> tag2 = LazyOptional.of(()->tag);
 
 
         public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
@@ -42,6 +45,10 @@ public class All {
 
         public void deserializeNBT(Tag nbt) {
         }
+
+
+
+        ;
     }
 
     @SubscribeEvent

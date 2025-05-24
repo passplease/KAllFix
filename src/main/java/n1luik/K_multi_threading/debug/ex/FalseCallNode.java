@@ -67,7 +67,7 @@ public class FalseCallNode extends RecursiveTask<Object> {
             throw e;
         }finally {
             stop = true;
-            startRun.accept(this);
+            stopRun.accept(this);
         }
         return null;
     }

@@ -8,7 +8,7 @@ import java.util.List;
 public class LogRoot {
     public List<RelationshipSave> relationshipSave;
     public int totalTicks;
-    public long sumTime;
+    public long runTime;
     public long startTime;
     public long interval;
 

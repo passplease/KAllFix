@@ -7,6 +7,7 @@
 
 可以用-DKMT_D=[任意字符]和-DKAllFix_D=[任意字符]禁用独立mod
 
+idea MinecraftDev有bug必须jar一下才可以正常查看源码
 
 ##  使用方法
 
@@ -51,6 +52,19 @@
 - 通过-DKAF-ServerTimeout=[多少秒]设置服务器连接超时时间，不一定有用可以试试另一个方式
   - forge自带的另一个建议2个都设置: -Dforge.readTimeout=[多少秒]
   - 指令:
+    - #kmt_debug
+      - 需要开启KMT-Debug
+      - start [可选的interval]
+        - 开始纪录
+        - interval的单位是毫秒默认是1.5，这个参数跟火花的这个参数功能一样但是精度更高
+      - stop [文件名，保存在服务器的./位置不可以有同名的文件夹和文件]
+        - 停止并保存，火花格式必须安装火花
+        - spark [true,false-是否保存所有线程不保存的话只有链接后的异步和多线程]
+          - 仅保存成spark的格式
+        - json
+          - 直接把数据保存成json，没有link
+        - all [true,false-spark格式是否保存所有线程不保存的话只有链接后的异步和多线程]
+          - 保存2种格式
     - debug_GetterClassFile 类名
       - 获取游戏最终游戏运行的类型文件数据，会保存在游戏目录下面“保存时间的时间戳_save.class”
     -  SetterWorldConfig [world, ClearErrorSize, RemoveRemoveErrorSize]

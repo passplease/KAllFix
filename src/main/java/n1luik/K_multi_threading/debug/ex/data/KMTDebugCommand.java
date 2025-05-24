@@ -1,6 +1,7 @@
 package n1luik.K_multi_threading.debug.ex.data;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -9,6 +10,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.logging.LogUtils;
 import me.lucko.spark.proto.SparkSamplerProtos;
 import n1luik.K_multi_threading.debug.ex.DebugLog;
+import n1luik.K_multi_threading.debug.ex.Relationship;
 import n1luik.K_multi_threading.debug.ex.spark.SparkSave;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
@@ -22,7 +24,7 @@ import java.io.IOException;
 
 public class KMTDebugCommand {
     static final Logger LOGGER = LogUtils.getLogger();
-    public static final Gson GSON = new Gson();
+    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static void register(CommandDispatcher<CommandSourceStack> p_214446_) {
         p_214446_.register(Commands.literal("#kmt_debug").requires((p_137777_) -> {
@@ -31,15 +33,23 @@ public class KMTDebugCommand {
                             .executes(v->{
                                 try{
                                     start((long) (DoubleArgumentType.getDouble(v, "interval") * 1000000));
+                                    Relationship relationship = new Relationship();
+                                    DebugLog.add(relationship);
+                                    relationship.initNode(1);
+                                    relationship.nodes[0].start(v.getSource().getServer().getRunningThread());
                                 }catch (Throwable e){
                                     LOGGER.error("", e);
                                     throw e;
                                 }
                                 return 1;
                             }))
-                    .executes((p_137775_) -> {
+                    .executes((v) -> {
                         try{
-                            start(1500000);
+                            start(2000000);
+                            Relationship relationship = new Relationship();
+                            DebugLog.add(relationship);
+                            relationship.initNode(1);
+                            relationship.nodes[0].start(v.getSource().getServer().getRunningThread());
                         }catch (Throwable e){
                             LOGGER.error("", e);
                             throw e;
@@ -66,7 +76,7 @@ public class KMTDebugCommand {
                                         return;
                                     }
                                     if (file.isFile()) {
-                                        v.getSource().sendSystemMessage(Component.literal("有一个同名文件|"+fileName+".json"));
+                                        v.getSource().sendSystemMessage(Component.literal("有一个同名文件，会替换掉他|"+fileName+".json"));
                                     }
                                     v.getSource().sendSystemMessage(Component.literal("正在生成"));
                                     LogRoot stop = DebugLog.stop();
@@ -81,10 +91,11 @@ public class KMTDebugCommand {
                                     } catch (IOException e) {
                                         throw new RuntimeException(e);
                                     }
+                                    v.getSource().sendSystemMessage(Component.literal("写入完成"));
 
                                 });
                                 return 1;
-                            })
+                            }))
                     .then(Commands.literal("all")
                             .then(Commands.argument("spark_all", BoolArgumentType.bool())
                                     .executes(v->{
@@ -95,10 +106,11 @@ public class KMTDebugCommand {
                                             throw new RuntimeException(e);
                                         }
                                 })))
-            ))));
+            )));
     }
 
     public static void start(long interval) {
         DebugLog.start(interval);
+
     }
 }

@@ -24,6 +24,7 @@ public class StackTraceNode {
         for (Map.Entry<Description, StackTraceNode> descriptionStackTraceNodeEntry : array) {
             DataBase save = descriptionStackTraceNodeEntry.getValue().save();
             save.data = descriptionStackTraceNodeEntry.getKey().save();
+            list.add(save);
         }
         return new DataBase(JvmCallLogData.EMPTY, time, list);
     }
@@ -64,7 +65,7 @@ public class StackTraceNode {
                 return true;
             } else if (o != null && this.getClass() == o.getClass()) {
                 Description description = (Description)o;
-                return this.hash == description.hash && this.lineNumber == description.lineNumber && this.parentLineNumber == description.parentLineNumber && this.className.equals(description.className) && this.methodName.equals(description.methodName) && Objects.equals(this.methodDescription, description.methodDescription);
+                return this.hash == description.hash && this.lineNumber == description.lineNumber && this.parentLineNumber == description.parentLineNumber && this.className.equals(description.className) && this.methodName.equals(description.methodName);// && Objects.equals(this.methodDescription, description.methodDescription);
             } else {
                 return false;
             }

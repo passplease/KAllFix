@@ -15,6 +15,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.RecursiveTask;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -27,7 +28,7 @@ public abstract class CalculateTaskMixin extends RecursiveTask<Object> {
 
     @Shadow(remap = false) protected int start;
     @Shadow(remap = false) protected int end;
-    @Shadow(remap = false) @Final private int min;
+    @Shadow(remap = false) @Final private int min = 1;
     @Shadow(remap = false) public volatile Throwable throwable;
     @Shadow(remap = false) protected BiConsumer<CalculateTask, Integer> run;
 
@@ -46,6 +47,14 @@ public abstract class CalculateTaskMixin extends RecursiveTask<Object> {
             DebugLog.add(relationship);
         }
     }
+
+    @Inject(method = "<init>(Ljava/util/function/Supplier;IIILjava/util/function/Consumer;)V", at = @At("RETURN"), remap = false)
+    private void init(Supplier name, int start, int end, int min, Consumer run, CallbackInfo ci) {
+        if (debug) {
+            relationship = new Relationship();
+            DebugLog.add(relationship);
+        }
+    }
     @Inject(method = "<init>(Ljava/util/function/Supplier;IIILjava/util/function/BiConsumer;)V", at = @At("RETURN"), remap = false)
     private void init(Supplier name, int start, int end, int max, BiConsumer run, CallbackInfo ci) {
          if (debug) {
@@ -57,7 +66,7 @@ public abstract class CalculateTaskMixin extends RecursiveTask<Object> {
      * @author
      * @reason
      */
-    @Overwrite
+    @Overwrite(remap = false)
     public <T> T waitThread(Function<Throwable, T> function, Thread wait){
         if (wait instanceof ForkJoinWorkerThread)
             synchronized (sync1){
@@ -75,7 +84,7 @@ public abstract class CalculateTaskMixin extends RecursiveTask<Object> {
         return unsafeWaitThread(function, wait);
     }
 
-    @Inject(method = {"unsafeWaitThread(Ljava/util/function/Function;Ljava/lang/Thread;)Ljava/lang/Object;"}, at = @At("HEAD"), remap = false)
+    @Inject(method = "unsafeWaitThread(Ljava/util/function/Function;Ljava/lang/Thread;)Ljava/lang/Object;", at = @At("HEAD"), remap = false)
     public <T> void impl1(Function<Throwable, T> function, Thread wait, CallbackInfoReturnable<T> cir) {
         if (debug) {
             relationship.track = wait.getId();
@@ -85,7 +94,7 @@ public abstract class CalculateTaskMixin extends RecursiveTask<Object> {
         }
     }
 
-    @Inject(method = {"call(Ljava/util/concurrent/ForkJoinPool;Ljava/util/function/Function;)V"}, at = @At(value = "INVOKE", target = "Ln1luik/K_multi_threading/core/base/CalculateTask;compute()Ljava/lang/Object;", remap = false), remap = false)
+    @Inject(method = "call(Ljava/util/concurrent/ForkJoinPool;Ljava/util/function/Function;)V", at = @At(value = "INVOKE", target = "Ln1luik/K_multi_threading/core/base/CalculateTask;compute()Ljava/lang/Object;", remap = false), remap = false)
     public <T> void impl2(ForkJoinPool pool, Function<Throwable, T> function, CallbackInfo ci) {
         if (debug){
             relationship.track = Thread.currentThread().getId();
@@ -95,7 +104,7 @@ public abstract class CalculateTaskMixin extends RecursiveTask<Object> {
         }
     }
 
-    @Inject(method = {"callAuto()V"}, at = @At(value = "INVOKE", target = "Ln1luik/K_multi_threading/core/base/CalculateTask;compute()Ljava/lang/Object;", remap = false), remap = false)
+    @Inject(method = "callAuto()V", at = @At(value = "INVOKE", target = "Ln1luik/K_multi_threading/core/base/CalculateTask;compute()Ljava/lang/Object;", remap = false), remap = false)
     public void impl4(CallbackInfo ci) {
         if (debug){
             relationship.track = Thread.currentThread().getId();
@@ -105,7 +114,7 @@ public abstract class CalculateTaskMixin extends RecursiveTask<Object> {
         }
     }
 
-    @Inject(method = {"call(Ljava/util/concurrent/ForkJoinPool;)V"}, at = @At(value = "INVOKE", target = "Ln1luik/K_multi_threading/core/base/CalculateTask;compute()Ljava/lang/Object;", remap = false), remap = false)
+    @Inject(method = "call(Ljava/util/concurrent/ForkJoinPool;)V", at = @At(value = "INVOKE", target = "Ln1luik/K_multi_threading/core/base/CalculateTask;compute()Ljava/lang/Object;", remap = false), remap = false)
     public void impl5(CallbackInfo ci) {
         if (debug){
             relationship.track = Thread.currentThread().getId();
@@ -123,26 +132,32 @@ public abstract class CalculateTaskMixin extends RecursiveTask<Object> {
     @Overwrite(remap = false)
     @Override
     protected synchronized Object compute() {
+        if (end - start < 1) return sync1;
         try {
 
+            CalculateTask calculateTask = (CalculateTask) (Object) this;
             if (end - start <= min) {
-                if (relationship.track == Thread.currentThread().getId()) {
-                    relationship.nodes = new Relationship.Node[0];
-                    relationship.nodeCall = relationship.nodes.clone();
-                }else {
-                    relationship.nodes = new Relationship.Node[1];
-                    relationship.nodes[0] = new Relationship.Node(Thread.currentThread(), System.nanoTime());
-                    relationship.nodeCall = relationship.nodes.clone();
+                if (debug){
+                    if (relationship.track == Thread.currentThread().getId()) {
+                        relationship.nodes = new Relationship.Node[0];
+                        relationship.nodeCall = relationship.nodes.clone();
+                    } else {
+                        relationship.nodes = new Relationship.Node[1];
+                        relationship.nodes[0] = new Relationship.Node(Thread.currentThread(), System.nanoTime());
+                        relationship.nodeCall = relationship.nodes.clone();
+                    }
                 }
                 try {
                     for (int i = start; i < end; i++) {
-                        run.accept((CalculateTask) (Object)this, i);
+                        run.accept(calculateTask, i);
                     }
                 }catch (Throwable e){
                     throwable = e;
                     throw e;
                 }finally {
-                    relationship.nodes[0].stop();
+                    if (debug){
+                        relationship.nodes[0].stop();
+                    }
                 }
             } else {
                 //if (notCallMode) {
@@ -150,11 +165,12 @@ public abstract class CalculateTaskMixin extends RecursiveTask<Object> {
                 boolean redundancy = rem % min != 0;
                 int middle_i = rem / min;
                 FalseCallNode[] callNodes = new FalseCallNode[redundancy ? middle_i + 1 : middle_i];
-
-                if (relationship.track == Thread.currentThread().getId()) {
-                    relationship.initNode(callNodes.length-1);
-                } else {
-                    relationship.initNode(callNodes.length);
+                if (debug){
+                    if (relationship.track == Thread.currentThread().getId()) {
+                        relationship.initNode(callNodes.length - 1);
+                    } else {
+                        relationship.initNode(callNodes.length);
+                    }
                 }
                 int all = 0;
                 double taskSize = (min * (rem / (double)min)) / ((int)(rem / (double)min));
@@ -170,7 +186,6 @@ public abstract class CalculateTaskMixin extends RecursiveTask<Object> {
                     if ((taskSize * i) > all){
                         add = (int) ((taskSize * i)+1) - all;
                     }
-                    ;
                     callNodes[i] = new FalseCallNode(debug ? v->{
                         if (Thread.currentThread().getId() != relationship.track) {
                             relationship.nodes[v.id].start(Thread.currentThread());
@@ -179,9 +194,9 @@ public abstract class CalculateTaskMixin extends RecursiveTask<Object> {
                         if (Thread.currentThread().getId() != relationship.track) {
                             relationship.nodes[v.id].stop();
                         }
-                    } : v->{}, errorLock, (CalculateTask) (Object)this, run, start, end,
+                    } : v->{}, errorLock, calculateTask, run, start, end,
                             e->throwable = e, ()->throwable
-                            , callNodes.length-i, start + (int)all, add);
+                            , (callNodes.length-1)-i, start + (int)all, add);
                     all += add;
                     //}
                 }
