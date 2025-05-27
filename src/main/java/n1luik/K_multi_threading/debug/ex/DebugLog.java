@@ -9,10 +9,16 @@ import n1luik.K_multi_threading.debug.ex.data.RelationshipSave;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class DebugLog {
     public volatile static boolean debug = false;
@@ -24,20 +30,40 @@ public class DebugLog {
 
     protected final AtomicInteger runSize = new AtomicInteger(0);
     protected volatile boolean run = false;
+    protected volatile boolean createNode = false;
+    protected volatile boolean createNode2 = false;
     protected volatile int taskSize = 0;
-    protected volatile IntList taskEmpty = new IntArrayList();
+    protected volatile int threadSize = 0;
     protected volatile BooleanSupplier[] tasks = new BooleanSupplier[0];
     //protected volatile boolean[] data = new boolean[0];
     //protected volatile BooleanSupplier[] taskUp = null;
-    protected final Int2ObjectArrayMap<ThreadNode> runThreadNodes = new Int2ObjectArrayMap<>();
+    //protected final Int2ObjectArrayMap<ThreadNode> runThreadNodes = new Int2ObjectArrayMap<>();
     protected final List<ThreadNode> nodes = new ArrayList<>();
-    protected final Queue<ThreadNode> stopNode = new ArrayDeque<>();
-    protected final ReentrantLock lock = new ReentrantLock();
-    protected final Condition condition = lock.newCondition();
+    //protected volatile Queue<Integer> emptyId = new ConcurrentLinkedQueue<>();
+    protected volatile Queue<ThreadNode> stopNode = new ArrayDeque<>();
+    protected volatile List<ThreadNode> runNode = new ArrayList<>();
+    protected final AtomicLong runTime = new AtomicLong(0);
+    //protected final Object lockCreate = new Object();
+    //protected final ReentrantLock lock = new ReentrantLock();
+    //protected final Condition condition = lock.newCondition();
+    //protected final List<ThreadNode> nodes = new CopyOnWriteArrayList<>();
+    //protected final Queue<ThreadNode> stopNode = new ConcurrentLinkedQueue<>();
+
 
     static  {
         //addTash.start();
     }
+
+    //public void start(Function<ThreadNode, Runnable> task){
+    //    ThreadNode node;
+    //    try {
+    //        node = stopNode.remove();
+    //    } catch (NoSuchElementException e) {
+    //        node = new ThreadNode();
+    //        node.start();
+    //    }
+    //    node.restart(task.apply(node));
+    //}
 
 
     public static void start(long interval) {
@@ -46,6 +72,7 @@ public class DebugLog {
         DebugLog.interval = interval;
         caller.restart();
         debug = true;
+
     }
 
     public static LogRoot stop() {
@@ -56,6 +83,12 @@ public class DebugLog {
         relationships.clear();
         return ret;
     }
+
+    //private void stopAll() {
+    //    caller.run = false;
+    //    stopNode.clear();
+    //    stopNode.addAll(nodes);
+    //}
 
     public static LogRoot save() {
         if (debug) throw new RuntimeException("DebugLog is running");
@@ -72,198 +105,267 @@ public class DebugLog {
         return logRoot;
     }
 
-
     public static void add(Relationship relationship) {
         //addTash.execute(()-> {
+        if (debug) {
+            relationships.add(relationship);
             synchronized (caller) {
                 if (debug) {
-                    relationships.add(relationship);
                     caller.addTask(relationship);
+                    //caller.start(v -> () -> {
+                    //    if (relationship.getAsBoolean()) {
+                    //        v.stopTask();
+                    //    }
+                    //});
                 }
             }
+        }
         //});
     }
 
-    private synchronized void remove(int id, ThreadNode node) {
+    protected synchronized void startNode() {
+        ThreadNode node;
+        if (stopNode.isEmpty()) {
+            node = new ThreadNode();
+            nodes.add(node);
+            node.initTask = ()->threadSize++;
+            node.init(threadSize);
+            node.start();
+            runNode.add(node);
+        }else {
+            node = stopNode.remove();
+            node.initTask = ()->threadSize++;
+            node.init(threadSize);
+            runNode.add(node);
+        }
+    }
+    protected boolean manageTask() {
+        if (createNode2){
+            createNode2 = false;
+            createNode = false;
+            if (threadSize < taskSize) {
+                if ((((double) runTime.get()) / (double) taskSize) > (interval * 0.7)) {
+                    createNode2 = false;
+                    startNode();
+
+                }
+            }
+        } else if (createNode) {
+            createNode = false;
+            if (threadSize < taskSize) {
+                if ((((double) runTime.get()) / (double) taskSize) > (interval * 0.7)) {
+                    createNode2 = false;
+                    startNode();
+
+                }
+            }
+        }else {
+            if (threadSize > 1) {
+                if ((((double) runTime.get()) / (double) taskSize) < (interval * 0.7)) {
+                    stopNode();
+                }
+            }
+        }
+        runTime.set(0);
+        return false;
+    }
+
+    protected synchronized void stopNode() {
+        ThreadNode remove = runNode.remove(runNode.size() - 1);
+        remove.runThis = false;
+        threadSize--;
+        stopNode.add(remove);
+    }
+
+    private synchronized void remove(int id) {
+        //emptyId.add(id);
+        BooleanSupplier task = tasks[taskSize - 1];
+        tasks[taskSize-1] = null;
+        tasks[id] = task;
         taskSize--;
-        tasks[id] = null;
-        taskEmpty.add(id);
-        runThreadNodes.remove(id);
-        stopNode.add(node);
+        //runThreadNodes.remove(id);
     }
 
     protected DebugLog() {
     }
-    
-    protected synchronized void startTask(int id){
-        if (nodes.size() <= runSize.get()){
-            ThreadNode e = new ThreadNode();
-            //DebugVoidAsyncWait debugVoidAsyncWait = new DebugVoidAsyncWait(lock, condition, () -> {
-            //});
-            //e.start = debugVoidAsyncWait;
-            nodes.add(e);
-            e.restart(id);
-            e.start();
-            //debugVoidAsyncWait.waitTask();
-        }else {
-            if (stopNode.isEmpty()){
-                throw new RuntimeException("nodes.size():"+nodes.size()+" runSize:"+runSize.get());
-            }
-            stopNode.remove().restart(id);
-        }
-    } 
-
     public synchronized void addTask(BooleanSupplier task) {
         if (run) {
             if (tasks.length == taskSize) {
-                BooleanSupplier[] taskUp = Arrays.copyOf(tasks, (int) (tasks.length * 1.06) + 1);
-                tasks = taskUp;
-                //data = Arrays.copyOf(data, (int)(data.length * 1.06) + 1);
+                tasks = Arrays.copyOf(tasks, (int) (tasks.length * 1.06) + 1);
                 tasks[taskSize] = task;
                 taskSize++;
-                startTask(taskSize-1);
             }else {
-                if (taskEmpty.isEmpty()) {
-                    for (int i = tasks.length - 1; i >= 0; i--) {
-                        if (tasks[i] == null) {
-                            tasks[i] = task;
-                            startTask(i);
-                            taskSize++;
-                            return;
-                        }
-                    }
-                    throw new RuntimeException("taskSize:"+taskSize+" tasks.length:"+tasks.length);
-                }
+                tasks[taskSize] = task;
                 taskSize++;
-                int i = taskEmpty.removeInt(taskEmpty.size()-1);
-                tasks[i] = task;
-                startTask(i);
             }
         }
     }
 
     private synchronized void restart() {
         stopAll();
-        taskSize = 0;
-        tasks = new BooleanSupplier[0];
-        taskEmpty.clear();
+        taskSize = 1;
+        tasks = new BooleanSupplier[128];
+        tasks[0] = this::manageTask;
+        threadSize = 0;
         //data = new boolean[0];
         //taskUp = null;
         run = true;
+        //init()
+        startNode();
     }
     protected void stopAll() {
-        synchronized (this) {
-            run = false;
-            for (ThreadNode value : runThreadNodes.values()) {
-                value.stopRun();
-            }
-            runThreadNodes.clear();
-            stopNode.addAll(nodes);
-        }
-        while (runSize.get() > 0){
-            System.out.println(runSize.get());//Thread.onSpinWait();
-        }
+        run = false;
+        threadSize = 0;
+        runSize.set(0);
         Arrays.fill(tasks, null);
+        runNode.clear();
+        stopNode.clear();
+        stopNode.addAll(nodes);
     }
 
+    /**
+     * 多线程运行tasks的任务的基础单位
+     * <p>
+     * pos是运行的任务数量offset是获取任务的偏移位置
+     */
     public class ThreadNode extends Thread{
-        protected final Object upLovk = new Object();
-        protected final ReentrantLock stopLock = new ReentrantLock();
-        protected volatile boolean up = false;
-        public volatile int id = -1;
-        public volatile boolean stop = false;
-        public volatile boolean runThis = false;
         public volatile boolean exit = false;
-        //public Runnable start = null;
-
-        public ThreadNode(){
+        public volatile boolean runThis = false;
+        public volatile boolean use = false;
+        //private volatile boolean test = false;
+        private volatile int pos = 0;
+        private volatile int offset = -1;//运行任务的偏移位置
+        private volatile long useTime = 0;//本次运行的时间
+        private volatile Runnable initTask = null;//本次运行的时间
+        public ThreadNode() {
             super("KMT-Debug-Thread");
-        }
-
-        public synchronized void restart(int id) {
-            synchronized (upLovk) {
-                this.id = id;
-                up = true;
-                synchronized (DebugLog.this) {
-                    stopNode.remove(this);
-                    runThreadNodes.put(id, this);
-                    synchronized (upLovk) {
-                        if (!runThis) {
-                            runSize.getAndAdd(1);
-                            runThis = true;
-                        }
-                    }
-                }
-            }
-            if (stopLock.isLocked()){
-                Unsafe.unsafe.unpark(this);
-            }
-        }
-        public void stopRun() {
-            synchronized (upLovk) {
-                if (runThis) {
-                    runSize.getAndAdd(-1);
-                    runThis = false;
-                }
-                this.id = -1;
-                up = true;
-                stop = true;
-                runThis = false;
-            }
         }
 
         @Override
         public void run() {
-            //if (start != null) {
-            //    start.run();
-            //    start = null;
-            //}
             while (!exit){
-                long l = System.nanoTime();
-                if (up) {
-                    synchronized (upLovk) {
-                        Thread.onSpinWait();
-                        up = false;
-                    }
+                if (initTask != null) {
+                    initTask.run();
+                    initTask = null;
                 }
-                int id1 = id;
-                if (id1 > -1) {
-                    if (tasks[id1] != null) {
-                        if (tasks[id1].getAsBoolean()) {
-                            synchronized (DebugLog.this) {
-                                stopRun();
-                                DebugLog.this.remove(id1, this);
+
+                if (run && runThis) {
+                    long l = System.nanoTime();
+                    //if (test) {
+                    //    //测试是否是单个任务超过interval的时间如果是就标记
+                    //    test = false;
+                    //    boolean nn = true;
+                    //    while (true) {
+                    //        int id = pos * offset;
+                    //        if (id > taskSize) {
+                    //            pos = 1;
+                    //            break;
+                    //        }
+                    //        BooleanSupplier task = tasks[id];
+                    //        if (task != null) {
+                    //            long l1 = System.nanoTime();
+                    //            if (task.getAsBoolean()) {
+                    //                tasks[id] = null;
+                    //                emptyId.add(id);
+                    //            }else {
+                    //                if (System.nanoTime() - l1 > interval) {
+                    //                    nn = false;
+//
+                    //                 }
+                    //            }
+                    //        }
+//
+                    //    }
+                    //    if  (nn) {
+                    //        createNode = true;
+                    //    }
+//
+                    //}else {
+                    while (true) {
+                        int id = ((pos++) * threadSize) + offset;
+                        if (id >= taskSize) {
+                            pos = 0;
+                            break;
+                        }
+                        BooleanSupplier task = tasks[id];
+                        if (task != null) {
+                            if (task.getAsBoolean()) {
+                                remove(id);
                             }
                         }
                     }
-                }
-                if (run && !stop) {
-                    //暂停指定的时间
-                    if (interval > 0) {
-                        long now = System.nanoTime();
-                        long l1 = interval - (now - l);
-                        if (l1 > 0)
-                            Unsafe.unsafe.park(false, l1);
+                    //}
+                    long now = System.nanoTime();
+                    long l1 = (now - l);
+                    useTime = l1;
+                    runTime.getAndAdd(l1);
+                    if (l1 < interval) {
+                        Unsafe.unsafe.park(false, interval - l1);
+                    }else {
+                        if (l1 > interval * 1.2) {
+                            createNode2 = true;
+                        }
+                        createNode = true;
+                    }
 
-                    }
-                } else {
-                    synchronized (upLovk) {
-                        if (runThis) {
-                            runSize.getAndAdd(-1);
-                            runThis = false;
-                        }
-                        if (!run) {
-                            this.id = -1;
-                        }
-                        stop = false;
-                        up = false;
-                        stopLock.lock();
-                    }
+                }else {
+                    use = false;
                     Unsafe.unsafe.park(false, 0);
-                    stopLock.unlock();
                 }
             }
         }
+
+        public void init(int threadSize) {
+            pos = 0;
+            offset = threadSize;
+            runThis = true;
+            Unsafe.unsafe.unpark(this);
+        }
     }
+    //public class ThreadNode extends Thread{
+    //    public volatile boolean exit = false;
+    //    public volatile Runnable task = null;
+    //    //protected final ReentrantLock stopLock = new ReentrantLock();
+    //    public ThreadNode() {
+    //        super("KMT-Debug-Thread");
+    //    }
+//
+//
+//
+    //    @Override
+    //    public void run() {
+    //        while (!exit){
+//
+    //            if (run && task != null) {
+    //                long l = System.nanoTime();
+    //                if (task != null) {
+    //                    task.run();
+    //                }
+    //                long l1 = interval - (System.nanoTime() - l);
+    //                if (l1 < 0) {
+    //                    Unsafe.unsafe.park(false, l1);
+    //                }
+//
+    //            }else {
+    //                if (!run) {
+    //                    task = null;
+    //                }
+    //                //stopLock.lock();
+    //                Unsafe.unsafe.park(false, 0);
+    //                //stopLock.unlock();
+    //            }
+    //        }
+    //    }
+//
+    //    public void restart(Runnable apply) {
+    //        task = apply;
+    //        Unsafe.unsafe.unpark(this);
+    //    }
+    //
+    //    public void stopTask() {
+    //        task = null;
+    //        stopNode.add(this);
+    //    }
+    //}
 
 }

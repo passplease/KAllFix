@@ -77,17 +77,7 @@ public class SparkSave {
         }
         for (LinkPosData linkPosDatum : linkPosData) {
             for (NodeSave datum : linkPosDatum.data) {
-                DataBase linkStart = add;
-                for (JvmCallLogData jvmCallLogData : linkPosDatum.pos) {
-                    DataBase linkStart1 = linkAutoGetNext(jvmCallLogData, linkStart);
-                    if (linkStart1 == null) {
-                        DataBase data = new DataBase(jvmCallLogData, linkPosDatum.endTime - linkPosDatum.startTime, new ArrayList<>(1));
-                        linkStart.add(data);
-                        linkStart = data;
-                    }else {
-                        linkStart = linkStart1;
-                    }
-                }
+                DataBase linkStart = getDataBase(add, linkPosDatum);
                 linkTree(linkBuf, linkPosDatum.startTime, linkPosDatum.endTime, datum.threadId, linkStart);
 
             }
@@ -111,6 +101,22 @@ public class SparkSave {
             }
         }
     }
+
+    private DataBase getDataBase(DataBase add, LinkPosData linkPosDatum) {
+        DataBase linkStart = add;
+        for (JvmCallLogData jvmCallLogData : linkPosDatum.pos) {
+            DataBase linkStart1 = linkAutoGetNext(jvmCallLogData, linkStart);
+            if (linkStart1 == null) {
+                DataBase data = new DataBase(jvmCallLogData, linkPosDatum.endTime - linkPosDatum.startTime, new ArrayList<>(1));
+                linkStart.add(data);
+                linkStart = data;
+            }else {
+                linkStart = linkStart1;
+            }
+        }
+        return linkStart;
+    }
+
     private boolean link() {
         if (!linkCopy())return false;
         Long2ObjectMap<ArrayList<LinkPosData>> linkBuf = new Long2ObjectNodeHashMap<>();
@@ -340,14 +346,14 @@ public class SparkSave {
             }
             throw new RuntimeException("link failed: main thread id[%s], all: [%s]".formatted(linkThreadId, list));
         }
-        createSum();
+        //createSum();//sum会炸火花我不知道为什么超级恶心
         //window在时间很短的情况会增加很大的开销所以没有addTimeWindows
         SparkSamplerProtos.SamplerData.Builder builder = SparkSamplerProtos.SamplerData.newBuilder()
                 .setMetadata(saveMetadata())
                 .putAllTimeWindowStatistics(Map.of());
 
         builder.addThreads(saveTree2("kmt-link", link));
-        builder.addThreads(saveTree2("kmt-sum", sum));
+        //builder.addThreads(saveTree2("kmt-sum", sum));
         if (all) {
             for (RelationshipSave relationshipSave : src.relationshipSave) {
                 for (NodeSave datum : relationshipSave.data) {

@@ -95,6 +95,7 @@ public class Relationship implements BooleanSupplier {
     }
 
     public void call(){
+        //System.out.println("call");
         if (nodes == null) return;
         if (nodeCall == null) return;
         for (int i = 0; i < nodeCall.length; i++) {
@@ -169,13 +170,13 @@ public class Relationship implements BooleanSupplier {
                         if (stack.length != 0) {
                             time += DebugLog.interval;
                             StackTraceNode node = root;
-                            StackTraceElement previousElement = null;
+                            //StackTraceElement previousElement = null;
 
                             for(int offset = 0; offset < stack.length; ++offset) {
                                 StackTraceElement element = stack[stack.length - 1 - offset];
-                                node = node.resolveChild(new StackTraceNode.Description(element.getClassName(), element.getMethodName(), element.getLineNumber(), previousElement == null ? -1 : previousElement.getLineNumber()));
+                                node = node.resolveChild(new StackTraceNode.Description(element.getClassName(), element.getMethodName(), element.getLineNumber(), -1));//这样会出现跟多毛刺根本没办法正常看//previousElement == null ? -1 : previousElement.getLineNumber()));
                                 node.time += DebugLog.interval;
-                                previousElement = element;
+                                //previousElement = element;
                             }
 
                         }

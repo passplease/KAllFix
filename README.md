@@ -9,6 +9,8 @@
 
 idea MinecraftDev有bug必须jar一下才可以正常查看源码
 
+debug的唯一作用就是连接多线程而不是替代专用工具，火花的基础单位是毫秒自带的工具是纳秒不到1毫秒的会强制转成1毫秒
+
 ##  使用方法
 
 1: 把gradle.properties里的代理删了 
