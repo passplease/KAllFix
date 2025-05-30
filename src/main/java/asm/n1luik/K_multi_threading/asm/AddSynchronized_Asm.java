@@ -66,7 +66,6 @@ public class AddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.updateChunkScheduling(JILnet/minecraft/server/level/ChunkHolder;I)Lnet/minecraft/server/level/ChunkHolder;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.playerLoadedChunk(Lnet/minecraft/server/level/ServerPlayer;Lorg/apache/commons/lang3/mutable/MutableObject;Lnet/minecraft/world/level/chunk/LevelChunk;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.addEntity(Lnet/minecraft/world/entity/Entity;)V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.move(Lnet/minecraft/server/level/ServerPlayer;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.markPositionReplaceable(Lnet/minecraft/world/level/ChunkPos;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.markPosition(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/world/level/chunk/ChunkStatus$ChunkType;)B"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.tick()V"),

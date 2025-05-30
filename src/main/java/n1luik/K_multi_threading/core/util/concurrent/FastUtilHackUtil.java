@@ -8,6 +8,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import it.unimi.dsi.fastutil.booleans.BooleanCollection;
+import it.unimi.dsi.fastutil.booleans.BooleanIterator;
 import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.*;
 import org.apache.commons.lang3.ArrayUtils;
@@ -475,6 +477,122 @@ public class FastUtilHackUtil {
 				@Override
 				public T next() {
 					return forward.apply(backg.next());
+				}
+
+				@Override
+				public void remove() {
+					backg.remove();
+				}
+			};
+		}
+
+
+	}
+
+	public static class ToObjectSet<T> implements ObjectSet<T> {
+
+		Set<T> backing;
+
+		public ToObjectSet(Set<T> backing) {
+			this.backing = backing;
+		}
+
+		@Override
+		public int size() {
+			return backing.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return backing.isEmpty();
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean contains(Object o) {
+			try {
+				return backing.contains(o);
+			} catch (ClassCastException cce) {
+				return false;
+			}
+		}
+
+		@Override
+		public Object[] toArray() {
+			return backing.toArray();
+		}
+
+		@Override
+		public <R> R[] toArray(R[] a) {
+			return backing.toArray(a);
+		}
+
+		@Override
+		public boolean add(T e) {
+			return backing.add(e);
+		}
+
+		@Override
+		public boolean remove(Object o) {
+			try {
+				return backing.remove(o);
+			} catch (ClassCastException cce) {
+				return false;
+			}
+		}
+
+		@Override
+		public boolean containsAll(Collection<?> c) {
+			try {
+				return backing.containsAll(c);
+			} catch (ClassCastException cce) {
+				return false;
+			}
+
+		}
+
+		@Override
+		public boolean addAll(Collection<? extends T> c) {
+			return backing.addAll(c);
+		}
+
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			try {
+				return backing.removeAll(c);
+			} catch (ClassCastException cce) {
+				return false;
+			}
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> c) {
+			try {
+				return backing.retainAll(c);
+			} catch (ClassCastException cce) {
+				return false;
+			}
+		}
+
+		@Override
+		public void clear() {
+			backing.clear();
+
+		}
+
+		@Override
+		public ObjectIterator<T> iterator() {
+			final Iterator<T> backg = backing.iterator();
+			return new ObjectIterator<T>() {
+
+				@Override
+				public boolean hasNext() {
+					return backg.hasNext();
+				}
+
+				@Override
+				public T next() {
+					return backg.next();
 				}
 
 				@Override
@@ -1107,8 +1225,53 @@ public class FastUtilHackUtil {
 			}
 		};
 	}
+	private static <K> Object2BooleanMap.Entry<K> boolEntryForwards(Map.Entry<K, Boolean> entry) {
+		return new Object2BooleanMap.Entry<K>() {
+
+			@Override
+			public boolean getBooleanValue() {
+				return entry.getValue();
+			}
+
+			@Override
+			public Boolean getValue() {
+				return entry.getValue();
+			}
+
+			@Override
+			public Boolean setValue(Boolean value) {
+				return entry.setValue(value);
+			}
+
+			@Override
+			public boolean setValue(boolean value) {
+				return entry.setValue(value);
+			}
+
+			@Override
+			public K getKey() {
+				return entry.getKey();
+			}
+
+			@Override
+			public boolean equals(Object obj) {
+				if (obj == entry) {
+					return true;
+				}
+				return super.equals(obj);
+			}
+
+			@Override
+			public int hashCode() {
+				return entry.hashCode();
+			}
+		};
+	}
 
 	private static <T> Map.Entry<Integer, T> intEntryBackwards(Int2ObjectMap.Entry<T> entry) {
+		return entry;
+	}
+	private static <K> Map.Entry<K, Boolean> boolEntryBackwards(Object2BooleanMap.Entry<K> entry) {
 		return entry;
 	}
 
@@ -1198,6 +1361,9 @@ public class FastUtilHackUtil {
 
 	public static <T> ObjectSet<Int2ObjectMap.Entry<T>> entrySetIntWrap(Map<Integer, T> map) {
 		return new ConvertingObjectSet<Map.Entry<Integer, T>, Int2ObjectMap.Entry<T>>(map.entrySet(), FastUtilHackUtil::intEntryForwards, FastUtilHackUtil::intEntryBackwards);
+	}
+	public static <K> ObjectSet<Object2BooleanMap.Entry<K>> entrySetBooleanWrap(Map<K, Boolean> map) {
+		return new ConvertingObjectSet<Map.Entry<K, Boolean>, Object2BooleanMap.Entry<K>>(map.entrySet(), FastUtilHackUtil::boolEntryForwards, FastUtilHackUtil::boolEntryBackwards);
 	}
 
 	public static <T> ObjectSet<Long2ObjectMap.Entry<T>> entrySetLongWrap(Map<Long, T> map) {
@@ -1782,6 +1948,164 @@ public class FastUtilHackUtil {
 
 	}
 
+	public static class WrappingBooleanCollection implements BooleanCollection {
+
+		Collection<Boolean> backing;
+
+		public WrappingBooleanCollection(Collection<Boolean> backing) {
+			this.backing = backing;
+		}
+
+		@Override
+		public int size() {
+			return backing.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return backing.isEmpty();
+		}
+
+		@Override
+		public boolean contains(Object o) {
+			return backing.contains(o);
+		}
+
+		@Override
+		public Object[] toArray() {
+			return backing.toArray();
+		}
+
+		@Override
+		public <T> T[] toArray(T[] a) {
+			return backing.toArray(a);
+		}
+
+		@Override
+		public boolean add(boolean e) {
+			return backing.add(e);
+		}
+
+		@Override
+		public boolean contains(boolean key) {
+			return backing.contains(key);
+		}
+
+		@Override
+		public boolean rem(boolean key) {
+			return backing.remove(key);
+		}
+
+		@Override
+		public boolean remove(Object o) {
+			return backing.remove(o);
+		}
+
+		@Override
+		public boolean[] toBooleanArray() {
+			Boolean[] array = backing.toArray(Boolean[]::new);
+			boolean[] ra = new  boolean[backing.size()];
+			for (int i = ra.length - 1; i >= 0; i--) {
+				ra[i] = array[i];
+			}
+			return ra;
+		}
+
+		@Override
+		public boolean[] toArray(boolean[] a) {
+			Boolean[] array = backing.toArray(Boolean[]::new);
+			if (a.length < array.length) {
+				boolean[] ra = new  boolean[backing.size()];
+				for (int i = ra.length - 1; i >= 0; i--) {
+					ra[i] = array[i];
+				}
+				return ra;
+			} else if (a.length == array.length) {
+				for (int i = a.length - 1; i >= 0; i--) {
+					a[i] = array[i];
+				}
+				return a;
+			}else {
+				for (int i = array.length - 1; i >= 0; i--) {
+					a[i] = array[i];
+				}
+				for (int i = array.length; i < a.length; i++) {
+					a[i] = false;
+				}
+				return a;
+
+			}
+		}
+
+		@Override
+		public boolean addAll(BooleanCollection c) {
+			return backing.addAll(c);
+		}
+
+		@Override
+		public boolean containsAll(BooleanCollection c) {
+			return backing.containsAll(c);
+		}
+
+		@Override
+		public boolean containsAll(Collection<?> c) {
+			return backing.containsAll(c);
+		}
+
+		@Override
+		public boolean addAll(Collection<? extends Boolean> c) {
+			return backing.addAll(c);
+		}
+
+		@Override
+		public boolean removeAll(BooleanCollection c) {
+			return backing.removeAll(c);
+		}
+
+		@Override
+		public boolean retainAll(BooleanCollection c) {
+			return false;
+		}
+
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			return backing.removeAll(c);
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> c) {
+			return backing.retainAll(c);
+		}
+
+		@Override
+		public void clear() {
+			backing.clear();
+		}
+
+		@Override
+		public @NotNull BooleanIterator iterator() {
+			Iterator<Boolean> iterator = backing.iterator();
+			return new BooleanIterator(){
+
+				@Override
+				public boolean hasNext() {
+					return iterator.hasNext();
+				}
+
+				@Override
+				public void remove() {
+					iterator.remove();
+				}
+
+				@Override
+				public boolean nextBoolean() {
+					return iterator.hasNext();
+				}
+			};
+		}
+
+	}
+
 	public static class WrappingReferenceCollection<V> implements ReferenceCollection<V> {
 
 		Collection<V> backing;
@@ -1859,6 +2183,9 @@ public class FastUtilHackUtil {
 
 	public static <K> ObjectCollection<K> wrap(Collection<K> c) {
 		return new WrappingObjectCollection<K>(c);
+	}
+	public static BooleanCollection wrapBoolean(Collection<Boolean> c) {
+		return new WrappingBooleanCollection(c);
 	}
 
 	public static <K> ReferenceCollection<K> wrapReference(Collection<K> c) {

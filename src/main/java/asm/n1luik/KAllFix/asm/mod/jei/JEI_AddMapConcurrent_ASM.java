@@ -35,7 +35,10 @@ public class JEI_AddMapConcurrent_ASM implements ITransformer<ClassNode> {
     }*/
     private final static AsmTarget Empty = new AsmTarget("", false);
     public final List<AsmTarget> stringsList = new ArrayList<>(List.of(
-            new AsmTarget("mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeUtil", false)
+            new AsmTarget("mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeUtil", false),
+            new AsmTarget("net.silentchaos512.gear.api.util.PartGearKey", false),
+            new AsmTarget("net.silentchaos512.gear.api.util.StatGearKey", false),
+            new AsmTarget("net.silentchaos512.gear.api.part.PartType", false)
     ));
     public final Map<String, AsmTarget> nameMap = new HashMap<>();
     public final Map<String, List<String>> fieldMappings = new HashMap<>();

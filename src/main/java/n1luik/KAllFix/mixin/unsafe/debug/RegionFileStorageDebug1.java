@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.ConcurrentModificationException;
 
 @Mixin(RegionFileStorage.class)
 public class RegionFileStorageDebug1 {
@@ -24,7 +25,7 @@ public class RegionFileStorageDebug1 {
     public void write(CompoundTag tag, DataOutput output) {
         try {
             NbtIo.write(tag, output);
-        }catch (IOException e) {
+        }catch (IOException | ConcurrentModificationException e) {
             RegionFileStorageDebug1_LOGGER.warn("Failed to write chunk ", e);
             try {
                 NbtIo.write(tag, output);
