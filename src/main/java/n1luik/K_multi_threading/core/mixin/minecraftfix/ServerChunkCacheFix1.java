@@ -87,12 +87,12 @@ public abstract class ServerChunkCacheFix1 {
             iWorldChunkLockedConfig.execTasks();
         }
     }
-    @Redirect(method = "runDistanceManagerUpdates", at = @At(value = "INVOKE",target = "Lnet/minecraft/server/level/DistanceManager;runAllUpdates(Lnet/minecraft/server/level/ChunkMap;)Z"))
-    public boolean fix6(DistanceManager instance, ChunkMap completablefuture) {
-        synchronized (completablefuture){
-            return instance.runAllUpdates(completablefuture);
-        }
-    }
+    //@Redirect(method = "runDistanceManagerUpdates", at = @At(value = "INVOKE",target = "Lnet/minecraft/server/level/DistanceManager;runAllUpdates(Lnet/minecraft/server/level/ChunkMap;)Z"))
+    //public boolean fix6(DistanceManager instance, ChunkMap completablefuture) {
+    //    synchronized (completablefuture){
+    //        return instance.runAllUpdates(completablefuture);
+    //    }
+    //}
 
     //@Redirect(method = "getChunk", at = @At(value = "INVOKE",target = "Lnet/minecraft/server/level/ServerChunkCache$MainThreadExecutor;managedBlock(Ljava/util/function/BooleanSupplier;)V"))
     //public void fix4(ServerChunkCache.MainThreadExecutor instance, BooleanSupplier booleanSupplier) {
