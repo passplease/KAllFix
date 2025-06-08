@@ -25,6 +25,7 @@
     "fix.mek.TransmitterNetworkRegistry_OrphanPathFinder",
     "fix.nuclearcraft.FluidCapabilityHandlerFix1",
     "fix.nuclearcraft.FluidHandlerWrapperFix1",
+    "fix.petrolpark.CommonEventsMixin",
     "impl.LevelImpl1",
     "impl.LevelTicksImpl1",
     "impl.MinecraftServerImpl1",

@@ -1,6 +1,9 @@
 package asm.n1luik.KAllFix.asm;
 
 import asm.n1luik.KAllFix.asm.mod.createdieselgenerators.EntityMixinAsm;
+import asm.n1luik.KAllFix.asm.mod.petrolpark.ITeamBoundItemAsm;
+import asm.n1luik.KAllFix.asm.mod.petrolpark.PetrolparkAsm;
+import asm.n1luik.KAllFix.asm.mod.petrolpark.ShopMenuItemAsm;
 import asm.n1luik.KAllFix.asm.util.NoModuleReadClassAsm;
 import asm.n1luik.KAllFix.asm.util.ReadClassAsm;
 import asm.n1luik.KAllFix.asm.mod.jei.JEI_AddMapConcurrent_ASM;
@@ -10,6 +13,8 @@ import cpw.mods.modlauncher.api.IEnvironment;
 import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.IncompatibleEnvironmentException;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -75,6 +80,11 @@ public class KAllFixAsm implements ITransformationService {
             transformers.add(new ReadClassAsm("quark", "1.20.1+all", "PotionUtilsMixin", Set.of(
                     ITransformer.Target.targetClass("org.violetmoon.quark.mixin.mixins.PotionUtilsMixin")
             )));
+        }
+        if (FMLEnvironment.dist == Dist.DEDICATED_SERVER){//用不了，直接不加载了
+            //transformers.add(new PetrolparkAsm());
+            transformers.add(new ShopMenuItemAsm());
+            transformers.add(new ITeamBoundItemAsm());
         }
         return transformers;
     }

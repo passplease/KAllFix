@@ -84,6 +84,8 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("me/desht/pneumaticcraft/common/amadron/AmadronOfferManager.pickRandomVillagerTrade(Lnet/minecraft/world/entity/npc/VillagerProfession;Ljava/util/Random;)Ljava/util/Optional;"),
             ForgeAsm.minecraft_map.mapMethod("me/desht/pneumaticcraft/common/amadron/AmadronOfferManager.setupVillagerTrades()V"),
             ForgeAsm.minecraft_map.mapMethod("me/desht/pneumaticcraft/common/amadron/AmadronOfferManager.checkForFullRebuild(Lnet/minecraft/world/level/Level;)V"),
+            //瓦尔基里
+            ForgeAsm.minecraft_map.mapMethod("org/valkyrienskies/core/impl/util/assertions/stages/TickStageEnforcerImpl.stage(Ljava/lang/Object;)V"),
             //gtceu
             ForgeAsm.minecraft_map.mapMethod("com/regtechceu/gtceu/api/machine/MetaMachine.serverTick()V"),
             ForgeAsm.minecraft_map.mapMethod("com/regtechceu/gtceu/api/machine/MetaMachine.executeTick()V"),
