@@ -14,7 +14,7 @@ public class CommonEventsMixin {
      * @author
      * @reason
      */
-    @Overwrite
+    @Overwrite(remap = false)
     @SubscribeEvent
     public static void onTickLevel(TickEvent.LevelTickEvent event) {
         // Decaying Items
