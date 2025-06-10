@@ -39,7 +39,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
   
 ##  功能
 - 修复[Petrolpark 的库]petrolpark 1.4.2服务器不可以在部分java使用问题
-  - 可以使用-DKAF-Petrolpark=false关闭
+  - 可以使用-DKAF-DisablePetrolpark=false关闭
 - 修复Biolith兼容问题(范围包括重新生成MultiNoiseBiomeSource的mod，例如所有的使用MCreator的所有有这个操作的mod)
 - 并不是修复了所有的使用MCreator的模组，小部使用分模组需要定制修复代码（例如）Terramity
 - (MCreator所有模组, terramity（尝试解决这一类问题）)

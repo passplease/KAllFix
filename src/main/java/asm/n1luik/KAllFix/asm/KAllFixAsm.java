@@ -81,7 +81,8 @@ public class KAllFixAsm implements ITransformationService {
                     ITransformer.Target.targetClass("org.violetmoon.quark.mixin.mixins.PotionUtilsMixin")
             )));
         }
-        if (FMLEnvironment.dist == Dist.DEDICATED_SERVER && System.getProperty("KAF-Petrolpark", "true").equals("true")){//用不了，直接不加载了
+
+        if (FMLEnvironment.dist == Dist.DEDICATED_SERVER && !Boolean.getBoolean("DisablePetrolpark")) {//用不了，直接不加载了
             //transformers.add(new PetrolparkAsm());
             transformers.add(new ShopMenuItemAsm());
             transformers.add(new ITeamBoundItemAsm());

@@ -45,7 +45,7 @@ public class ITeamBoundItemAsm implements ITransformer<ClassNode> {
                         log.info("找到ITeamBoundItem.trySelectTeam");
                     }
                 }
-                 if (stop != null){
+                 if (stop == null){
                      log.error("可能是新版本的petrolpark");
                      return input;
                  }

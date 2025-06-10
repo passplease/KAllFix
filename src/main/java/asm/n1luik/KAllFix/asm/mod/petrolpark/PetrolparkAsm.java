@@ -39,7 +39,7 @@ public class PetrolparkAsm implements ITransformer<ClassNode> {
                     }
                 }
                 log.info("开始修改");
-                if (start != null){
+                if (start == null){
                     log.error("可能是新版本的petrolpark");
                     return input;
                 }
