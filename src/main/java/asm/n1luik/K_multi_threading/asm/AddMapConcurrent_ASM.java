@@ -65,6 +65,18 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
             new AsmTarget("net.minecraft.world.level.block.ComposterBlock", false),
             new AsmTarget("net.minecraft.world.entity.ai.attributes.AttributeInstance", false),
             new AsmTarget("appeng.me.service.CraftingService", false),
+            new AsmTarget("org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld", false, new String[]{
+                    "dimensionsAddedThisTick",
+                    "dimensionsRemovedThisTick",
+                    "voxelShapeUpdatesList",
+            }, new MethodInfo[]{
+                    new MethodInfo("<init>", null, false, false),
+                    new MethodInfo("clearNewUpdatedDeletedShipObjectsAndVoxelUpdates", "()V", false, true),
+                    new MethodInfo("addDimension", "(Ljava/lang/String;Lorg/valkyrienskies/core/api/world/LevelYRange;)V", false, true),
+                    new MethodInfo("removeDimension", "(Ljava/lang/String;)V", false, true),
+                    new MethodInfo("addTerrainUpdates", "(Ljava/lang/String;Ljava/util/List;)V", false, true),
+                    new MethodInfo("postTick", "()V", false, true)
+            }),
             new AsmTarget("appeng.api.stacks.KeyCounter", true)
     ));
     public final Map<String, AsmTarget> nameMap = new HashMap<>();
@@ -181,6 +193,19 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                 "java.lang.Object"
         ).map(string -> string.replace(".", "/")).toList());*/
     }
+    public String descMap(String desc){
+        int array = 0;
+        while (desc.charAt(array) == '['){
+            array++;
+        }
+        if (desc.charAt(array) == 'L') {
+            String desc1 = typeMapping.get(desc.substring(array + 1, desc.length() - 1));
+            if (desc1 != null){
+                return  "[".repeat(array) + "L" + desc1 + ";";
+            }
+        }
+        return desc;
+    }
 
 
     @Override
@@ -192,10 +217,24 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
             for (FieldNode field : input.fields) {
                 for (String s : orDefault.mappingFields) {
                     if (field.name.equals(s)) {
-                        field.desc = typeMapping.getOrDefault(field.desc, field.desc);
+                        field.desc = descMap(field.desc);
                     }
                 }
             }
+            for (MethodNode methodNode : input.methods) {
+                for (AbstractInsnNode instruction : methodNode.instructions) {
+                    if (instruction instanceof FieldInsnNode fieldInsnNode) {
+                        List<String> strings = fieldMappings.get(fieldInsnNode.owner);
+                        if (strings != null) {
+                            if (strings.contains(fieldInsnNode.name)){
+                                fieldInsnNode.desc = descMap(fieldInsnNode.desc);
+                            }
+                        }
+                    }
+                }
+
+            }
+
         }
         for (MethodNode method : input.methods) {
             for (MethodInfo methodInfo : orDefault.methods) {
@@ -293,8 +332,15 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                                     }
                                     break;
                                 case "java/util/ArrayList":
-                                    if (methodInsnNode.name.equals("<init>") && methodInsnNode.desc.equals("()V")) {
-                                        method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/concurrent/CopyOnWriteArrayList", "<init>", "()V", false));
+                                    if (methodInsnNode.name.equals("<init>")) {
+                                        if (methodInsnNode.desc.equals("()V")) {
+                                            method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/concurrent/CopyOnWriteArrayList", "<init>", "()V", false));
+                                        } else if (methodInsnNode.desc.equals("(I)V")) {
+                                            method.instructions.add(new InsnNode(Opcodes.POP));
+                                            method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/concurrent/CopyOnWriteArrayList", "<init>", "()V", false));
+                                        }else {
+                                            method.instructions.add(instruction);
+                                        }
                                     } else {
                                         method.instructions.add(instruction);
                                     }
@@ -520,7 +566,7 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
         }
         for (AsmTarget asmTarget : stringsList) {
             if (asmTarget.mappingFields.length < 1) continue;
-            List<String> stringStringMap = fieldMappings.computeIfAbsent(asmTarget.className.replace(".", "/"), k -> new ArrayList<>());
+            List<String> stringStringMap = fieldMappings.computeIfAbsent(asmTarget.className.replace(".", "/"), k -> new ArrayList<>(asmTarget.mappingFields.length));
             stringStringMap.addAll(Arrays.asList(asmTarget.mappingFields));
 
         }

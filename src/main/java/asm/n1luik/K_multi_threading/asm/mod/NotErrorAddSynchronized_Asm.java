@@ -58,6 +58,8 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/logistics/depot/DepotBehaviour.removeHeldItem()V"),
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/logistics/depot/DepotBehaviour.handleBeltFunnelOutput()Z"),
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/logistics/depot/DepotBehaviour.tick()Z"),
+            //瓦尔基里
+            ForgeAsm.minecraft_map.mapMethod("org/valkyrienskies/core/impl/game/ships/ShipObjectServerWorld.clearNewUpdatedDeletedShipObjectsAndVoxelUpdates()V"),
             //brandonscore
             ForgeAsm.minecraft_map.mapMethod("com/brandon3055/brandonscore/handlers/contributor/ContributorFetcher.onTick(Lnet/minecraftforge/event/TickEvent;)V"),
             ForgeAsm.minecraft_map.mapMethod("com/brandon3055/brandonscore/handlers/contributor/ContributorFetcher.queTask(Lcom/brandon3055/brandonscore/handlers/contributor/ContributorFetcher$ThreadedTask;)V"),

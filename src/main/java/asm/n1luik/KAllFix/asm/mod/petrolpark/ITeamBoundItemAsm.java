@@ -27,7 +27,6 @@ public class ITeamBoundItemAsm implements ITransformer<ClassNode> {
              if (method.name.equals(strings2[1]) && method.desc.equals(strings2[2])) {
                 debug1++;
                 InsnList instructions = method.instructions;
-                InsnList nl = method.instructions = new InsnList();
                 AbstractInsnNode start = null;
                 AbstractInsnNode stop = null;
                 for (AbstractInsnNode instruction : instructions) {
@@ -46,8 +45,12 @@ public class ITeamBoundItemAsm implements ITransformer<ClassNode> {
                         log.info("找到ITeamBoundItem.trySelectTeam");
                     }
                 }
-                assert stop!= null;
-                for (AbstractInsnNode instruction : instructions) {
+                 if (stop != null){
+                     log.error("可能是新版本的petrolpark");
+                     return input;
+                 }
+                 InsnList nl = method.instructions = new InsnList();
+                 for (AbstractInsnNode instruction : instructions) {
                     if (instruction == start) {
                         debug2 = 1;
                     }else if (instruction == stop) {
@@ -58,7 +61,8 @@ public class ITeamBoundItemAsm implements ITransformer<ClassNode> {
                     }
                 }
                 if (debug2 != 2) {
-                    throw new RuntimeException("ITeamBoundItem.trySelectTeam没有正常工作");
+                    //throw new RuntimeException("ITeamBoundItem.trySelectTeam没有正常工作");
+                    log.error("ITeamBoundItem.trySelectTeam没有正常工作，可能是新版本的petrolpark");
                 }
                 methods.add(method);
             }else if ((!method.name.equals(strings3[1]) || !method.desc.equals(strings3[2])) && (!method.name.equals(strings[1]) || !method.desc.equals(strings[2]))) {
@@ -71,7 +75,8 @@ public class ITeamBoundItemAsm implements ITransformer<ClassNode> {
         }
         input.methods = methods;
         if (debug1 != 3) {
-            throw new RuntimeException("ITeamBoundItemAsm没有正常工作");
+            //throw new RuntimeException("ITeamBoundItemAsm没有正常工作");
+            log.error("ITeamBoundItemAsm没有正常工作，可能是新版本的petrolpark");
         }
         return input;
     }

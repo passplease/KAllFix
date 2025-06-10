@@ -33,7 +33,8 @@ public class ShopMenuItemAsm implements ITransformer<ClassNode> {
         }
         input.methods = methods;
         if (debug1 != 2) {
-            throw new RuntimeException("ShopMenuItemAsm没有正常工作");
+            log.error("ShopMenuItemAsm没有正常工作，可能是新版本的petrolpark");
+            //throw new RuntimeException("ShopMenuItemAsm没有正常工作");
         }
         return input;
     }

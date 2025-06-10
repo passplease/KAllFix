@@ -20,7 +20,6 @@ public class PetrolparkAsm implements ITransformer<ClassNode> {
         for (MethodNode method : input.methods) {
             if (method.name.equals("<clinit>") && method.desc.equals("()V")) {
                 InsnList instructions = method.instructions;
-                InsnList nl = method.instructions = new InsnList();
                 AbstractInsnNode start = null;
                 AbstractInsnNode stop = null;
                 for (AbstractInsnNode instruction : instructions) {
@@ -40,7 +39,11 @@ public class PetrolparkAsm implements ITransformer<ClassNode> {
                     }
                 }
                 log.info("开始修改");
-                assert start != null;
+                if (start != null){
+                    log.error("可能是新版本的petrolpark");
+                    return input;
+                }
+                InsnList nl = method.instructions = new InsnList();
                 for (AbstractInsnNode instruction : instructions) {
                     if (instruction == start) {
                         debug1 = 1;
@@ -56,7 +59,8 @@ public class PetrolparkAsm implements ITransformer<ClassNode> {
             }
         }
         if (debug1 != 2) {
-            throw new RuntimeException("com.petrolpark.Petrolpark没有正常工作");
+            log.error("com.petrolpark.Petrolpark没有正常工作, 可能是新版本的petrolpark");
+            //throw new RuntimeException("com.petrolpark.Petrolpark没有正常工作");
         }
         return input;
     }
