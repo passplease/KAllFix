@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -114,7 +115,7 @@ public class ForgeAsm implements ITransformationService{
     public @NotNull List<ITransformer> transformers() {
         if (System.getProperty("KMT_D") != null || FMLLoader.getDist().isClient())
             return List.of();
-        return List.of(
+        List<ITransformer> iTransformers = new ArrayList<>(List.of(
                 //new SyncImplGetterChunk_ASM(),
                 new IndependenceAddSynchronized_Asm(),
                 new ImplLevel1_Asm(),
@@ -144,6 +145,7 @@ public class ForgeAsm implements ITransformationService{
                 new NoiseChunkGeneratorMixinFix1_Asm(),
                 //new ChunkMapSynchronized_Asm(),
                 new FastUtilTransformerService()
-        );
+        ));
+        return iTransformers;
     }
 }

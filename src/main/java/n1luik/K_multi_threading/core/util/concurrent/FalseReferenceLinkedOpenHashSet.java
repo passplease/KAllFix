@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 public class FalseReferenceLinkedOpenHashSet<T> extends ReferenceLinkedOpenHashSet<T> {
-    Set<T> backing;
+    protected final ConcurrentHashMap.KeySetView<T, Boolean> backing;
     public FalseReferenceLinkedOpenHashSet() {
         this.backing = ConcurrentHashMap.newKeySet();
     }

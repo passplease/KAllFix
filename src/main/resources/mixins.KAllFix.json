@@ -5,6 +5,7 @@
   "refmap": "mixins.K_multi_threading.refmap.json",
   "plugin": "n1luik.KAllFix.Imixin.Plugin",
   "mixins": [
+    "UtilMixin",
     "ex.Connection_1Mixin",
     "ex.EntityMixin",
     "ex.ServerGamePacketListenerImplMixin",

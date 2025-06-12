@@ -13,7 +13,7 @@ import java.util.function.LongFunction;
 
 public class ConcurrentLong2ObjectOpenHashMap<V> extends Long2ObjectOpenHashMap<V> {
 
-	Map<Long, V> backing;
+	protected final ConcurrentHashMap<Long, V> backing;
 	V defaultReturn = null;
 
 	public ConcurrentLong2ObjectOpenHashMap() {
@@ -107,5 +107,10 @@ public class ConcurrentLong2ObjectOpenHashMap<V> extends Long2ObjectOpenHashMap<
 	public V remove(long key) {
 		V out = backing.remove(key);
 		return (out == null && !backing.containsKey(key)) ? defaultReturn : out;
+	}
+
+	@Override
+	public void clear() {
+		backing.clear();
 	}
 }

@@ -12,7 +12,7 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 public class Int2ObjectConcurrentHashMap<V> implements Int2ObjectMap<V> {
 
-	Map<Integer, V> backing;
+	protected final ConcurrentHashMap<Integer, V> backing;
 	
 	public Int2ObjectConcurrentHashMap() {
 		backing = new ConcurrentHashMap<Integer, V>();
@@ -87,5 +87,10 @@ public class Int2ObjectConcurrentHashMap<V> implements Int2ObjectMap<V> {
 	@Override
 	public V remove(int key) {
 		return backing.remove(key);
+	}
+
+	@Override
+	public void clear() {
+		backing.clear();
 	}
 }

@@ -45,7 +45,7 @@ public class FalseReference2ReferenceConcurrentHashMap2<K, V> extends Reference2
 
     @Override
     public ReferenceSet<K> keySet() {
-        return new FalseAbstractReferenceSortedSet(map.keySet());
+        return new OpenFalseAbstractReferenceSortedSet(map.keySet());
     }
 
     @Override
@@ -123,8 +123,8 @@ public class FalseReference2ReferenceConcurrentHashMap2<K, V> extends Reference2
                 throw new UnsupportedOperationException();
             }
 
-            public final boolean equals(Object o) {
-                return entry.equals(o);
-            }
+        public final boolean equals(Object o) {
+            return entry.equals(o);
         }
+    }
 }

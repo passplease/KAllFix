@@ -45,7 +45,7 @@ public class FalseReference2ReferenceConcurrentHashMap<K, V> extends AbstractRef
 
     @Override
     public ReferenceSet<K> keySet() {
-        return new FalseAbstractReferenceSortedSet(map.keySet());
+        return new OpenFalseAbstractReferenceSortedSet(map.keySet());
     }
 
     @Override

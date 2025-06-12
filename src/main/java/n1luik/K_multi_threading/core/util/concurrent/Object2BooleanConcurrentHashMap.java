@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Object2BooleanConcurrentHashMap<K> implements Object2BooleanMap<K> {
 
-	Map<K, Boolean> backing;
+	protected final ConcurrentHashMap<K, Boolean> backing;
 
 	public Object2BooleanConcurrentHashMap() {
 		backing = new ConcurrentHashMap<K, Boolean>();
@@ -119,5 +119,10 @@ public class Object2BooleanConcurrentHashMap<K> implements Object2BooleanMap<K> 
 	public boolean replace(K key, boolean value) {
 		Boolean replace = backing.replace(key, value);
 		return replace != null && replace;
+	}
+
+	@Override
+	public void clear() {
+		backing.clear();
 	}
 }

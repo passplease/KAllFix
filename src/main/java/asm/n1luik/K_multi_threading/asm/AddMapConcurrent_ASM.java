@@ -1,5 +1,6 @@
 package asm.n1luik.K_multi_threading.asm;
 
+import asm.n1luik.K_multi_threading.asm.mod.valkyrienskies.AddMapConcurrent;
 import cpw.mods.modlauncher.TransformingClassLoader;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
@@ -65,18 +66,6 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
             new AsmTarget("net.minecraft.world.level.block.ComposterBlock", false),
             new AsmTarget("net.minecraft.world.entity.ai.attributes.AttributeInstance", false),
             new AsmTarget("appeng.me.service.CraftingService", false),
-            new AsmTarget("org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld", false, new String[]{
-                    "dimensionsAddedThisTick",
-                    "dimensionsRemovedThisTick",
-                    "voxelShapeUpdatesList",
-            }, new MethodInfo[]{
-                    new MethodInfo("<init>", null, false, false),
-                    new MethodInfo("clearNewUpdatedDeletedShipObjectsAndVoxelUpdates", "()V", false, true),
-                    new MethodInfo("addDimension", "(Ljava/lang/String;Lorg/valkyrienskies/core/api/world/LevelYRange;)V", false, true),
-                    new MethodInfo("removeDimension", "(Ljava/lang/String;)V", false, true),
-                    new MethodInfo("addTerrainUpdates", "(Ljava/lang/String;Ljava/util/List;)V", false, true),
-                    new MethodInfo("postTick", "()V", false, true)
-            }),
             new AsmTarget("appeng.api.stacks.KeyCounter", true)
     ));
     public final Map<String, AsmTarget> nameMap = new HashMap<>();
@@ -192,6 +181,8 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
 
                 "java.lang.Object"
         ).map(string -> string.replace(".", "/")).toList());*/
+        AddMapConcurrent.init(this);
+
     }
     public String descMap(String desc){
         int array = 0;
@@ -241,7 +232,7 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                 if (methodInfo.test(method)) {
                     if (methodInfo.mappingLocal){
                         for (LocalVariableNode localVariableNode : method.localVariables) {
-                            localVariableNode.desc = typeMapping.getOrDefault(localVariableNode.desc, localVariableNode.desc);
+                            localVariableNode.desc = descMap(localVariableNode.desc);
                         }
                     }
                     AbstractInsnNode[] abstractInsnNodes = method.instructions.toArray();

@@ -35,6 +35,7 @@ public class JEI_AddMapConcurrent_ASM implements ITransformer<ClassNode> {
     }*/
     private final static AsmTarget Empty = new AsmTarget("", false);
     public final List<AsmTarget> stringsList = new ArrayList<>(List.of(
+            new AsmTarget("slimeknights.tconstruct.library.client.materials.MaterialTooltipCache", false),
             new AsmTarget("mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeUtil", false),
             new AsmTarget("net.silentchaos512.gear.api.util.PartGearKey", false),
             new AsmTarget("net.silentchaos512.gear.gear.part.FakePartData", false),
@@ -69,6 +70,8 @@ public class JEI_AddMapConcurrent_ASM implements ITransformer<ClassNode> {
         typeMapping.put("it/unimi/dsi/fastutil/objects/ObjectOpenHashSet", "it/unimi/dsi/fastutil/objects/ObjectSortedSet");
         //////////////////////////////////
         typeMapping.put("it/unimi/dsi/fastutil/objects/ReferenceLinkedOpenHashSet", "n1luik/K_multi_threading/core/util/concurrent/FalseReferenceLinkedOpenHashSet");
+        //////////////////////////////////
+        typeMapping.put("it/unimi/dsi/fastutil/objects/Object2BooleanOpenHashMap", "n1luik/K_multi_threading/core/util/concurrent/Object2BooleanConcurrentHashMap");
 
         /*compatible.put("java/util/concurrent/ConcurrentHashMap", Stream.of(
                 "java/util/concurrent/ConcurrentHashMap",
@@ -153,6 +156,19 @@ public class JEI_AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                 "java.lang.Object"
         ).map(string -> string.replace(".", "/")).toList());*/
     }
+    public String descMap(String desc){
+        int array = 0;
+        while (desc.charAt(array) == '['){
+            array++;
+        }
+        if (desc.charAt(array) == 'L') {
+            String desc1 = typeMapping.get(desc.substring(array + 1, desc.length() - 1));
+            if (desc1 != null){
+                return  "[".repeat(array) + "L" + desc1 + ";";
+            }
+        }
+        return desc;
+    }
 
 
     @Override
@@ -164,10 +180,24 @@ public class JEI_AddMapConcurrent_ASM implements ITransformer<ClassNode> {
             for (FieldNode field : input.fields) {
                 for (String s : orDefault.mappingFields) {
                     if (field.name.equals(s)) {
-                        field.desc = typeMapping.getOrDefault(field.desc, field.desc);
+                        field.desc = descMap(field.desc);
                     }
                 }
             }
+            for (MethodNode methodNode : input.methods) {
+                for (AbstractInsnNode instruction : methodNode.instructions) {
+                    if (instruction instanceof FieldInsnNode fieldInsnNode) {
+                        List<String> strings = fieldMappings.get(fieldInsnNode.owner);
+                        if (strings != null) {
+                            if (strings.contains(fieldInsnNode.name)){
+                                fieldInsnNode.desc = descMap(fieldInsnNode.desc);
+                            }
+                        }
+                    }
+                }
+
+            }
+
         }
         for (MethodNode method : input.methods) {
             for (MethodInfo methodInfo : orDefault.methods) {
@@ -265,8 +295,15 @@ public class JEI_AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                                     }
                                     break;
                                 case "java/util/ArrayList":
-                                    if (methodInsnNode.name.equals("<init>") && methodInsnNode.desc.equals("()V")) {
-                                        method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/concurrent/CopyOnWriteArrayList", "<init>", "()V", false));
+                                    if (methodInsnNode.name.equals("<init>")) {
+                                        if (methodInsnNode.desc.equals("()V")) {
+                                            method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/concurrent/CopyOnWriteArrayList", "<init>", "()V", false));
+                                        } else if (methodInsnNode.desc.equals("(I)V")) {
+                                            method.instructions.add(new InsnNode(Opcodes.POP));
+                                            method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/concurrent/CopyOnWriteArrayList", "<init>", "()V", false));
+                                        }else {
+                                            method.instructions.add(instruction);
+                                        }
                                     } else {
                                         method.instructions.add(instruction);
                                     }
@@ -274,6 +311,13 @@ public class JEI_AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                                 case "it/unimi/dsi/fastutil/objects/ReferenceLinkedOpenHashSet":
                                     if (methodInsnNode.name.equals("<init>") && methodInsnNode.desc.equals("()V")) {
                                         method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/FalseReferenceLinkedOpenHashSet", "<init>", "()V", false));
+                                    } else {
+                                        method.instructions.add(instruction);
+                                    }
+                                    break;
+                                case "it/unimi/dsi/fastutil/objects/Object2BooleanOpenHashMap":
+                                    if (methodInsnNode.name.equals("<init>") && methodInsnNode.desc.equals("()V")) {
+                                        method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/Object2BooleanConcurrentHashMap", "<init>", "()V", false));
                                     } else {
                                         method.instructions.add(instruction);
                                     }
@@ -316,6 +360,8 @@ public class JEI_AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                                         method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/ConcurrentLong2ObjectOpenHashMap"));
                                 case "it/unimi/dsi/fastutil/objects/ReferenceLinkedOpenHashSet" ->
                                         method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/FalseReferenceLinkedOpenHashSet"));
+                                case "it/unimi/dsi/fastutil/objects/Object2BooleanOpenHashMap" ->
+                                        method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/Object2BooleanConcurrentHashMap"));
                                 case "java/util/ArrayList" ->
                                         method.instructions.add(new TypeInsnNode(Opcodes.NEW, "java/util/concurrent/CopyOnWriteArrayList"));
                                 case "it/unimi/dsi/fastutil/objects/ObjectOpenHashSet" ->
@@ -483,7 +529,7 @@ public class JEI_AddMapConcurrent_ASM implements ITransformer<ClassNode> {
         }
         for (AsmTarget asmTarget : stringsList) {
             if (asmTarget.mappingFields.length < 1) continue;
-            List<String> stringStringMap = fieldMappings.computeIfAbsent(asmTarget.className.replace(".", "/"), k -> new ArrayList<>());
+            List<String> stringStringMap = fieldMappings.computeIfAbsent(asmTarget.className.replace(".", "/"), k -> new ArrayList<>(asmTarget.mappingFields.length));
             stringStringMap.addAll(Arrays.asList(asmTarget.mappingFields));
 
         }

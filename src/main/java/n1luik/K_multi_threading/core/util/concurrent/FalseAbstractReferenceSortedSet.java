@@ -14,13 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class FalseAbstractReferenceSortedSet<T> extends AbstractReferenceSortedSet<T> {
-    Set<T> backing;
+    protected final ConcurrentHashMap.KeySetView<T, Boolean> backing;
     public FalseAbstractReferenceSortedSet() {
         this.backing = ConcurrentHashMap.newKeySet();
-    }
-
-    public FalseAbstractReferenceSortedSet(Set<T> backing) {
-        this.backing = backing;
     }
 
     @Override

@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConcurrentInt2ObjectOpenHashMap<V> extends Int2ObjectOpenHashMap<V> {
 
-    Map<Integer, V> backing;
+    protected final ConcurrentHashMap<Integer, V> backing;
 
     public ConcurrentInt2ObjectOpenHashMap() {
         backing = new ConcurrentHashMap<Integer, V>();
@@ -113,4 +113,10 @@ public class ConcurrentInt2ObjectOpenHashMap<V> extends Int2ObjectOpenHashMap<V>
     //public int lastIntKey() {
     //    throw new UnsupportedOperationException();
     //}
+
+
+    @Override
+    public void clear() {
+        backing.clear();
+    }
 }

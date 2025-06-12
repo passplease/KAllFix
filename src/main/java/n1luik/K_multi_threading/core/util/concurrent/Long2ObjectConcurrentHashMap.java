@@ -10,7 +10,7 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 public class Long2ObjectConcurrentHashMap<V> implements Long2ObjectMap<V> {
 
-	Map<Long, V> backing;
+	protected final ConcurrentHashMap<Long, V> backing;
 	V defaultReturn = null;
 	
 	public Long2ObjectConcurrentHashMap() {
@@ -89,5 +89,10 @@ public class Long2ObjectConcurrentHashMap<V> implements Long2ObjectMap<V> {
 	public V remove(long key) {
 		V out = backing.remove(key);
 		return (out == null && !backing.containsKey(key)) ? defaultReturn : out;
+	}
+
+	@Override
+	public void clear() {
+		backing.clear();
 	}
 }

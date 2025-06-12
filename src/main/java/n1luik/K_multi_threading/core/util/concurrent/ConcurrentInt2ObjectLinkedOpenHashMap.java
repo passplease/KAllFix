@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConcurrentInt2ObjectLinkedOpenHashMap<V> extends Int2ObjectLinkedOpenHashMap<V> {
 
-    Map<Integer, V> backing;
+    protected final ConcurrentHashMap<Integer, V> backing;
 
     public ConcurrentInt2ObjectLinkedOpenHashMap() {
         backing = new ConcurrentHashMap<Integer, V>();
@@ -111,5 +111,10 @@ public class ConcurrentInt2ObjectLinkedOpenHashMap<V> extends Int2ObjectLinkedOp
     @Override
     public int lastIntKey() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void clear() {
+        backing.clear();
     }
 }

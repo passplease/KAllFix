@@ -33,6 +33,8 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 
 会生成k_multi_threading-base.jar和k_multi_threading-asm.jar两个文件
 
+有一些功能需要启动一次游戏收集数据在下一次启动是使用，当然这一次启动是无法正常工作的
+
 有一些功能会下载一些库，如果下载失败可以手动放到./lib：
 - Zstd-jni 1.5.7-2 下载地址：https://repo1.maven.org/maven2/com/github/luben/zstd-jni/1.5.7-2/
 - 在启用调试模式的时候需要[火花]spark 任意版本（没有测试过低版本但是最好不要低于1.10.53要不然可能不能生成保存成火花的格式）放入mods
