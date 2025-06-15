@@ -1,4 +1,6 @@
 ##  状态
+目前是直接提交到[gitee](https://gitee.com/n1luik/k_multi_threadingK_multi_threading)在每天的会自动更新一次[github](https://github.com/1luik/KAllFix)
+
 这个项目包含了2个mod     k_all_fix， K_multi_threading
 
 理论上1.17+ java11+都可以用但是需要改源码把没有的部分删除
