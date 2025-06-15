@@ -1,0 +1,153 @@
+plugins {
+    id("java")
+    id 'eclipse'
+    id 'maven-publish'
+}
+
+base {
+    archivesName = mod_id
+}
+
+version = mod_version
+group = mod_group_id
+
+repositories {
+    mavenCentral()
+
+    maven { url =  'https://maven.aliyun.com/repository/gradle-plugin' }
+    maven { url = 'https://maven.minecraftforge.net/' }
+    maven { url = "https://maven.fabricmc.net/" }
+    maven { url = "https://papermc.io/repo/repository/maven-public/" }
+    maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url = "https://google.bintray.com/tensorflow" }
+    maven { url = "https://repo1.maven.org/maven2" }
+    maven {
+        name = 'sponge'
+        url = 'https://repo.spongepowered.org/maven'
+    }
+
+}
+
+dependencies {
+    implementation("cpw.mods:bootstraplauncher:1.1.2")
+    implementation("cpw.mods:modlauncher:10.0.8")
+    implementation("net.minecraftforge:forgespi:7.0.0")
+    implementation("net.minecraftforge:fmlloader:1.20.1-47.0.0")
+}
+
+import java.util.jar.JarEntry
+import java.util.jar.JarFile
+import java.util.jar.JarOutputStream
+
+// 创建自定义任务 splitJar
+tasks.register('splitJar') {
+    // 执行任务时的操作
+    dependsOn(':jar')
+    doLast {
+        def outputPath = file("build")
+        outputPath.mkdirs()
+
+        // 删除旧的目标 JAR 文件并创建新文件
+        def baseJar = new File(outputPath, "k_multi_threading-base.jar")
+        def asmJar = new File(outputPath, "k_multi_threading-asm.jar")
+        baseJar.delete()
+        asmJar.delete()
+        baseJar.createNewFile()
+        asmJar.createNewFile()
+
+        // 定义复制和移动的文件列表
+        def copy = []
+        def mov = [
+                "K_multi_threading.mapping",
+                "asm/n1luik/K_multi_threading",
+                "asm/n1luik/KAllFix",
+                "asm/KAllFix.fix/",
+                "META-INF/services"
+        ]
+
+        // 打开源 JAR 文件
+        def sourceJar = new JarFile(files(tasks.getByPath(":jar").outputs).first())
+        def jarBase = new JarOutputStream(new FileOutputStream(baseJar))
+        def jarAsm = new JarOutputStream(new FileOutputStream(asmJar))
+
+        def names = []
+        def names2 = []
+
+        // 遍历源 JAR 文件中的所有条目
+        sourceJar.entries().each { JarEntry jarEntry ->
+            def name = jarEntry.getName()
+            if (name.endsWith("/")) return
+
+            // 处理复制列表
+            def shouldCopyToAsm = false
+            copy.each { s ->
+                if (name.startsWith(s) && !names.contains(name)) {
+                    names.add(name)
+                    jarAsm.putNextEntry(jarEntry)
+                    jarAsm.write(sourceJar.getInputStream(jarEntry).bytes)
+                    shouldCopyToAsm = true
+                }
+            }
+
+            // 处理移动列表
+            mov.each { s ->
+                if (name.startsWith(s)) {
+                    if (!names.contains(name)) {
+                        names.add(name)
+                        jarAsm.putNextEntry(jarEntry)
+                        jarAsm.write(sourceJar.getInputStream(jarEntry).bytes)
+                    }
+                    shouldCopyToAsm = true
+                }
+            }
+
+            // 处理基础 JAR 文件
+            if (!shouldCopyToAsm && !names2.contains(name)) {
+                names2.add(name)
+                jarBase.putNextEntry(jarEntry)
+                jarBase.write(sourceJar.getInputStream(jarEntry).bytes)
+            }
+        }
+
+        // 关闭流
+        jarBase.close()
+        jarAsm.close()
+        sourceJar.close()
+    }
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+
+tasks.jar {
+    setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    dependsOn('splitJar')
+    from file("build/k_multi_threading-base.jar") //{
+        //rename { String fileName -> "KMT.jar"
+//
+        //}
+    //}
+    //if (Boolean.getBoolean("install_package")){
+    //    from files(tasks.getByPath(":jar").outputs) {
+    //        rename { String fileName -> "KMT_ALL.jar"
+//
+    //        }
+    //    }
+    //}
+    from zipTree(files("build/k_multi_threading-asm.jar").first())
+
+    manifest {
+        attributes([
+                "Main-Class"     : "n1luik.K_multi_threading.install.Install",
+                "Specification-Title"     : mod_id,
+                "Specification-Vendor"    : mod_authors,
+                "Specification-Version"   : "1", // We are version 1 of ourselves
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : project.jar.archiveVersion,
+                "Implementation-Vendor"   : mod_authors,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}

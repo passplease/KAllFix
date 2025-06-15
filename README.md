@@ -25,9 +25,11 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 
 然后把build/libs的文件复制到游戏目录
 
-然后
+1.0.3.18之前
 
     java -jar k_multi_threading-xxx.jar -i [空或安装目录]
+
+1.0.3.18开始可以直接运行但是保留安装功能
 
 按照提示操作或者去n1luik.K_multi_threading.core.util.Util看源码
 
@@ -90,6 +92,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 - -DKAF-gtceu.MedicalConditionTrackerMixin=true 禁止添加gtm的辐射
 - -DKAF-RemoveClientboundKeepAlivePacket=true 禁用ClientboundKeepAlivePacket功能
 - -DKAF-Fix_fabric-object-builder-api.jar=true 修复信雅互联的fabric-object-builder-api不兼容47.3.27的问题，我因为这个问题让这个mod晚发了半个月他们还没有解决
+- -DKAF-FixTFMGDestroy=true修复[坍毁化合]destroy和[机械动力：工业长路]tfmg的兼容问题，需如果在没有安装2个的情况下会直接出现[坍毁化合]destroy的Creative Pump无法正常连接机械动力的管道
 - -DKAF-FixConfigAuto=true自动修改配置文件为正确的选项
 - -DKAF-fix.asynchronous.ClientboundCustomQueryPacket=true握手异步，如果加的mod太多可能会导致握手的时候堵包导致不能玩服务器
 - -DKMT-LoginMultiThreading=true登陆多线程，防止模组过多在[net.minecraftforge.event.OnDatapackSyncEvent]的过程中出现bug

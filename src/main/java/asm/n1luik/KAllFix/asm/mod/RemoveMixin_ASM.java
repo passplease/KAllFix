@@ -1,4 +1,4 @@
-package asm.n1luik.K_multi_threading.asm.mod;
+package asm.n1luik.KAllFix.asm.mod;
 
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
 import cpw.mods.modlauncher.api.ITransformer;
@@ -17,12 +17,13 @@ import java.util.Set;
 
 @Slf4j
 public class RemoveMixin_ASM implements ITransformer<ClassNode> {
-    public final List<String[]> stringsList = new ArrayList<>(List.of(
-            new String[]{"com/gregtechceu/gtceu/core/mixins/LevelMixin","getTileEntity"},
-            new String[]{"com/github/alexthe666/iceandfire/mixin/gen/NoLakesInStructuresMixin","iaf_noLakesInMausoleum"}
+    public final List<String[]> stringsList = new ArrayList<>();
 
-    ));
-
+    {
+        if (Boolean.getBoolean("KAF-FixTFMGDestroy")){
+            stringsList.add(new String[]{"com/petrolpark/destroy/mixin/FluidPropagatorMixin","matchOtherPumps"});
+        }
+    }
 
     @Override
     public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
@@ -58,7 +59,7 @@ public class RemoveMixin_ASM implements ITransformer<ClassNode> {
     @Override
     public @NotNull Set<Target> targets() {
 
-        File f = new File("config/K_multi_threading-RemoveMixin-list.txt");
+        File f = new File("config/K_all_fix-RemoveMixin-list.txt");
         if (f.exists()) {
             try (BufferedReader r = new BufferedReader(new FileReader(f))) {
                 r.lines().filter(s -> !(s.startsWith("#") || s.startsWith("//") || s.equals("")))

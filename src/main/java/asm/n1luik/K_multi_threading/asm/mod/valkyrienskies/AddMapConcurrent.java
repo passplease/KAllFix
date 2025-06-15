@@ -54,7 +54,7 @@ public class AddMapConcurrent {
                         new AddMapConcurrent_ASM.MethodInfo("addDimension", "(Ljava/lang/String;Lorg/valkyrienskies/core/api/world/LevelYRange;)V", false, true),
                         new AddMapConcurrent_ASM.MethodInfo("removeDimension", "(Ljava/lang/String;)V", false, true),
                         new AddMapConcurrent_ASM.MethodInfo("addTerrainUpdates", "(Ljava/lang/String;Ljava/util/List;)V", false, true),
-                        new AddMapConcurrent_ASM.MethodInfo("postTick", "()V", false, true)
+                        new AddMapConcurrent_ASM.MethodInfo("postTick", "()V", true, true)
                 })
         );
         File allPath = new File("./config/KAllFix/DataCollectors/ValkyrienSkies");

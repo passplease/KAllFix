@@ -1,8 +1,10 @@
 package asm.n1luik.KAllFix.asm;
 
+import asm.n1luik.KAllFix.asm.mod.RemoveMixin_ASM;
 import asm.n1luik.KAllFix.asm.mod.createdieselgenerators.EntityMixinAsm;
 import asm.n1luik.KAllFix.asm.mod.petrolpark.ITeamBoundItemAsm;
 import asm.n1luik.KAllFix.asm.mod.petrolpark.ShopMenuItemAsm;
+import asm.n1luik.KAllFix.asm.mod.tfmg.DestroyFix_Asm;
 import asm.n1luik.KAllFix.asm.util.ReadClassAsm;
 import asm.n1luik.KAllFix.asm.mod.jei.JEI_AddMapConcurrent_ASM;
 import asm.n1luik.KAllFix.asm.mod.jei.JEI_NotErrorAddSynchronized_Asm;
@@ -78,6 +80,10 @@ public class KAllFixAsm implements ITransformationService {
             transformers.add(new ReadClassAsm("quark", "1.20.1+all", "PotionUtilsMixin", Set.of(
                     ITransformer.Target.targetClass("org.violetmoon.quark.mixin.mixins.PotionUtilsMixin")
             )));
+        }
+        transformers.add(new RemoveMixin_ASM());
+        if (Boolean.getBoolean("KAF-FixTFMGDestroy")){
+            transformers.add(new DestroyFix_Asm());
         }
 
         if (FMLEnvironment.dist == Dist.DEDICATED_SERVER && !Boolean.getBoolean("DisablePetrolpark")) {//用不了，直接不加载了

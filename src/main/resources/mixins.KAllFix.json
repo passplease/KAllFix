@@ -33,6 +33,7 @@
     "unsafe.NbtIoMixin_NotGZip",
     "unsafe.RemoveClientboundKeepAlivePacket",
     "unsafe.ServerGamePacketListenerImplMixin2",
+    "unsafe.debug.ClientboundUpdateRecipesPacketDebug",
     "unsafe.debug.ConnectionMixin",
     "unsafe.debug.RegionFileStorageDebug1",
     "unsafe.debug.packet.ConnectionMixin1",

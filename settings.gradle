@@ -14,3 +14,4 @@ plugins {
 if (new File("./remap/build.gradle").isFile()){
     include ':remap'
 }
+include 'install'

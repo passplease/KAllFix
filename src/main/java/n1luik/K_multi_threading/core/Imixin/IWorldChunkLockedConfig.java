@@ -18,6 +18,7 @@ public interface IWorldChunkLockedConfig {
     void execTask(Runnable task);
     void execWaitTask(Runnable task);
     void KMT$addTickRun(Runnable task);
+    void KMT$genTestTickRun(Runnable task);
     void KMT$addRun(Runnable task);
     boolean isGeneratorWait();
 }

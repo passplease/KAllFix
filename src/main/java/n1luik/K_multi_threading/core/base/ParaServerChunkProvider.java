@@ -304,10 +304,26 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
                 return KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, out, err);
             }else {
                 Runnable runnable = () -> KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, out, err);
-                if (ChunkGeneratorTest-1 > 0) {
-                    mainThreadProcessor.tell(runnable);
+
+                if (mainThreadProcessor instanceof IMainThreadExecutor iMainThreadExecutor){
+                    boolean b;
+                    synchronized (iMainThreadExecutor.getLockCall()) {
+                        if (iMainThreadExecutor.isCall()) {
+                            mainThreadProcessor.execute(runnable);
+                            b = false;
+                        }else {
+                            b = true;
+                        }
+                    }
+                    if (b) {
+                        generatorAllRun.execute(runnable);
+                    }
                 }else {
-                    generatorAllRun.execute(runnable);
+                    if (ChunkGeneratorTest-1 > 0) {
+                        mainThreadProcessor.tell(runnable);
+                    }else {
+                        generatorAllRun.execute(runnable);
+                    }
                 }
                 return null;
             }
@@ -382,7 +398,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         //} else {
         //if (requiredStatus != ChunkStatus.FULL && !iMainThreadExecutor.isCall() && Thread.currentThread() != iMainThreadExecutor.getCallThread()){
             synchronized (isBlacklistThread ? threadBlacklist : lock) {//代理并委托不能锁this会出现问题的
-                //log.info("Missed chunk {} {} now", chunkX, chunkZ);
+                //log.debug("Missed chunk {} {} now", chunkX, chunkZ);
                 //synchronized (locks.get(requiredStatus.getIndex())) {
                     if (chunkCache.containsKey(new ChunkCacheAddress(i, requiredStatus)) && (c = lookupChunk(i, requiredStatus, false)) != null) {
                         return c;
@@ -540,6 +556,10 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
      * 用于兼容在生成区块时运行任务
      * */
     public void KMT$genTestTickRun(Runnable runnable){
+        if (Thread.currentThread() == generatorAllThread) {
+            runnable.run();
+            return;
+        }
         if (mainThreadProcessor instanceof IMainThreadExecutor iMainThreadExecutor){
             boolean b;
             synchronized (iMainThreadExecutor.getLockCall()) {
