@@ -51,6 +51,7 @@
     "minecraftfix.ServerLevel_EntityCallbacksFix1",
     "minecraftfix.ServerLevelFix1",
     "minecraftfix.ServerPlayerGameModeFix1",
+    "minecraftfix.DimensionDataStorageFix1",
     "minecraftfix.ServerWatchdogFix1",
     "minecraftfix.ThreadedLevelLightEngineFix2",
     "minecraftfix.loginMultiThreading.DistanceManagerFix1",

@@ -17,6 +17,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import com.mojang.datafixers.util.Either;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
@@ -29,6 +30,8 @@ import n1luik.K_multi_threading.core.util.*;
 import n1luik.K_multi_threading.core.util.concurrent.FixNullConcurrentHashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.Ticket;
+import net.minecraft.util.SortedArraySet;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -300,9 +303,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     protected ChunkAccess KMT$basePush(int chunkX, int chunkZ, ChunkStatus requiredStatus, boolean load, Consumer<ChunkAccess> out, Consumer<Throwable> err){
         synchronized (lock3) {
             ChunkGeneratorTest++;//.getAndAdd(1);
-            if (Thread.currentThread() == generatorAllThread) {
-                return KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, out, err);
-            }else {
+            if (Thread.currentThread() != generatorAllThread) {
                 Runnable runnable = () -> KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, out, err);
 
                 if (mainThreadProcessor instanceof IMainThreadExecutor iMainThreadExecutor){
@@ -328,6 +329,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
                 return null;
             }
         }
+        return KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, out, err);
     }
 
     protected ChunkAccess KMT$baseGetChunk(int chunkX, int chunkZ, ChunkStatus requiredStatus, boolean load, Consumer<ChunkAccess> out, Consumer<Throwable> err){
@@ -512,8 +514,15 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     public void testChunkCache(){
         //if (Util.getMillis() + 14246622 % 28 == 0) {
         List<ChunkCacheAddress> remove = new ArrayList<>();
+        Long2ObjectOpenHashMap<SortedArraySet<Ticket<?>>> tickets = distanceManager.tickets;
         for (ChunkCacheAddress chunkCacheAddress : chunkCache.keySet()) {
-            if (distanceManager.getTickets(chunkCacheAddress.chunk).isEmpty()) {
+            //if (distanceManager.getTickets(chunkCacheAddress.chunk).isEmpty()) {
+            //    remove.add(chunkCacheAddress);
+            //}
+            SortedArraySet<Ticket<?>> tickets1 = tickets.get(chunkCacheAddress.chunk);
+            if (tickets1 == null) {
+                remove.add(chunkCacheAddress);
+            }else if (tickets1.isEmpty()) {
                 remove.add(chunkCacheAddress);
             }
         }

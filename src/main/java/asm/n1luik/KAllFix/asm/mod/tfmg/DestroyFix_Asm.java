@@ -26,25 +26,50 @@ public class DestroyFix_Asm implements ITransformer<ClassNode> {
                 debug_add2 = true;
                 InsnList instructions = method.instructions;
                 method.instructions = new InsnList();
-                method.maxStack++;
+                //method.maxStack += 2;
                 LabelNode label = new LabelNode();
                 label.getLabel().info = label;
-                AbstractInsnNode il = null;
+                LabelNode label2 = new LabelNode();
+                label2.getLabel().info = label2;
+                //AbstractInsnNode il = null;
+                //AbstractInsnNode il2 = null;
+                method.visitLocalVariable("DestroyFix_Asm", "Z", null, label.getLabel(), label2.getLabel(), method.maxLocals);
+
+                //for (AbstractInsnNode instruction : instructions) {
+                //    if (instruction.getOpcode() == Opcodes.INVOKEVIRTUAL && instruction instanceof MethodInsnNode methodInsnNode) {
+                //        if (methodInsnNode.owner.equals(strings2[0]) && methodInsnNode.name.equals(strings2[1]) && methodInsnNode.desc.equals(strings2[2])) {
+                //            il = instruction.getNext();
+                //            while (!(il instanceof JumpInsnNode))
+                //                il = il.getNext();
+                //            //il2 = instruction.getPrevious();
+                //            //while (!(il2 instanceof VarInsnNode))
+                //            //    il2 = il2.getPrevious();
+                //            //il2 = il2.clone(null);
+                //        }
+                //    }
+                //}
+                //assert il != null;
 
                 for (AbstractInsnNode instruction : instructions) {
                     if (!debug_add1 && instruction.getOpcode() == Opcodes.INVOKEVIRTUAL && instruction instanceof MethodInsnNode methodInsnNode) {
                         if (methodInsnNode.owner.equals(strings2[0]) && methodInsnNode.name.equals(strings2[1]) && methodInsnNode.desc.equals(strings2[2])) {
                             debug_add1 = true;
-                            il = instruction.getNext();
-                            while (!(il instanceof JumpInsnNode))
-                                il = il.getNext();
 
                             method.instructions.add(new InsnNode(Opcodes.DUP));
-                            method.instructions.add(instruction);
-                            method.instructions.add(new JumpInsnNode(Opcodes.IFNE, label));
                             method.instructions.add(new FieldInsnNode(Opcodes.GETSTATIC, "com/petrolpark/destroy/DestroyBlocks", "CREATIVE_PUMP", "Lcom/tterrag/registrate/util/entry/BlockEntry;"));
                             method.instructions.add(new InsnNode(Opcodes.SWAP));
+                            method.instructions.add(label);
                             method.instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, strings2[0], strings2[1], strings2[2]));
+                            //method.instructions.add(new JumpInsnNode(Opcodes.IFNE, label));
+                            method.instructions.add(new VarInsnNode(Opcodes.ISTORE, method.maxLocals));
+                            method.instructions.add(instruction);
+                            method.instructions.add(new VarInsnNode(Opcodes.ILOAD, method.maxLocals));
+                            method.instructions.add(label2);
+                            //method.instructions.add(new InsnNode(Opcodes.IOR));
+                            method.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Boolean", "logicalOr", "(ZZ)Z"));
+
+
+                            //method.instructions.add(il2);
                         }else {
                             method.instructions.add(instruction);
                         }
@@ -52,7 +77,8 @@ public class DestroyFix_Asm implements ITransformer<ClassNode> {
                         method.instructions.add(instruction);
                     }
                 }
-                method.instructions.insertBefore(il, label);
+                //method.instructions.insertBefore(il, label);
+                method.visitMaxs(0, 0);
             }
         }
         //method.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,

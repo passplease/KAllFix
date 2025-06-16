@@ -1418,7 +1418,7 @@ public class FastUtilHackUtil {
 		}
 	}
 
-	static class WrappingLongIterator implements LongIterator {
+	public static class WrappingLongIterator implements LongIterator {
 
 		Iterator<Long> backing;
 
