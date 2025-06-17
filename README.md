@@ -57,8 +57,8 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 - (不安全)（需要开启-DKAF-NbtIoMixin_NotGZip=true)加一个try catch解决nbtio的gzip问题
 - 解决老destroy的数据库连不上就崩服问题
 - -DKMT-threadMax=[线程池的线程数] | 1.0.3
-- -KMT-callMax=[多线程任务默认分配最大使用线程] | 1.0.3
-- -KMT-ThreadpoolKeepAliveTime=[毫秒]多线程线程池停止不需要的线程的时间 | 1.0.3
+- -DKMT-callMax=[多线程任务默认分配最大使用线程] | 1.0.3
+- -DKMT-ThreadpoolKeepAliveTime=[毫秒]多线程线程池停止不需要的线程的时间 | 1.0.3
 - 使用-DKAF-RemoveMixin:[类名]禁用指定的mixin，KMT也可以
 - -DKMT-ChunkGeneratorMode2Start=[true, false]相当于自动在开始的执行 /SetterWorldConfig world setM2 %%KMT-ChunkGeneratorMode2Start%%
 - -DKAF-ClientboundKeepAlivePacket_Max=[多少毫秒] 修改ClientboundKeepAlivePacket数据包的时间要求，默认15秒
@@ -181,3 +181,5 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
   - 吧老备份的或者一样种子一样一样规则的level.dat替换
 - 问题：
   - 不一定数据完全可能会出现数据偏差
+- 文档之前有的忘加-D了
+

@@ -22,37 +22,56 @@ public class EntityMixinAsm implements ITransformer<ClassNode> {
 
         for (MethodNode method : input.methods) {
             if (method.name.equals("tick")) {
-                boolean enable = true;
+                boolean enable = false;
 
                 for (AbstractInsnNode instruction : method.instructions) {
                     if (instruction.getOpcode() == Opcodes.INVOKEINTERFACE && instruction instanceof MethodInsnNode methodInsnNode) {
-                        if (methodInsnNode.name.equals("java/util/stream/Stream")) {
-                            enable = false;
+                        if (methodInsnNode.owner.equals("java/util/stream/Stream")) {
+                            enable = true;
                         }
                     }
                 }
-                if (enable) return input;
+                if (!enable) return input;
                 InsnList instructions = method.instructions;
                 InsnList instructions1 = method.instructions = new InsnList();
+                boolean remove = false;
+                boolean remove2 = false;
 
                 for (AbstractInsnNode instruction : instructions) {
-                    if (instruction.getOpcode() == Opcodes.INVOKEINTERFACE && instruction instanceof MethodInsnNode methodInsnNode) {
-                        if (!methodInsnNode.name.equals("java/util/stream/Stream") && !methodInsnNode.name.equals("java/util/List")) {
+                    if (remove2) {
+                        instructions1.add(instruction);
+                    }else if (!remove && instruction.getOpcode() == Opcodes.INVOKEVIRTUAL && instruction instanceof MethodInsnNode methodInsnNode) {
+                        if (methodInsnNode.name.equals(strings[1])) {
+                            remove = true;
+                        }else {
                             instructions1.add(instruction);
                         }
+                    }else if (!remove) {
+                        instructions1.add(instruction);
                     }else {
-                        if (instruction.getOpcode() != Opcodes.ICONST_0) {
-                            if (instruction.getOpcode() == Opcodes.INVOKEVIRTUAL && instruction instanceof MethodInsnNode methodInsnNode) {
-
-                                if (!methodInsnNode.name.equals(strings[1])) {
-                                    instructions1.add(instruction);
-                                }// else {
-                                    //instructions1.add(new VarInsnNode(Opcodes.ALOAD, 0));
-
-                                //}
-                            } else instructions1.add(instruction);
+                        if (instruction.getOpcode() == Opcodes.INVOKEINTERFACE && instruction instanceof MethodInsnNode methodInsnNode) {
+                            if (methodInsnNode.owner.equals("java/util/List") && methodInsnNode.name.equals("get") && methodInsnNode.desc.equals("(I)Ljava/lang/Object;")) {
+                                remove2 = true;
+                            }
                         }
                     }
+                    //if (instruction.getOpcode() == Opcodes.INVOKEINTERFACE && instruction instanceof MethodInsnNode methodInsnNode) {
+                    //    if (!methodInsnNode.owner.equals("java/util/stream/Stream") && !methodInsnNode.owner.equals("java/util/List")) {
+                    //        instructions1.add(instruction);
+                    //    }
+                    //}else {
+                    //    if (instruction.getOpcode() != Opcodes.ICONST_0) {
+                    //        if (instruction.getOpcode() == Opcodes.INVOKEVIRTUAL && instruction instanceof MethodInsnNode methodInsnNode) {
+//
+                    //            if (!methodInsnNode.name.equals(strings[1])) {
+                    //                instructions1.add(instruction);
+                    //            }// else {
+                    //                //instructions1.add(new VarInsnNode(Opcodes.ALOAD, 0));
+//
+                    //            //}
+                    //        } else instructions1.add(instruction);
+                    //    }
+                    //}
                 }
             }
         }
