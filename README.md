@@ -1,0 +1,2 @@
+## About This Repository
+Used to collect issues, for newest source code, please go to [Gitee](https://gitee.com/n1luik/k_multi_threadingK_multi_threading), or look at `Code` branch (Auto sychronize by github action)
