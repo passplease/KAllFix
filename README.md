@@ -161,6 +161,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
   - 自动移除的方式是吧mixin.world.tick_scheduler=false是直接写config/canary.properties里吗
 - canary的entity_by_type功能会覆盖ClassInstanceMultiMap的多线程修复只能关闭，可以通过-DKAF-FixConfigAuto=true自动禁用
   - 在游戏目录/config/canary.properties新开一行写上写上[mixin.chunk.entity_class_groups=false]
+  - 自动移除的方式是吧mixin.chunk.entity_class_groups=false是直接写config/canary.properties里吗
 - 多线程会出现线程池拦截报错不会崩溃的情况，但是有一个拦截次数超过这个次数会报错，这个次数是可以设置的
 - 跟现代化修复(modernfix)的mixin.perf.cache_upgraded_structures可能冲突的，建议先试一试会不会出问题在关闭
   - 关闭方法：在config/modernfix-mixins.properties文件新增一行插入的mixin.perf.cache_upgraded_structures=false
