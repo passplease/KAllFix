@@ -156,6 +156,8 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 ## 问题
 - 如果不手动设置-DKMT-threadMax=[cpu线程数]的话可能会导致地形生成莫名其妙卡死，还是的话继续调高这个
 - cupboard模组的logOffthreadEntityAdd功能可能不兼容，我不想直接让他直接消失而且被人发现，可以通过-DKAF-FixConfigAuto=true自动禁用
+- canary的entity_class_groups功能根本不可能兼容多线程只能关闭，可以通过-DKAF-FixConfigAuto=true自动禁用，如果不关闭会导致小概率出现实体错误储存的情况
+  - 在游戏目录/config/canary.properties新开一行写上写上[mixin.chunk.entity_class_groups=false]
 - 多线程会出现线程池拦截报错不会崩溃的情况，但是有一个拦截次数超过这个次数会报错，这个次数是可以设置的
 - 跟现代化修复(modernfix)的mixin.perf.cache_upgraded_structures可能冲突的，建议先试一试会不会出问题在关闭
   - 关闭方法：在config/modernfix-mixins.properties文件新增一行插入的mixin.perf.cache_upgraded_structures=false
