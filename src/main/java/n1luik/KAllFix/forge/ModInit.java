@@ -1,9 +1,11 @@
 package n1luik.KAllFix.forge;
 
+import com.abdelaziz.canary.common.Canary;
 import lombok.extern.slf4j.Slf4j;
 import n1luik.KAllFix.DataCollectors;
 import n1luik.K_multi_threading.core.Base;
 import n1luik.K_multi_threading.core.dataCollectors.ValkyrienSkies;
+import n1luik.K_multi_threading.fix.canary.CanaryConfigAuto;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
@@ -48,6 +50,7 @@ public class ModInit {
         MinecraftForge.EVENT_BUS.post(event);
         if (FMLEnvironment.dist == Dist.DEDICATED_SERVER) {
             event.dataCollectors.addTools(new ValkyrienSkies());
+            event.dataCollectors.addTools(new CanaryConfigAuto());
         }
 
         try {

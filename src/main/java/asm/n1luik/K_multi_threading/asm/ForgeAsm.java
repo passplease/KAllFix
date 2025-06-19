@@ -4,7 +4,7 @@ import asm.n1luik.K_multi_threading.asm.mod.*;
 import asm.n1luik.K_multi_threading.asm.mod.Modernfix.ModernfixGetChunkSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.ae2.PathingCalculation_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.biolith.FixMixinServerWorld1_Asm;
-import asm.n1luik.K_multi_threading.asm.mod.canary.CanaryMixinPluginAsm;
+import asm.n1luik.K_multi_threading.asm.mod.canary.CanaryConfigAsm;
 import asm.n1luik.K_multi_threading.asm.mod.canary.ServerChunkCacheMixin_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateGeneratingKineticBlockEntity_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateTrackBlockSynchronized_Asm;
@@ -19,7 +19,6 @@ import cpw.mods.modlauncher.api.IEnvironment;
 import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.IncompatibleEnvironmentException;
-import net.minecraftforge.fml.loading.FMLConfig;
 import net.minecraftforge.fml.loading.FMLLoader;
 import org.jetbrains.annotations.NotNull;
 
@@ -150,8 +149,10 @@ public class ForgeAsm implements ITransformationService{
                 //new ChunkMapSynchronized_Asm(),
                 new FastUtilTransformerService()
         ));
+        //在这里不可以使用插件
         if (Boolean.getBoolean("KAF-FixConfigAuto")) {
-            iTransformers.add(new CanaryMixinPluginAsm());
+            //iTransformers.add(new CanaryConfigAsm());
+
         }
         return iTransformers;
     }

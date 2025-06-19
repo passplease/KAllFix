@@ -4,9 +4,6 @@ import asm.n1luik.K_multi_threading.asm.ForgeAsm;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.loading.LoadingModList;
-import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -17,11 +14,11 @@ import org.objectweb.asm.tree.*;
 import java.io.IOException;
 import java.util.Set;
 
-public class CanaryMixinPluginAsm implements ITransformer<ClassNode> {
+public class CanaryConfigAsm implements ITransformer<ClassNode> {
     @NotNull
     @Override
     public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
-        String[] strings = ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/mixin/CanaryMixinPlugin.shouldApplyMixin(Ljava/lang/String;Ljava/lang/String;)Z");
+        String[] strings = ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/common/config/CanaryConfig.getEffectiveOptionForMixin(Ljava/lang/String;)Lcom/abdelaziz/canary/common/config/Option;");
         boolean debug_add1 = false;
         boolean debug_add2 = false;
         String kMultiThreading$FixTest = "K_multi_threading$FixTest";
@@ -39,18 +36,29 @@ public class CanaryMixinPluginAsm implements ITransformer<ClassNode> {
                         labelNode.getLabel().info = labelNode;
                         InsnList abstractInsnNodes = new InsnList();
 
-                        abstractInsnNodes.add(new VarInsnNode(Opcodes.ALOAD, 2));
+                        abstractInsnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
                         abstractInsnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, input.name, kMultiThreading$FixTest, "(Ljava/lang/String;)Z"));
                         abstractInsnNodes.add(new JumpInsnNode(Opcodes.IFEQ, labelNode));
-                        abstractInsnNodes.add(new InsnNode(Opcodes.ICONST_0));
-                        abstractInsnNodes.add(new InsnNode(Opcodes.IRETURN));
+
+                        //abstractInsnNodes.add(new InsnNode(Opcodes.ICONST_0));
+                        //abstractInsnNodes.add(new InsnNode(Opcodes.IRETURN));
+
+                        //abstractInsnNodes.add(new TypeInsnNode(Opcodes.NEW, "com/abdelaziz/canary/common/config/Option"));
+                        //abstractInsnNodes.add(new InsnNode(Opcodes.DUP));
+                        //abstractInsnNodes.add(new LdcInsnNode("K_multi_threading$Fix"));
+                        //abstractInsnNodes.add(new InsnNode(Opcodes.ICONST_0));
+                        //abstractInsnNodes.add(new InsnNode(Opcodes.ICONST_0));
+                        //abstractInsnNodes.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "com/abdelaziz/canary/common/config/Option", "<init>", "(Ljava/lang/String;ZZ)V", false));
+                        abstractInsnNodes.add(new InsnNode(Opcodes.ACONST_NULL));
+                        abstractInsnNodes.add(new InsnNode(Opcodes.ARETURN));
+
                         abstractInsnNodes.add(labelNode);
 
                         method.instructions.insertBefore(instruction, abstractInsnNodes);
                         break;
                     }
                 }
-                method.maxStack++;
+                method.maxStack += 5;
             }
         }
 
@@ -63,7 +71,10 @@ public class CanaryMixinPluginAsm implements ITransformer<ClassNode> {
             methodVisitor.visitCode();
 
             methodVisitor.visitLabel(l1);
-            addRemove(methodVisitor, l3, "com.abdelaziz.canary.mixin.collections.entity_by_type.");
+            addRemove(methodVisitor, l3, "collections.entity_by_type.");
+            addRemove(methodVisitor, l3, "world.tick_scheduler.");
+            //addRemove(methodVisitor, l3, "com.abdelaziz.canary.mixin.collections.entity_by_type.");
+            //addRemove(methodVisitor, l3, "com.abdelaziz.canary.mixin.world.tick_scheduler.");
             //addRemove(methodVisitor, l3, "com.abdelaziz.canary.mixin.collections.entity_filtering.");
             //addRemove(methodVisitor, l3, "com.abdelaziz.canary.mixin.chunk.entity_class_groups.");
             //addRemove(methodVisitor, l3, "com.abdelaziz.canary.mixin.entity.collisions.unpushable_cramming.");
@@ -80,14 +91,14 @@ public class CanaryMixinPluginAsm implements ITransformer<ClassNode> {
         }
 
         if (!debug_add1 || !debug_add2){
-            throw new RuntimeException("Not mapping error: com.abdelaziz.canary.mixin.CanaryMixinPlugin %s %s".formatted(debug_add1, debug_add2));
+            throw new RuntimeException("Not mapping error: com.abdelaziz.canary.common.config.CanaryConfig %s %s".formatted(debug_add1, debug_add2));
         }
-        if (Boolean.getBoolean("KAF-CanaryMixinPluginAsmDebug")){
+        if (Boolean.getBoolean("KAF-CanaryConfigAsmDebug")){
             //吧input写入debug.class用于调试
             try {
                 ClassWriter classWriter = new ClassWriter(0);
                 input.accept(classWriter);
-                java.nio.file.Files.write(java.nio.file.Paths.get("./CanaryMixinPluginAsmDebug.class"), classWriter.toByteArray());
+                java.nio.file.Files.write(java.nio.file.Paths.get("./CanaryConfigAsmDebug.class"), classWriter.toByteArray());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -112,6 +123,6 @@ public class CanaryMixinPluginAsm implements ITransformer<ClassNode> {
     @Override
     public @NotNull Set<Target> targets() {
         return Set.of(
-                Target.targetClass("com.abdelaziz.canary.mixin.CanaryMixinPlugin"));
+                Target.targetClass("com.abdelaziz.canary.common.config.CanaryConfig"));
     }
 }
