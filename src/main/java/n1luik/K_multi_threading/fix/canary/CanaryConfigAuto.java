@@ -24,7 +24,7 @@ public class CanaryConfigAuto extends DataCollectors.CollectTools<CanaryConfigAu
                 return false;
             }
             fin.close();
-            return !props.getProperty("mixin.chunk.entity_class_groups", "true").equals("true");
+            return !props.getProperty("mixin.collections.entity_by_type", "true").equals("true");
         } catch (IOException e) {
             throw new RuntimeException("Could not load config file", e);
         }
@@ -52,7 +52,7 @@ public class CanaryConfigAuto extends DataCollectors.CollectTools<CanaryConfigAu
                 "# By default, this file will be empty except for this notice.
                 
                 # KMT
-                mixin.chunk.entity_class_groups=false
+                mixin.collections.entity_by_type=false
                 mixin.world.tick_scheduler=false
                 """.getBytes());
             } catch (IOException e) {
@@ -64,7 +64,7 @@ public class CanaryConfigAuto extends DataCollectors.CollectTools<CanaryConfigAu
             FileInputStream fin = new FileInputStream(file);
             props.load(fin);
             boolean tick_scheduler = props.getProperty("mixin.world.tick_scheduler", "true").equals("true");
-            boolean entity_class_groups = props.getProperty("mixin.chunk.entity_class_groups", "true").equals("true");
+            boolean entity_class_groups = props.getProperty("mixin.collections.entity_by_type", "true").equals("true");
             FileOutputStream fileOutputStream = new FileOutputStream(file, true);
             fileOutputStream.write('\n');
 
@@ -73,7 +73,7 @@ public class CanaryConfigAuto extends DataCollectors.CollectTools<CanaryConfigAu
                 fileOutputStream.write("mixin.world.tick_scheduler=false\n".getBytes());
             }
             if (entity_class_groups) {
-                fileOutputStream.write("mixin.chunk.entity_class_groups=false\n".getBytes());
+                fileOutputStream.write("mixin.collections.entity_by_type=false\n".getBytes());
             }
             fileOutputStream.close();
         } catch (IOException e) {
