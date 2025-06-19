@@ -46,6 +46,13 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
     private final static AsmTarget Empty = new AsmTarget("", false);
     public final List<AsmTarget> stringsList = new ArrayList<>(List.of(
             //new AsmTarget("net.minecraft.world.level.storage.DimensionDataStorage", true),
+            new AsmTarget("me.wesley1808.servercore.mixin.optimizations.ticking.chunk.broadcast.ServerChunkCacheMixin", false
+            //        , new String[]{"servercore$requiresBroadcast"}
+            //        ,new MethodInfo[]{
+            //        new MethodInfo("servercore$broadcastChanges", null, true, true),
+            //        new MethodInfo("servercore$requiresBroadcast", null, true, true)
+            //}
+            ),
             new AsmTarget("net.minecraft.server.level.PlayerMap", false),
             new AsmTarget("net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.ServerStorageSoundHandler", false),
             new AsmTarget("mekanism.common.recipe.lookup.cache.type.BaseInputCache", false),
@@ -63,6 +70,7 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
             new AsmTarget("com.github.alexthe666.alexsmobs.event.ServerEvents", false),
             new AsmTarget("com.teammoeg.caupona.CPCommonBootStrap", false),
             new AsmTarget("me.jellysquid.mods.lithium.mixin.chunk.entity_class_groups.TypeFilterableListMixin", false),
+            new AsmTarget("com.abdelaziz.canary.mixin.chunk.entity_class_groups.ClassInstanceMultiMapMixin", false),
             new AsmTarget("net.minecraft.world.level.levelgen.structure.StructureCheck", false),
             new AsmTarget("net.minecraft.world.level.block.ComposterBlock", false),
             new AsmTarget("net.minecraft.world.entity.ai.attributes.AttributeInstance", false),
@@ -338,8 +346,14 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                                     }
                                     break;
                                 case "it/unimi/dsi/fastutil/objects/ReferenceLinkedOpenHashSet":
-                                    if (methodInsnNode.name.equals("<init>") && methodInsnNode.desc.equals("()V")) {
-                                        method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/FalseReferenceLinkedOpenHashSet", "<init>", "()V", false));
+                                    if (methodInsnNode.name.equals("<init>")) {
+                                        if (methodInsnNode.desc.equals("()V")){
+                                            method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/FalseReferenceLinkedOpenHashSet", "<init>", "()V", false));
+                                        }else if (methodInsnNode.desc.equals("(I)V")){
+                                            method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/FalseReferenceLinkedOpenHashSet", "<init>", "(I)V", false));
+                                        }else {
+                                            method.instructions.add(instruction);
+                                        }
                                     } else {
                                         method.instructions.add(instruction);
                                     }

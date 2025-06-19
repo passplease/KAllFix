@@ -12,6 +12,8 @@ public class MixinConnector implements IMixinConnector {
             Mixins.addConfigurations("mixins.KAllFix.json");
         if (Boolean.getBoolean("KAF-LoginProtectionMod"))
             Mixins.addConfigurations("mixins.KAllFix$KAF-LoginProtectionMod.json");
+        if (Boolean.getBoolean("KAF-RenderOptimizer"))
+            Mixins.addConfigurations("mixins.KAllFix$KAF-RenderOptimizer.json");
         if (Boolean.getBoolean("KMT-Debug"))
             Mixins.addConfigurations("mixins.K_multi_threading$debug.json");
     }

@@ -4,17 +4,27 @@ import lombok.extern.slf4j.Slf4j;
 import n1luik.KAllFix.DataCollectors;
 import n1luik.K_multi_threading.core.Base;
 import n1luik.K_multi_threading.core.dataCollectors.ValkyrienSkies;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
 
 @Slf4j
 @Mod(Base.MOD_ID2)
 public class ModInit {
+
+    //懒得折腾了，拉一点吧
+    public static synchronized void registerKeyBinding(KeyMapping key)
+    {
+        Minecraft.getInstance().options.keyMappings = ArrayUtils.add(Minecraft.getInstance().options.keyMappings, key);
+    }
+
     private static boolean INIT_DATA_COLLECTORS_EVENT = false;
     public ModInit(){
         try {

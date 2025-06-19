@@ -6,6 +6,17 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import java.util.*;
 
 public class UtilKAF {
+    //ai生成，作者不会搓
+    public static double calculateDistance(double x1, double y1, double z1, double x2, double y2, double z2) {
+        // 计算 x 坐标差值的平方
+        double dx = x2 - x1;
+        // 计算 y 坐标差值的平方
+        double dy = y2 - y1;
+        // 计算 z 坐标差值的平方
+        double dz = z2 - z1;
+        // 使用 Math.sqrt 方法计算平方根
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
 
     //ai生成，作者不会搓
     public static long hash64long(long[] data, int seed){

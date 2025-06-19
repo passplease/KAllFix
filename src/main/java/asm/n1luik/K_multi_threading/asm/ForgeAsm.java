@@ -4,6 +4,8 @@ import asm.n1luik.K_multi_threading.asm.mod.*;
 import asm.n1luik.K_multi_threading.asm.mod.Modernfix.ModernfixGetChunkSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.ae2.PathingCalculation_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.biolith.FixMixinServerWorld1_Asm;
+import asm.n1luik.K_multi_threading.asm.mod.canary.CanaryMixinPluginAsm;
+import asm.n1luik.K_multi_threading.asm.mod.canary.ServerChunkCacheMixin_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateGeneratingKineticBlockEntity_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateTrackBlockSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateTrackGraphSynchronized_Asm;
@@ -141,12 +143,16 @@ public class ForgeAsm implements ITransformationService{
                 new LithiumGetChunkSynchronized_Asm(),
                 new Lithium$TypeFilterableListMixin_Asm(),
                 new CreateGeneratingKineticBlockEntity_Asm(),
+                new ServerChunkCacheMixin_Asm(),
                 new AddMapConcurrent_ASM(),
                 new NotErrorAddSynchronized_Asm(),
                 new NoiseChunkGeneratorMixinFix1_Asm(),
                 //new ChunkMapSynchronized_Asm(),
                 new FastUtilTransformerService()
         ));
+        if (Boolean.getBoolean("KAF-FixConfigAuto")) {
+            iTransformers.add(new CanaryMixinPluginAsm());
+        }
         return iTransformers;
     }
 }

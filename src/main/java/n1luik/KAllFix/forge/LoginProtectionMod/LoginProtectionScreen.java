@@ -25,4 +25,9 @@ public class LoginProtectionScreen extends Screen {
                 false);
         //p_281549_.pose().popPose();
     }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
 }

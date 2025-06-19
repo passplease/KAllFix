@@ -17,6 +17,10 @@ public class FalseReferenceLinkedOpenHashSet<T> extends ReferenceLinkedOpenHashS
         this.backing = ConcurrentHashMap.newKeySet();
     }
 
+    public FalseReferenceLinkedOpenHashSet(int size) {
+        this.backing = ConcurrentHashMap.newKeySet(size);
+    }
+
     @Override
     public int size() {
         return backing.size();

@@ -45,11 +45,6 @@ public abstract class ServerChunkCacheFix1 {
 
     @Shadow @Final public ServerChunkCache.MainThreadExecutor mainThreadProcessor;
 
-    @Redirect(method = "getChunk", at = @At(value = "INVOKE",target = "Ljava/lang/Thread;currentThread()Ljava/lang/Thread;"))
-    public Thread fix1() {
-        return mainThread;
-    }
-
     @Redirect(method = "getChunkFuture", at = @At(value = "INVOKE",target = "Ljava/lang/Thread;currentThread()Ljava/lang/Thread;"))
     public Thread fix2() {
         return mainThread;
