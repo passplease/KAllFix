@@ -25,6 +25,7 @@ public class SafeIndependenceAddSynchronized_Asm implements ITransformer<ClassNo
         List<IndependenceAddSynchronized_Asm.ReadBuf> list2 = new ArrayList<>();
         list2.addAll(List.of(
                 //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.startTickingChunk(Lnet/minecraft/world/level/chunk/LevelChunk;)V")
+                new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.move(Lnet/minecraft/server/level/ServerPlayer;)V"), null),
                 new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.tickBlockEntities()V"), null)
         ));
 

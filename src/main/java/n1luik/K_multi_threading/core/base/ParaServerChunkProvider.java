@@ -28,6 +28,7 @@ import n1luik.K_multi_threading.core.Imixin.IMainThreadExecutor;
 import n1luik.K_multi_threading.core.Imixin.IWorldChunkLockedConfig;
 import n1luik.K_multi_threading.core.util.*;
 import n1luik.K_multi_threading.core.util.concurrent.FixNullConcurrentHashMap;
+import net.minecraft.core.IdMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.Ticket;
@@ -156,8 +157,19 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         //cacheThread.start();
 
         //这里出现过locks没有数据
-        for (int i = 0; i < BuiltInRegistries.CHUNK_STATUS.size(); i++) {
-            locks.add(new Object());
+        try{
+            //BuiltInRegistries.CHUNK_STATUS
+            Class<?> aClass = Class.forName("net.minecraft.core.registries.BuiltInRegistries", true, ParaServerChunkProvider.class.getClassLoader());
+            initLocks(((IdMap<?>)aClass.getField("f_256940_").get(aClass)).size());
+        } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
+            try{
+                //net.minecraft.core.Registry#CHUNK_STATUS
+                Class<?> aClass = Class.forName("net.minecraft.core.Registry", true, ParaServerChunkProvider.class.getClassLoader());
+                initLocks(((IdMap<?>)aClass.getField("f_122833_").get(aClass)).size());
+            } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e2) {
+                throw new RuntimeException(e2);
+            }
+
         }
     }
 
@@ -194,10 +206,28 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         //Unsafe.unsafe.putObject(this, initId.getLong("ChunkGeneratorTest"), new AtomicInteger());
         chunkCleaner = MarkerManager.getMarker("ChunkCleaner");
 
-        for (int i = 0; i < BuiltInRegistries.CHUNK_STATUS.size(); i++) {
+        try{
+            //BuiltInRegistries.CHUNK_STATUS
+            Class<?> aClass = Class.forName("net.minecraft.core.registries.BuiltInRegistries", true, ParaServerChunkProvider.class.getClassLoader());
+            initLocks(((IdMap<?>)aClass.getField("f_256940_").get(aClass)).size());
+        } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
+            try{
+                //net.minecraft.core.Registry#CHUNK_STATUS
+                Class<?> aClass = Class.forName("net.minecraft.core.Registry", true, ParaServerChunkProvider.class.getClassLoader());
+                initLocks(((IdMap<?>)aClass.getField("f_122833_").get(aClass)).size());
+            } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e2) {
+                throw new RuntimeException(e2);
+            }
+
+        }
+
+        ChunkGeneratorTest = 0;
+    }
+
+    protected void initLocks(int size){
+        for (int i = 0; i < size; i++) {
             locks.add(new Object());
         }
-        ChunkGeneratorTest = 0;
     }
 
     /*@Override

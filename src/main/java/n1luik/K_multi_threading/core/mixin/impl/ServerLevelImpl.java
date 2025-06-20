@@ -46,7 +46,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @Mixin(ServerLevel.class)
-public abstract class ServerLevelImpl implements GetBlockTickSync {
+public abstract class ServerLevelImpl /*implements GetBlockTickSync*/ {
     @Shadow @Final private LevelTicks<Block> blockTicks;
     @Shadow @Final private LevelTicks<Fluid> fluidTicks;
     @Shadow @Final EntityTickList entityTickList;
@@ -55,7 +55,7 @@ public abstract class ServerLevelImpl implements GetBlockTickSync {
 
     //@Mutable
     //@Shadow @Final private ServerChunkCache chunkSource;
-    private Sync<GetterSyncNode<Void, ChunkPos, ChunkAccess>> sync;
+    //private Sync<GetterSyncNode<Void, ChunkPos, ChunkAccess>> sync;
     //static volatile int min;//防止同时访问爆炸
 
 
@@ -77,17 +77,17 @@ public abstract class ServerLevelImpl implements GetBlockTickSync {
     //    clone.UnsafeInit();
     //}
 
-    @Inject(method = "<init>", at = @At("RETURN"))
-    public void init(MinecraftServer p_214999_, Executor p_215000_, LevelStorageSource.LevelStorageAccess p_215001_, ServerLevelData p_215002_, ResourceKey p_215003_, LevelStem p_215004_, ChunkProgressListener p_215005_, boolean p_215006_, long p_215007_, List p_215008_, boolean p_215009_, RandomSequences p_288977_, CallbackInfo ci){
-        sync = new SyncImpl<>(Base.getEx());
-        ((GetBlockTickSync)blockTicks).setBiockTickSync(sync);
-        ((GetBlockTickSync)fluidTicks).setBiockTickSync(sync);
-    }
+    //@Inject(method = "<init>", at = @At("RETURN"))
+    //public void init(MinecraftServer p_214999_, Executor p_215000_, LevelStorageSource.LevelStorageAccess p_215001_, ServerLevelData p_215002_, ResourceKey p_215003_, LevelStem p_215004_, ChunkProgressListener p_215005_, boolean p_215006_, long p_215007_, List p_215008_, boolean p_215009_, RandomSequences p_288977_, CallbackInfo ci){
+    //    sync = new SyncImpl<>(Base.getEx());
+    //    ((GetBlockTickSync)blockTicks).setBiockTickSync(sync);
+    //    ((GetBlockTickSync)fluidTicks).setBiockTickSync(sync);
+    //}
 
-    @Override
-    public Sync<GetterSyncNode<Void, ChunkPos, ChunkAccess>> getBlockTickSync() {
-        return sync;
-    }
+    //@Override
+    //public Sync<GetterSyncNode<Void, ChunkPos, ChunkAccess>> getBlockTickSync() {
+    //    return sync;
+    //}
 
     @Redirect(method = "tick", at = @At(value = "INVOKE",target = "Lnet/minecraft/world/level/entity/EntityTickList;forEach(Ljava/util/function/Consumer;)V"))
     public void tickEntity1(EntityTickList tickList, Consumer<Entity> consumer){

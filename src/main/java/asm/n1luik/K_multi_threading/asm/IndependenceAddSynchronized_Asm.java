@@ -32,7 +32,6 @@ public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> 
                 new ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/DistanceManager.removePlayer(Lnet/minecraft/core/SectionPos;Lnet/minecraft/server/level/ServerPlayer;)V"), "kmt-fixPlayer"),
                 new ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.startTickingChunk(Lnet/minecraft/world/level/chunk/LevelChunk;)V"), null),
                 new ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkHolder.broadcastChanges(Lnet/minecraft/world/level/chunk/LevelChunk;)V"), null),
-                new ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.move(Lnet/minecraft/server/level/ServerPlayer;)V"), null),
                 new ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.addFreshBlockEntities(Ljava/util/Collection;)V"), null)
         ));
         File f = new File("config/K_multi_threading-independence-sync-Method-list.txt");

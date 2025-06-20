@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 
 @Mixin(LevelTicks.class)
-public abstract class LevelTicksImpl1<T> implements LevelTickAccess<T>, GetBlockTickSync {
+public abstract class LevelTicksImpl1<T> implements LevelTickAccess<T>/*, GetBlockTickSync*/ {
     @Shadow @Final private Queue<ScheduledTick<T>> toRunThisTick;
     @Shadow @Final private Set<ScheduledTick<?>> toRunThisTickSet;
     @Shadow @Final private List<ScheduledTick<T>> alreadyRunThisTick;
@@ -33,7 +33,7 @@ public abstract class LevelTicksImpl1<T> implements LevelTickAccess<T>, GetBlock
 
     //static volatile int min;//防止同时访问爆炸
 
-    private Sync<GetterSyncNode<Void, ChunkPos, ChunkAccess>> sync;
+    //private Sync<GetterSyncNode<Void, ChunkPos, ChunkAccess>> sync;
     /**
      * @author ++
      * @reason ++
@@ -101,13 +101,13 @@ public abstract class LevelTicksImpl1<T> implements LevelTickAccess<T>, GetBlock
 
     }
 
-    @Override
-    public Sync<GetterSyncNode<Void, ChunkPos, ChunkAccess>> getBlockTickSync() {
-        return sync;
-    }
-
-    @Override
-    public void setBiockTickSync(Sync<GetterSyncNode<Void, ChunkPos, ChunkAccess>> set) {
-        sync = set;
-    }
+    //@Override
+    //public Sync<GetterSyncNode<Void, ChunkPos, ChunkAccess>> getBlockTickSync() {
+    //    return sync;
+    //}
+//
+    //@Override
+    //public void setBiockTickSync(Sync<GetterSyncNode<Void, ChunkPos, ChunkAccess>> set) {
+    //    sync = set;
+    //}
 }

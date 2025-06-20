@@ -4,6 +4,8 @@ import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
 import lombok.extern.slf4j.Slf4j;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.Set;
 @Slf4j
 public class AddSynchronized_Asm implements ITransformer<ClassNode> {
-    public static final List<String[]> stringsList = new ArrayList<>(List.of(
+    public final List<String[]> stringsList = new ArrayList<>(List.of(
             ////////sb forge
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.getEntities(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.getEntities(Lnet/minecraft/world/level/entity/EntityTypeTest;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;Ljava/util/List;I)V"),
@@ -51,7 +53,6 @@ public class AddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.clearAllBlockEntities()V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.postProcessGeneration()V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.setBlockState(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/level/block/state/BlockState;"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.getListenerRegistry(I)Lnet/minecraft/world/level/gameevent/GameEventListenerRegistry;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.removeGameEventListenerRegistry(I)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.unpackTicks(J)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkHolder.setTicketLevel(I)V"),
@@ -251,6 +252,9 @@ public class AddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/storage/SectionStorage.setDirty(J)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/LegacyRandomSource.setSeed(J)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/LegacyRandomSource.nextGaussian()D"),
+            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/gameevent/EuclideanGameEventListenerRegistry.visitInRangeListeners(Lnet/minecraft/world/level/gameevent/GameEvent;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/level/gameevent/GameEvent$Context;Lnet/minecraft/world/level/gameevent/GameEventListenerRegistry$ListenerVisitor;)Z"),
+            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/gameevent/EuclideanGameEventListenerRegistry.register(Lnet/minecraft/world/level/gameevent/GameEventListener;)V"),
+            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/gameevent/EuclideanGameEventListenerRegistry.unregister(Lnet/minecraft/world/level/gameevent/GameEventListener;)V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/LegacyRandomSource.next(I)I"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/BitRandomSource.nextDouble()D"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/BitRandomSource.nextFloat()F"),
@@ -265,6 +269,13 @@ public class AddSynchronized_Asm implements ITransformer<ClassNode> {
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel$EntityCallbacks.onTrackingEnd(Lnet/minecraft/world/entity/Entity;)V")//,
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.onTrackingEnd(Lnet/minecraft/world/entity/Entity;)V")
     ));
+    {
+        String s = FMLLoader.versionInfo().mcVersion();
+        if (s.startsWith("1.20.")){
+            stringsList.add(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.getListenerRegistry(I)Lnet/minecraft/world/level/gameevent/GameEventListenerRegistry;"));
+            stringsList.add(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.removeGameEventListenerRegistry(I)V"));
+        }
+    }
 
     int posfilter = Opcodes.ACC_PUBLIC;
     int negfilter = /*Opcodes.ACC_STATIC |*/ Opcodes.ACC_SYNTHETIC/* | Opcodes.ACC_NATIVE */| Opcodes.ACC_ABSTRACT

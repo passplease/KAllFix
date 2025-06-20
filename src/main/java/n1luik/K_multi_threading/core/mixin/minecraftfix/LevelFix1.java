@@ -38,9 +38,9 @@ public abstract class LevelFix1 {
     //@Unique
     //protected final Lock K_multi_threading$lock_FreshBlockEntities2 = new java.util.concurrent.locks.ReentrantLock();//用于保证tickBlockEntities是唯一的
     @Unique
-    private ReentrantLock K_multi_threading$lock;
+    private final ReentrantLock K_multi_threading$lock = new java.util.concurrent.locks.ReentrantLock();
     @Unique
-    private Condition K_multi_threading$condition;
+    private final Condition K_multi_threading$condition = K_multi_threading$lock.newCondition();;
     //通过IndependenceAddSynchronized_Asm保证安全
     @Unique
     private boolean K_multi_threading$isLock = false;//用于保证tickBlockEntities是唯一的
@@ -60,12 +60,17 @@ public abstract class LevelFix1 {
         }
     }
 
-    @Inject(method = "<init>", at = @At("RETURN"))
-    public void fix2(WritableLevelData p_270739_, ResourceKey p_270683_, RegistryAccess p_270200_, Holder p_270240_, Supplier p_270692_, boolean p_270904_, boolean p_270470_, long p_270248_, int p_270466_, CallbackInfo ci){
-        capturedBlockSnapshots = new LockArrayList<>();
-        K_multi_threading$lock = new java.util.concurrent.locks.ReentrantLock();
-        K_multi_threading$condition = K_multi_threading$lock.newCondition();
+    @Redirect(method = "<init>",at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/Level;capturedBlockSnapshots:Ljava/util/ArrayList;"))
+    public void fix2(Level instance, ArrayList<BlockSnapshot> value){
+        capturedBlockSnapshots = new LockArrayList<>(value);
     }
+
+    //@Inject(method = "<init>", at = @At("RETURN"))
+    //public void fix2(WritableLevelData p_270739_, ResourceKey p_270683_, RegistryAccess p_270200_, Holder p_270240_, Supplier p_270692_, boolean p_270904_, boolean p_270470_, long p_270248_, int p_270466_, CallbackInfo ci){
+    //    capturedBlockSnapshots = new LockArrayList<>();
+    //    K_multi_threading$lock = new java.util.concurrent.locks.ReentrantLock();
+    //    K_multi_threading$condition = K_multi_threading$lock.newCondition();
+    //}
 
     @Inject(method = "addFreshBlockEntities",at = @At("HEAD"), remap = false)
     public void fix3(Collection<BlockEntity> beList, CallbackInfo ci){

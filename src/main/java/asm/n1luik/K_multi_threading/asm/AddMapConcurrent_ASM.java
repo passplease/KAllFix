@@ -69,6 +69,12 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                     new MethodInfo("setNavigationActive", null, true, true)
             }
             ),
+            //new AsmTarget("net.minecraft.world.level.gameevent.EuclideanGameEventListenerRegistry", false),
+            //
+            //Caused by: java.lang.UnsupportedOperationException
+            //	at java.util.concurrent.CopyOnWriteArrayList$COWIterator.remove(CopyOnWriteArrayList.java:1208) ~[?:?]
+            //	at net.minecraft.world.level.gameevent.EuclideanGameEventListenerRegistry.m_245521_(EuclideanGameEventListenerRegistry.java:71) ~[server-1.20.1-20230612.114412-srg.jar%23113!/:?]
+            //
             new AsmTarget("net.minecraft.server.level.PlayerMap", false),
             new AsmTarget("net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.ServerStorageSoundHandler", false),
             new AsmTarget("mekanism.common.recipe.lookup.cache.type.BaseInputCache", false),
@@ -99,6 +105,8 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
     public final Map<String, String> typeMapping = new HashMap<>();
     {
         typeMapping.put("java/util/HashMap", "java/util/concurrent/ConcurrentHashMap");
+        //////////////////////////////////
+        typeMapping.put("it/unimi/dsi/fastutil/objects/ReferenceOpenHashSet", "n1luik/K_multi_threading/core/util/concurrent/FalseReferenceOpenHashSet");
         //////////////////////////////////
         typeMapping.put("it/unimi/dsi/fastutil/objects/Reference2ObjectOpenHashMap", "n1luik/K_multi_threading/core/util/concurrent/FalseReference2ObjectOpenHashMap");
         //////////////////////////////////
@@ -374,6 +382,19 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                                         method.instructions.add(instruction);
                                     }
                                     break;
+                                case "it/unimi/dsi/fastutil/objects/ReferenceOpenHashSet":
+                                    if (methodInsnNode.name.equals("<init>")) {
+                                        if (methodInsnNode.desc.equals("()V")){
+                                            method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/FalseReferenceOpenHashSet", "<init>", "()V", false));
+                                        }else if (methodInsnNode.desc.equals("(Ljava/util/Collection;)V")){
+                                            method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/FalseReferenceOpenHashSet", "<init>", "(Ljava/util/Collection;)V", false));
+                                        }else {
+                                            method.instructions.add(instruction);
+                                        }
+                                    } else {
+                                        method.instructions.add(instruction);
+                                    }
+                                    break;
                                 case "it/unimi/dsi/fastutil/objects/Object2BooleanOpenHashMap":
                                     if (methodInsnNode.name.equals("<init>") && methodInsnNode.desc.equals("()V")) {
                                         method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/Object2BooleanConcurrentHashMap", "<init>", "()V", false));
@@ -425,6 +446,8 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                                         method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/ConcurrentLong2ObjectOpenHashMap"));
                                 case "it/unimi/dsi/fastutil/objects/ReferenceLinkedOpenHashSet" ->
                                         method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/FalseReferenceLinkedOpenHashSet"));
+                                case "it/unimi/dsi/fastutil/objects/ReferenceOpenHashSet" ->
+                                        method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/FalseReferenceOpenHashSet"));
                                 case "it/unimi/dsi/fastutil/objects/Object2BooleanOpenHashMap" ->
                                         method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/Object2BooleanConcurrentHashMap"));
                                 case "java/util/ArrayList" ->

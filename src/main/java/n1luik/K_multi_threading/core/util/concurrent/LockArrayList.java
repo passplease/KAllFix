@@ -1,8 +1,17 @@
 package n1luik.K_multi_threading.core.util.concurrent;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class LockArrayList<T> extends ArrayList<T>{
+    public LockArrayList(){
+        super();
+    }
+
+    public LockArrayList(Collection<? extends T> c){
+        super(c);
+    }
+
     @Override
     public synchronized boolean add(T t) {
         return super.add(t);
