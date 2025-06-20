@@ -63,7 +63,8 @@
   ],
   "mixins": [
     "debug.NbtIoDebug",
-    "k.CommandsMixin"
+    "k.CommandsMixin",
+    "minecraftfix.EntityFix1"
   ],
   "error": [
     "minecraftfix.ChunkGeneratorFix3",
