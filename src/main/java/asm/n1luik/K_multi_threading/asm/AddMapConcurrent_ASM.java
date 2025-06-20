@@ -53,6 +53,22 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
             //        new MethodInfo("servercore$requiresBroadcast", null, true, true)
             //}
             ),
+            new AsmTarget("com.abdelaziz.canary.mixin.collections.entity_filtering.ClassInstanceMultiMapMixin", false
+                    , new String[]{}
+                    ,new MethodInfo[]{
+                    new MethodInfo("createAllOfType", null, true, true)
+            }
+            ),
+            new AsmTarget("com.abdelaziz.canary.mixin.entity.inactive_navigations.ServerLevelMixin", false
+                    , new String[]{"activeNavigations"}
+                    ,new MethodInfo[]{
+                    new MethodInfo("init", null, true, true),
+                    new MethodInfo("isConsistent", null, true, true),
+                    new MethodInfo("updateActiveListeners", null, true, true),
+                    new MethodInfo("setNavigationInactive", null, true, true),
+                    new MethodInfo("setNavigationActive", null, true, true)
+            }
+            ),
             new AsmTarget("net.minecraft.server.level.PlayerMap", false),
             new AsmTarget("net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.ServerStorageSoundHandler", false),
             new AsmTarget("mekanism.common.recipe.lookup.cache.type.BaseInputCache", false),
