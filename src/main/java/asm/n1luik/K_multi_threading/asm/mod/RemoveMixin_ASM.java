@@ -18,6 +18,10 @@ import java.util.Set;
 @Slf4j
 public class RemoveMixin_ASM implements ITransformer<ClassNode> {
     public final List<String[]> stringsList = new ArrayList<>(List.of(
+            new String[]{"com/ishland/vmp/mixins/general/collections/MixinTypeFilterableList","redirectSetElementsByType"},
+            new String[]{"com/ishland/vmp/mixins/general/collections/MixinTypeFilterableList","redirectSetAllElements"},
+            new String[]{"com/ishland/vmp/mixins/general/collections/MixinTypeFilterableList","redirectNewArrayList"},
+            new String[]{"com/ishland/vmp/mixins/general/collections/MixinTypeFilterableList","redirectNewHashMap"},
             new String[]{"com/gregtechceu/gtceu/core/mixins/LevelMixin","getTileEntity"},
             new String[]{"com/github/alexthe666/iceandfire/mixin/gen/NoLakesInStructuresMixin","iaf_noLakesInMausoleum"}
 

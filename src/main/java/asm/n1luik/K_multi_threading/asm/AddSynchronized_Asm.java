@@ -27,7 +27,6 @@ public class AddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/behavior/LongJumpToRandomPos.getJumpCandidate(Lnet/minecraft/server/level/ServerLevel;)Ljava/util/Optional;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/behavior/LongJumpToRandomPos.pickCandidate(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/Mob;J)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/behavior/LongJumpToRandomPos.start(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/Mob;J)V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/behavior/ShufflingList.iterator()Ljava/util/Iterator;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/behavior/ShufflingList.stream()Ljava/util/stream/Stream;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/behavior/ShufflingList.add(Ljava/lang/Object;I)Lnet/minecraft/world/entity/ai/behavior/ShufflingList;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/behavior/ShufflingList.shuffle()Lnet/minecraft/world/entity/ai/behavior/ShufflingList;"),
@@ -274,6 +273,7 @@ public class AddSynchronized_Asm implements ITransformer<ClassNode> {
         if (s.startsWith("1.20.")){
             stringsList.add(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.getListenerRegistry(I)Lnet/minecraft/world/level/gameevent/GameEventListenerRegistry;"));
             stringsList.add(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.removeGameEventListenerRegistry(I)V"));
+            stringsList.add(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/behavior/ShufflingList.iterator()Ljava/util/Iterator;"));
         }
     }
 

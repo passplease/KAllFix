@@ -27,7 +27,7 @@ public class Plugin implements IMixinConfigPlugin {
     }
     public boolean test(String targetClassName, String mixinClassName) {
         String s1 = "n1luik.K_multi_threading.core.mixin.minecraftfix.loginMultiThreading.";
-        if (targetClassName.startsWith(s1)) {
+        if (mixinClassName.startsWith(s1)) {
             return Boolean.getBoolean("KMT-LoginMultiThreading");
         }
         return switch (mixinClassName) {

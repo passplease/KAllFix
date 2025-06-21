@@ -270,6 +270,15 @@ sourceSets {
         compileClasspath += sourceSets.main.compileClasspath
         runtimeClasspath += sourceSets.main.runtimeClasspath
     }
+    empty_1_19_2 {
+        java {
+            srcDirs = ['src/empty/java'] // 指定自定义源码目录
+        }
+        resources {
+            srcDirs = ['src/empty/resources']
+        }
+        compileClasspath += fileTree(dir: 'libs19', include: ['*.jar'])
+    }
 }
 // Example for how to get properties into the manifest for reading at runtime.
 jar {

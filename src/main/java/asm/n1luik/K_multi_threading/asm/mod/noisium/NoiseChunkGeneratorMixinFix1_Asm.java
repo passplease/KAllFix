@@ -42,7 +42,16 @@ public class NoiseChunkGeneratorMixinFix1_Asm implements ITransformer<ClassNode>
         }
 
         if (!add1){
-            throw new RuntimeException("Not mapping error: io/github/steveplays28/noisium/mixin/NoiseChunkGeneratorMixin");
+            String[] strings2 = ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.doFill(Lnet/minecraft/world/level/levelgen/blending/Blender;Lnet/minecraft/world/level/StructureManager;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/chunk/ChunkAccess;II)Lnet/minecraft/world/level/chunk/ChunkAccess;");
+            //对函数进行扫描，如果检测到getSections是高版本就直接退出因为没有这段代码不需要修改
+            boolean canExit = false;
+            for (MethodNode method : input.methods) {
+                if (method.name.equals(strings2[1]) && method.desc.equals(strings2[2])){
+                    canExit = true;
+                }
+
+            }
+            if (canExit)throw new RuntimeException("Not mapping error: io/github/steveplays28/noisium/mixin/NoiseChunkGeneratorMixin");
         }
 
 
