@@ -35,23 +35,26 @@ public class ClientLevelMixin {
                 try {
                     for(Entity entity : instance.active.values()) {
                         if (entity.isControlledByLocalInstance()){
+                            ((IEntityOptimizerData) entity).KAllFix$setIsOptimizer(false);
                             entityConsumer.accept(entity);
                             continue;
                         }
                         double abs = Math.abs(UtilKAF.calculateDistance(projectedView.x, projectedView.y, projectedView.z, entity.getX(), entity.getY(), entity.getZ()));
-                        if (Config.FixLivingEntity){
-                            if (entity instanceof LivingEntity livingEntity){
-                                if (livingEntity.lerpSteps > 0) {
-                                    livingEntity.setPos(livingEntity.lerpX, livingEntity.lerpY, livingEntity.lerpZ);
-                                    livingEntity.setRot((float) livingEntity.lerpXRot, (float) livingEntity.lerpYRot);
-                                }
-                            }
-
-                        }
                         if (abs < Config.EntityStopTickDistance) {
                             if (abs < Config.EntityStartStopTickDistance) {
                                 entityConsumer.accept(entity);
+                                ((IEntityOptimizerData) entity).KAllFix$setIsOptimizer(false);
                             }else{
+                                ((IEntityOptimizerData) entity).KAllFix$setIsOptimizer(true);
+                                if (Config.FixLivingEntity){
+                                    if (entity instanceof LivingEntity livingEntity){
+                                        if (livingEntity.lerpSteps > 0) {
+                                            livingEntity.setPos(livingEntity.lerpX, livingEntity.lerpY, livingEntity.lerpZ);
+                                            livingEntity.setRot((float) livingEntity.lerpXRot, (float) livingEntity.lerpYRot);
+                                        }
+                                    }
+
+                                }
                                 double v = (abs - Config.EntityStartStopTickDistance) / (Config.EntityStopTickDistance - Config.EntityStartStopTickDistance);
                                 //错开tick减少卡顿
                                 double i = Math.abs(entity.getX() * entity.getY()) % Config.EntityTickScaling;

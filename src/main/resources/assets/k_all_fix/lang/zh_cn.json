@@ -3,7 +3,7 @@
   "k_all_fix.wait_server_send_pack": "等待服务器发送完成登陆数据包 当前状态: [%s]",
   "k_all_fix.wait_server_send_pack_wait": "等待",
   "k_all_fix.wait_server_send_pack_ok": "完成",
-  "k_all_fix.RenderOptimizer.FixLivingEntity": "LivingEntity修复: %ss",
+  "k_all_fix.RenderOptimizer.FixLivingEntity": "LivingEntity修复: %s",
   "k_all_fix.RenderOptimizer.OpenConfigGui": "打开配置ui",
   "k_all_fix.RenderOptimizer.Enable": "启用：%s",
   "k_all_fix.RenderOptimizer.renderTickInfo": "实体数 [%s]，实体方块数 [%s]",

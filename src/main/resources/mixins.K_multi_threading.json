@@ -19,6 +19,7 @@
     "fix.create.CreateRegistrateFix1",
     "fix.create.ItemVaultBlockEntityFix1",
     "fix.destroy.DestroyCommonEventsFix1",
+    "fix.ic2c.PlatformFix1",
     "fix.ic2c.SidedGatewayFix1",
     "fix.lootr.TileTickerFix1",
     "fix.mek.BasicFluidTankFix1",
@@ -42,6 +43,7 @@
     "minecraftfix.ClassInstanceMultiMapFix1",
     "minecraftfix.CollectingNeighborUpdaterDebug",
     "minecraftfix.DimensionDataStorageFix1",
+    "minecraftfix.EntitySectionStorageFix1",
     "minecraftfix.LegacyRandomSourceFix1",
     "minecraftfix.LevelChunkFix1",
     "minecraftfix.LevelChunkTicksFix1",
@@ -55,8 +57,8 @@
     "minecraftfix.ServerLevelFix1",
     "minecraftfix.ServerPlayerGameModeFix1",
     "minecraftfix.ServerWatchdogFix1",
+    "minecraftfix.EntityFix1",
     "minecraftfix.ThreadedLevelLightEngineFix2",
-    "minecraftfix.EntitySectionStorageFix1",
     "minecraftfix.loginMultiThreading.DistanceManagerFix1",
     "minecraftfix.loginMultiThreading.MinecraftServerImpl3",
     "minecraftfix.loginMultiThreading.PacketUtilsFix1",
@@ -65,8 +67,7 @@
   ],
   "mixins": [
     "debug.NbtIoDebug",
-    "k.CommandsMixin",
-    "minecraftfix.EntityFix1"
+    "k.CommandsMixin"
   ],
   "error": [
     "minecraftfix.ChunkGeneratorFix3",

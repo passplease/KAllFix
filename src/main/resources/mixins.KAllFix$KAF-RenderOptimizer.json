@@ -7,9 +7,9 @@
   "server": [
   ],
   "mixins": [
-    "EntityMixin"
   ],
   "client": [
+    "EntityMixin",
     "ClientLevelMixin",
     "This"
   ]

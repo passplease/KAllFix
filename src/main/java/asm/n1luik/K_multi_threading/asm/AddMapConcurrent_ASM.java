@@ -75,6 +75,7 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
             //	at java.util.concurrent.CopyOnWriteArrayList$COWIterator.remove(CopyOnWriteArrayList.java:1208) ~[?:?]
             //	at net.minecraft.world.level.gameevent.EuclideanGameEventListenerRegistry.m_245521_(EuclideanGameEventListenerRegistry.java:71) ~[server-1.20.1-20230612.114412-srg.jar%23113!/:?]
             //
+            new AsmTarget("com.petrolpark.contamination.IntrinsicContaminants", false),
             new AsmTarget("net.minecraft.server.level.PlayerMap", false),
             new AsmTarget("net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.ServerStorageSoundHandler", false),
             new AsmTarget("mekanism.common.recipe.lookup.cache.type.BaseInputCache", false),

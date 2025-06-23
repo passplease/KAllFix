@@ -25,11 +25,11 @@ public class ServerLoginPacketListenerImplImpl1 {
     @Unique private static final List<Runnable> K_multi_threading$waitTask = new CopyOnWriteArrayList<>();
     @Unique private static final AtomicInteger K_multi_threading$waitTaskSize = new AtomicInteger(0);
     @Unique private static final int K_multi_threading$waitTaskMax = Integer.getInteger("KMT-LoginMultiThreading.TaskSizeMax", 8);
-    @Unique volatile boolean asynchronous = false;
+    @Unique volatile AtomicInteger asynchronous = new AtomicInteger(0);
     @Unique final Object lockLogin = new Object();
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     public void impl1(CallbackInfo ci) {
-        if (asynchronous) ci.cancel();
+        if (asynchronous.get() > 0) ci.cancel();
     }
 
     @Unique
@@ -74,12 +74,12 @@ public class ServerLoginPacketListenerImplImpl1 {
 
     @Redirect(method = "placeNewPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;placeNewPlayer(Lnet/minecraft/network/Connection;Lnet/minecraft/server/level/ServerPlayer;)V"))
     public synchronized void impl2(PlayerList instance, Connection s, ServerPlayer serverlevel1) {
-        asynchronous = true;
+        asynchronous.getAndIncrement();
 
         K_multi_threading$addTask(()->{
             synchronized (lockLogin) {
                 instance.placeNewPlayer(s, serverlevel1);
-                asynchronous = false;
+                asynchronous.getAndDecrement();
             }
         });
     }
