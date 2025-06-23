@@ -18,11 +18,14 @@ import java.util.Set;
 @Slf4j
 public class RemoveMixin_ASM implements ITransformer<ClassNode> {
     public final List<String[]> stringsList = new ArrayList<>(List.of(
+            new String[]{"com/ishland/vmp/mixins/playerwatching/MixinTACSCancelSending","beforeWatchPacketsOnMoving"},
             new String[]{"com/ishland/vmp/mixins/general/collections/MixinTypeFilterableList","redirectSetElementsByType"},
             new String[]{"com/ishland/vmp/mixins/general/collections/MixinTypeFilterableList","redirectSetAllElements"},
             new String[]{"com/ishland/vmp/mixins/general/collections/MixinTypeFilterableList","redirectNewArrayList"},
             new String[]{"com/ishland/vmp/mixins/general/collections/MixinTypeFilterableList","redirectNewHashMap"},
+            //new String[]{"com/ishland/vmp/mixins/general/collections/MixinTypeFilterableList","m_13533_"},
             new String[]{"com/gregtechceu/gtceu/core/mixins/LevelMixin","getTileEntity"},
+            new String[]{"com/cupboard/mixin/ServerAddEntityMixin","OnaddEntity"},
             new String[]{"com/github/alexthe666/iceandfire/mixin/gen/NoLakesInStructuresMixin","iaf_noLakesInMausoleum"}
 
     ));
@@ -32,7 +35,7 @@ public class RemoveMixin_ASM implements ITransformer<ClassNode> {
     public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
 
         for (String[] strings : stringsList) {
-            if (input.name.equals(strings[0])){
+            if (input.name.equals(strings[0])) {
                 boolean debug_add1 = false;
                 for (MethodNode method : input.methods) {
                     if ((method.name.equals(strings[1]))) {

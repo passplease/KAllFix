@@ -15,12 +15,15 @@ import asm.n1luik.K_multi_threading.asm.mod.lithium.Lithium$TypeFilterableListMi
 import asm.n1luik.K_multi_threading.asm.mod.lithium.LithiumGetChunkSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.mek.MekanismNetworkAcceptorCacheSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.noisium.NoiseChunkGeneratorMixinFix1_Asm;
+import asm.n1luik.K_multi_threading.asm.mod.vmp.MixinTACSCancelSendingFixAsm;
 import asm.n1luik.K_multi_threading.asm.mod.vmp.MixinTypeFilterableListAsm;
 import cpw.mods.modlauncher.api.IEnvironment;
 import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.IncompatibleEnvironmentException;
 import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.loading.LoadingModList;
+import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -113,21 +116,24 @@ public class ForgeAsm implements ITransformationService{
 
     }
 
+    private static boolean isModLoaded(String modId) {
+        //if (ModList.get() == null) {
+            return LoadingModList.get().getMods().stream().map(ModInfo::getModId).anyMatch(modId::equals);
+        //}
+        //return ModList.get().isLoaded(modId);
+    }
+
     @Override
     public @NotNull List<ITransformer> transformers() {
         if (System.getProperty("KMT_D") != null || FMLLoader.getDist().isClient())
             return List.of();
         List<ITransformer> iTransformers = new ArrayList<>(List.of(
                 //new SyncImplGetterChunk_ASM(),
-                new IndependenceAddSynchronized_Asm(),
                 new ImplLevel1_Asm(),
                 new ImplMetaMachine1_Asm(),
                 new FixMixinServerWorld1_Asm(),
                 new ImplServerLevel1_Asm(),
                 new ImplLevelChunkTicks1_Asm(),
-                new AddSynchronized_Asm(),
-                new SafeAddSynchronized_Asm(),
-                new SafeIndependenceAddSynchronized_Asm(),
                 //new MekanismStructureSynchronized_Asm(),//jvm检测过不了
                 //new MekanismVoxelPlaneSynchronized_Asm(),
                 new PathingCalculation_Asm(),
@@ -145,7 +151,6 @@ public class ForgeAsm implements ITransformationService{
                 new CreateGeneratingKineticBlockEntity_Asm(),
                 new ServerChunkCacheMixin_Asm(),
                 new AddMapConcurrent_ASM(),
-                new NotErrorAddSynchronized_Asm(),
                 new NoiseChunkGeneratorMixinFix1_Asm(),
                 new MixinTypeFilterableListAsm(),
                 //new ChunkMapSynchronized_Asm(),
@@ -160,6 +165,14 @@ public class ForgeAsm implements ITransformationService{
         if (s.startsWith("1.19.")){
             iTransformers.add(new TruePacketThreadTestAsm());
         }
+        if (isModLoaded("vmp")){
+            iTransformers.add(new MixinTACSCancelSendingFixAsm());
+        }
+        iTransformers.add(new SafeIndependenceAddSynchronized_Asm());
+        iTransformers.add(new AddSynchronized_Asm());
+        iTransformers.add(new SafeAddSynchronized_Asm());
+        iTransformers.add(new IndependenceAddSynchronized_Asm());
+        iTransformers.add(new NotErrorAddSynchronized_Asm());
         return iTransformers;
     }
 }

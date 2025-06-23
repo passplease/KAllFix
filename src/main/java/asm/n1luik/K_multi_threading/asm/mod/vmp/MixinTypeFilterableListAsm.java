@@ -18,8 +18,10 @@ public class MixinTypeFilterableListAsm implements ITransformer<ClassNode> {
     @NotNull
     @Override
     public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+        boolean add2 = false;
         boolean add1 = false;
         String[] strings = ForgeAsm.minecraft_map.mapMethod("com/ishland/vmp/mixins/general/collections/MixinTypeFilterableList.getBackingArray()[Ljava/lang/Object;");
+        String[] strings3 = ForgeAsm.minecraft_map.mapMethod("net/minecraft/util/ClassInstanceMultiMap.find(Ljava/lang/Class;)Ljava/util/Collection;");
         String[] strings2 = ForgeAsm.minecraft_map.mapField("net/minecraft/util/ClassInstanceMultiMap.allInstances");
         Iterator<MethodNode> iterator = input.methods.iterator();
         while (iterator.hasNext()){
@@ -27,6 +29,15 @@ public class MixinTypeFilterableListAsm implements ITransformer<ClassNode> {
             if (method.name.equals(strings[1]) && method.desc.equals(strings[2])){
                 iterator.remove();
                 add1 = true;
+                break;
+            }
+        }
+        iterator = input.methods.iterator();
+        while (iterator.hasNext()){
+            MethodNode method = iterator.next();
+            if (method.name.equals(strings3[1]) && method.desc.equals(strings3[2])){
+                iterator.remove();
+                add2 = true;
                 break;
             }
         }
@@ -38,18 +49,20 @@ public class MixinTypeFilterableListAsm implements ITransformer<ClassNode> {
         methodVisitor.visitLabel(label);
         methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
         methodVisitor.visitFieldInsn(Opcodes.GETFIELD, input.name, strings2[1], "Ljava/util/List;");
-        methodVisitor.visitInsn(Opcodes.DUP);
-        methodVisitor.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "size", "()I", true);
-        methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object");
-        methodVisitor.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "toArray", "([Ljava/lang/Object;)Ljava/lang/Object;", true);
+        //methodVisitor.visitInsn(Opcodes.DUP);
+        //methodVisitor.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "size", "()I", true);
+        //methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object");
+        //methodVisitor.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "toArray", "([Ljava/lang/Object;)Ljava/lang/Object;", true);
+        //methodVisitor.visitTypeInsn(Opcodes.CHECKCAST, "[Ljava/lang/Object;");");
+        methodVisitor.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "toArray", "()[Ljava/lang/Object;", true);
         methodVisitor.visitInsn(Opcodes.ARETURN);
 
         methodVisitor.visitLabel(label2);
-        methodVisitor.visitMaxs(4, 1);
+        methodVisitor.visitMaxs(1, 1);
 
 
-        if (!add1){
-            throw new RuntimeException("Not mapping error: com.ishland.vmp.mixins.general.collections.MixinTypeFilterableList");
+        if (!(add1 && add2)){
+            throw new RuntimeException("Not mapping error: com.ishland.vmp.mixins.general.collections.MixinTypeFilterableList %s %s".formatted(add1, add2));
         }
 
 
