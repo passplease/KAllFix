@@ -80,8 +80,8 @@
     "DynamicGraphMinFixedPointFix1",
     "DynamicGraphMinFixedPointFix2",
     "ServerChunkCacheDebug",
-    "fix.mod.MekanismStructureFix1",
     "minecraftfix.StructureTemplateFix1",
+    "fix.mod.MekanismStructureFix1",
     "k.ClientboundStatusResponsePacketDebug",
     "k.ConnectionDebug",
     "k.ServerGamePacketListenerImplDebug"
