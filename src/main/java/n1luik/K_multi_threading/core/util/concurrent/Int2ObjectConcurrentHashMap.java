@@ -17,7 +17,11 @@ public class Int2ObjectConcurrentHashMap<V> implements Int2ObjectMap<V> {
 	public Int2ObjectConcurrentHashMap() {
 		backing = new ConcurrentHashMap<Integer, V>();
 	}
-	
+
+	public Int2ObjectConcurrentHashMap(Map<Integer, ? extends V> v) {
+		backing = new ConcurrentHashMap<>(v);
+	}
+
 	@Override
 	public V get(int key) {
 		return backing.get(key);

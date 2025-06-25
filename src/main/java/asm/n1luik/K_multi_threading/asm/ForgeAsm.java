@@ -1,5 +1,6 @@
 package asm.n1luik.K_multi_threading.asm;
 
+import asm.n1luik.K_multi_threading.asm.mc1_19.LevelChunk_Asm;
 import asm.n1luik.K_multi_threading.asm.mc1_19.TruePacketThreadTestAsm;
 import asm.n1luik.K_multi_threading.asm.mod.*;
 import asm.n1luik.K_multi_threading.asm.mod.Modernfix.ModernfixGetChunkSynchronized_Asm;
@@ -164,6 +165,7 @@ public class ForgeAsm implements ITransformationService{
         String s = FMLLoader.versionInfo().mcVersion();
         if (s.startsWith("1.19.")){
             iTransformers.add(new TruePacketThreadTestAsm());
+            iTransformers.add(new LevelChunk_Asm());
         }
         if (isModLoaded("vmp")){
             iTransformers.add(new MixinTACSCancelSendingFixAsm());

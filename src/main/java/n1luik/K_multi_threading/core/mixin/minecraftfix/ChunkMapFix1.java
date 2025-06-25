@@ -2,14 +2,9 @@ package n1luik.K_multi_threading.core.mixin.minecraftfix;
 
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
-import n1luik.KAllFix.util.VoidAsyncWait;
 import n1luik.K_multi_threading.core.Base;
 import n1luik.K_multi_threading.core.Imixin.IWorldChunkLockedConfig;
 import n1luik.K_multi_threading.core.base.ParaServerChunkProvider;
-import n1luik.K_multi_threading.core.util.concurrent.LockArrayList;
-import net.minecraft.core.Holder;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
@@ -23,7 +18,6 @@ import net.minecraft.world.level.chunk.LightChunkGetter;
 import net.minecraft.world.level.entity.ChunkStatusUpdateListener;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.level.storage.LevelStorageSource;
-import net.minecraft.world.level.storage.WritableLevelData;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
 import org.spongepowered.asm.mixin.Final;
@@ -39,6 +33,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 @Mixin(ChunkMap.class)
@@ -77,6 +72,8 @@ public abstract class ChunkMapFix1 {
     //        //                    VoidAsyncWait voidAsyncWait = new VoidAsyncWait(p_214960_::postProcessGeneration);
 
     @Shadow public abstract CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> schedule(ChunkHolder p_140293_, ChunkStatus p_140294_);
+
+    @Shadow protected abstract void processUnloads(BooleanSupplier p_140354_);
 
     ////
     //        //                    level.getChunkSource().mainThreadProcessor.execute(voidAsyncWait);

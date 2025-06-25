@@ -2742,6 +2742,9 @@ public class FastUtilHackUtil {
 	public static <V> ConcurrentLinkedQueue<V> concurrentQueue(Collection<? extends V> v) {
 		return new ConcurrentLinkedQueue<>(v);
 	}
+	public static <V> Int2ObjectConcurrentHashMap<V> concurrentInt2ObjectMap2(Map<Integer, ? extends V> v) {
+		return new Int2ObjectConcurrentHashMap<>(v);
+	}
 
 
 }
