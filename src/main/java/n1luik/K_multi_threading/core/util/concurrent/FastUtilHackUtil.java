@@ -35,7 +35,7 @@ public class FastUtilHackUtil {
 
 	public static class WrappingObjectSortedSet<T> implements ObjectSortedSet<T> {
 
-		Set<T> backing;
+		private final Set<T> backing;
 		public WrappingObjectSortedSet(Set<T> backing) {
 			this.backing = backing;
 		}
@@ -197,9 +197,9 @@ public class FastUtilHackUtil {
 
 	public static class ConvertingObjectSortedSet<E, T> implements ObjectSortedSet<T> {
 
-		Set<E> backing;
-		Function<E, T> forward;
-		Function<T, E> back;
+		private final Set<E> backing;
+		private final Function<E, T> forward;
+		private final Function<T, E> back;
 
 		public ConvertingObjectSortedSet(Set<E> backing, Function<E, T> forward, Function<T, E> back) {
 			this.backing = backing;
@@ -367,9 +367,9 @@ public class FastUtilHackUtil {
 
 	public static class ConvertingObjectSet<E, T> implements ObjectSet<T> {
 
-		Set<E> backing;
-		Function<E, T> forward;
-		Function<T, E> back;
+		private final Set<E> backing;
+		private final Function<E, T> forward;
+		private final Function<T, E> back;
 
 		public ConvertingObjectSet(Set<E> backing, Function<E, T> forward, Function<T, E> back) {
 			this.backing = backing;
@@ -491,7 +491,7 @@ public class FastUtilHackUtil {
 
 	public static class ToObjectSet<T> implements ObjectSet<T> {
 
-		Set<T> backing;
+		private final Set<T> backing;
 
 		public ToObjectSet(Set<T> backing) {
 			this.backing = backing;
@@ -607,9 +607,9 @@ public class FastUtilHackUtil {
 
 	public static class Int2ObjectConvertingFastSortedObjectSet<E, T> implements Int2ObjectSortedMap.FastSortedEntrySet<T> {
 
-		Set<E> backing;
-		Function<E, Int2ObjectMap.Entry<T>> forward;
-		Function<Int2ObjectMap.Entry<T>, E> back;
+		private final Set<E> backing;
+		private final Function<E, Int2ObjectMap.Entry<T>> forward;
+		private final Function<Int2ObjectMap.Entry<T>, E> back;
 
 		public Int2ObjectConvertingFastSortedObjectSet(Set<E> backing, Function<E, Int2ObjectMap.Entry<T>> forward, Function<Int2ObjectMap.Entry<T>, E> back) {
 			this.backing = backing;
@@ -786,9 +786,9 @@ public class FastUtilHackUtil {
 
 	public static class ConvertingObjectSetFast_Long<E, T> implements it.unimi.dsi.fastutil.longs.Long2ObjectMap.FastEntrySet<T> {
 
-		Set<E> backing;
-		Function<E, it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry<T>> forward;
-		Function<it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry<T>, E> back;
+		private final Set<E> backing;
+		private final Function<E, it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry<T>> forward;
+		private final Function<it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry<T>, E> back;
 
 		public ConvertingObjectSetFast_Long(Set<E> backing,
 											Function<E, it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry<T>> forward,
@@ -923,9 +923,9 @@ public class FastUtilHackUtil {
 
 	public static class ConvertingObjectSetFast_Reference2Reference<E, K, V> implements Reference2ReferenceMap.FastEntrySet<K, V> {
 
-		final Set<E> backing;
-		final Function<E, Reference2ReferenceMap.Entry<K, V>> forward;
-		final Function<Reference2ReferenceMap.Entry<K, V>, E> back;
+		private final Set<E> backing;
+		private final Function<E, Reference2ReferenceMap.Entry<K, V>> forward;
+		private final Function<Reference2ReferenceMap.Entry<K, V>, E> back;
 
 		public ConvertingObjectSetFast_Reference2Reference(Set<E> backing,
 											Function<E, Reference2ReferenceMap.Entry<K, V>> forward,
@@ -1059,9 +1059,9 @@ public class FastUtilHackUtil {
 
 	public static class ConvertingObjectSetFast_Reference2ObjectMap<E, K, V> implements Reference2ObjectMap.FastEntrySet<K, V> {
 
-		Set<E> backing;
-		Function<E, Reference2ObjectMap.Entry<K, V>> forward;
-		Function<Reference2ObjectMap.Entry<K, V>, E> back;
+		private final Set<E> backing;
+		private final Function<E, Reference2ObjectMap.Entry<K, V>> forward;
+		private final Function<Reference2ObjectMap.Entry<K, V>, E> back;
 
 		public ConvertingObjectSetFast_Reference2ObjectMap(Set<E> backing,
 											Function<E, Reference2ObjectMap.Entry<K, V>> forward,
@@ -1381,7 +1381,7 @@ public class FastUtilHackUtil {
 
 	static class WrappingIntIterator implements IntBidirectionalIterator {
 
-		Iterator<Integer> backing;
+		private final Iterator<Integer> backing;
 
 		public WrappingIntIterator(Iterator<Integer> backing) {
 			this.backing = backing;
@@ -1420,7 +1420,7 @@ public class FastUtilHackUtil {
 
 	public static class WrappingLongIterator implements LongIterator {
 
-		Iterator<Long> backing;
+		private final Iterator<Long> backing;
 
 		public WrappingLongIterator(Iterator<Long> backing) {
 			this.backing = backing;
@@ -1450,7 +1450,7 @@ public class FastUtilHackUtil {
 
 	public static class WrappingIntSet implements IntSortedSet {
 
-		Set<Integer> backing;
+		private final Set<Integer> backing;
 
 		public WrappingIntSet(Set<Integer> backing) {
 			this.backing = backing;
@@ -1603,7 +1603,7 @@ public class FastUtilHackUtil {
 
 	public static class WrappingLongSet implements LongSet {
 
-		Set<Long> backing;
+		private final Set<Long> backing;
 
 		public WrappingLongSet(Set<Long> backing) {
 			this.backing = backing;
@@ -1721,7 +1721,7 @@ public class FastUtilHackUtil {
 
 	public static class WrappingLongSortedSet implements LongSortedSet {
 
-		Set<Long> backing;
+		private final Set<Long> backing;
 
 		public WrappingLongSortedSet(Set<Long> backing) {
 			this.backing = backing;
@@ -1875,7 +1875,7 @@ public class FastUtilHackUtil {
 
 	public static class WrappingObjectCollection<V> implements ObjectCollection<V> {
 
-		Collection<V> backing;
+		private final Collection<V> backing;
 
 		public WrappingObjectCollection(Collection<V> backing) {
 			this.backing = backing;
@@ -1950,7 +1950,7 @@ public class FastUtilHackUtil {
 
 	public static class WrappingBooleanCollection implements BooleanCollection {
 
-		Collection<Boolean> backing;
+		private final Collection<Boolean> backing;
 
 		public WrappingBooleanCollection(Collection<Boolean> backing) {
 			this.backing = backing;
@@ -2108,7 +2108,7 @@ public class FastUtilHackUtil {
 
 	public static class WrappingReferenceCollection<V> implements ReferenceCollection<V> {
 
-		Collection<V> backing;
+		private final Collection<V> backing;
 
 		public WrappingReferenceCollection(Collection<V> backing) {
 			this.backing = backing;
@@ -2194,7 +2194,7 @@ public class FastUtilHackUtil {
 
 	public static class WrappingByteCollection implements ByteCollection {
 
-		Collection<Byte> backing;
+		private final Collection<Byte> backing;
 
 		public WrappingByteCollection(Collection<Byte> backing) {
 			this.backing = backing;
@@ -2313,7 +2313,7 @@ public class FastUtilHackUtil {
 
 	public static class WrappingIntCollection implements IntCollection {
 
-		Collection<Integer> backing;
+		private final Collection<Integer> backing;
 
 		public WrappingIntCollection(Collection<Integer> backing) {
 			this.backing = backing;
@@ -2433,7 +2433,7 @@ public class FastUtilHackUtil {
 
 	public static class WrappingLongListIterator implements LongListIterator {
 
-		ListIterator<Long> backing;
+		private final ListIterator<Long> backing;
 
 		public WrappingLongListIterator(ListIterator<Long> backing) {
 			this.backing = backing;
@@ -2487,7 +2487,7 @@ public class FastUtilHackUtil {
 
 	public static class SlimWrappingLongListIterator implements LongListIterator {
 
-		Iterator<Long> backing;
+		private final Iterator<Long> backing;
 
 		public SlimWrappingLongListIterator(Iterator<Long> backing) {
 			this.backing = backing;
@@ -2549,7 +2549,7 @@ public class FastUtilHackUtil {
 
 	public static class WrappingByteIterator implements ByteIterator {
 
-		Iterator<Byte> parent;
+		private final Iterator<Byte> parent;
 
 		public WrappingByteIterator(Iterator<Byte> parent) {
 			this.parent = parent;
@@ -2595,7 +2595,7 @@ public class FastUtilHackUtil {
 
 	public static class WrapperObjectIterator<T> implements ObjectIterator<T> {
 
-		Iterator<T> parent;
+		private final Iterator<T> parent;
 
 		public WrapperObjectIterator(Iterator<T> parent) {
 			this.parent = parent;
@@ -2620,7 +2620,7 @@ public class FastUtilHackUtil {
 
 	public static class IntWrapperEntry<T> implements Entry<T> {
 
-		java.util.Map.Entry<Integer, T> parent;
+		private final java.util.Map.Entry<Integer, T> parent;
 
 		public IntWrapperEntry(java.util.Map.Entry<Integer, T> parent) {
 			this.parent = parent;
@@ -2650,7 +2650,7 @@ public class FastUtilHackUtil {
 
 	public static class Long2IntWrapperEntry implements Long2IntMap.Entry {
 
-		java.util.Map.Entry<Long, Integer> parent;
+		private final java.util.Map.Entry<Long, Integer> parent;
 
 		public Long2IntWrapperEntry(java.util.Map.Entry<Long, Integer> parent) {
 			this.parent = parent;
@@ -2676,7 +2676,7 @@ public class FastUtilHackUtil {
 
 	public static class WrapperIntEntryObjectIterator<T> implements ObjectIterator<Entry<T>> {
 
-		Iterator<Map.Entry<Integer, T>> parent;
+		private final Iterator<Map.Entry<Integer, T>> parent;
 
 		public WrapperIntEntryObjectIterator(Iterator<Map.Entry<Integer, T>> parent) {
 			this.parent = parent;
