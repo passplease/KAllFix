@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.AbstractReferenceSortedSet;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSet;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -11,7 +12,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FalseAbstractReferenceSortedSet<T> extends AbstractReferenceSortedSet<T> {
     protected final ConcurrentHashMap.KeySetView<T, Boolean> backing;
@@ -181,5 +186,42 @@ public class FalseAbstractReferenceSortedSet<T> extends AbstractReferenceSortedS
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public @NotNull Stream<T> stream() {
+        return backing.stream();
+    }
 
+    @Override
+    public int hashCode() {
+        return backing.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return backing.toString();
+    }
+
+    @Override
+    public <T1> T1[] toArray(@NotNull IntFunction<T1[]> generator) {
+        return backing.toArray(generator);
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> action) {
+        backing.forEach(action);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof Set)) return false;
+        Set<?> s = (Set<?>)o;
+        if (s.size() != size()) return false;
+        return backing.containsAll(s);
+    }
+
+    @Override
+    public boolean removeIf(@NotNull Predicate<? super T> filter) {
+        return backing.removeIf(filter);
+    }
 }

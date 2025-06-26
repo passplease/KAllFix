@@ -1,12 +1,18 @@
 package n1luik.K_multi_threading.core.util.concurrent;
 
 import it.unimi.dsi.fastutil.longs.LongCollection;
+import it.unimi.dsi.fastutil.longs.LongConsumer;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.IntFunction;
+import java.util.function.LongPredicate;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 public class LongConcurrentHashSet implements LongSet {
 
@@ -120,4 +126,46 @@ public class LongConcurrentHashSet implements LongSet {
 		return backing.remove(k);
 	}
 
+	@Override
+	public LongStream longStream() {
+		return backing.stream().mapToLong(i -> i);
+	}
+
+	@Override
+	public @NotNull Stream<Long> stream() {
+		return backing.stream();
+	}
+
+	@Override
+	public int hashCode() {
+		return backing.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return backing.toString();
+	}
+
+	@Override
+	public <T1> T1[] toArray(@NotNull IntFunction<T1[]> generator) {
+		return backing.toArray(generator);
+	}
+
+	@Override
+	public void forEach(LongConsumer action) {
+		backing.forEach(action);
+	}
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) return true;
+		if (!(o instanceof Set)) return false;
+		Set<?> s = (Set<?>)o;
+		if (s.size() != size()) return false;
+		return backing.containsAll(s);
+	}
+
+	@Override
+	public boolean removeIf(LongPredicate filter) {
+		return backing.removeIf(filter::test);
+	}
 }

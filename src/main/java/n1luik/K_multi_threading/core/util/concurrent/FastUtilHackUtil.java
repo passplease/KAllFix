@@ -923,9 +923,9 @@ public class FastUtilHackUtil {
 
 	public static class ConvertingObjectSetFast_Reference2Reference<E, K, V> implements Reference2ReferenceMap.FastEntrySet<K, V> {
 
-		Set<E> backing;
-		Function<E, Reference2ReferenceMap.Entry<K, V>> forward;
-		Function<Reference2ReferenceMap.Entry<K, V>, E> back;
+		final Set<E> backing;
+		final Function<E, Reference2ReferenceMap.Entry<K, V>> forward;
+		final Function<Reference2ReferenceMap.Entry<K, V>, E> back;
 
 		public ConvertingObjectSetFast_Reference2Reference(Set<E> backing,
 											Function<E, Reference2ReferenceMap.Entry<K, V>> forward,

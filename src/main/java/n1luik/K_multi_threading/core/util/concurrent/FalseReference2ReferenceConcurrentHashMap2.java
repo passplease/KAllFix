@@ -5,100 +5,102 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class FalseReference2ReferenceConcurrentHashMap2<K, V> extends Reference2ReferenceArrayMap<K, V> {
-    private final ConcurrentHashMap<K, V> map;
+    private final ConcurrentHashMap<K, V> backing;
     private FastUtilHackUtil.ConvertingObjectSetFast_Reference2Reference<Map.Entry<K, V>, K, V> reference2ReferenceEntrySet = null;
 
     public FalseReference2ReferenceConcurrentHashMap2() {
-        map = new ConcurrentHashMap<K, V>();
+        backing = new ConcurrentHashMap<K, V>();
     }
     public FalseReference2ReferenceConcurrentHashMap2(ConcurrentHashMap<K, V> map) {
-        this.map = map;
+        this.backing = map;
     }
 
     @Override
     public V computeIfAbsent(K key, @NotNull Function<? super K, ? extends V> mappingFunction) {
-        return map.computeIfAbsent(key, mappingFunction);
+        return backing.computeIfAbsent(key, mappingFunction);
     }
 
     @Override
     public V computeIfAbsent(K key, Reference2ReferenceFunction<? super K, ? extends V> mappingFunction) {
-        return map.computeIfAbsent(key, mappingFunction);
+        return backing.computeIfAbsent(key, mappingFunction);
     }
 
     @Override
     public boolean isEmpty() {
-        return map.isEmpty();
+        return backing.isEmpty();
     }
 
     @Override
     public boolean containsValue(Object v) {
-        return map.containsValue(v);
+        return backing.containsValue(v);
     }
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
-        map.putAll(m);
+        backing.putAll(m);
     }
 
     @Override
     public ReferenceSet<K> keySet() {
-        return new OpenFalseAbstractReferenceSortedSet(map.keySet());
+        return new OpenFalseAbstractReferenceSortedSet(backing.keySet());
     }
 
     @Override
     public ReferenceCollection<V> values() {
-        return FastUtilHackUtil.wrapReference(map.values());
+        return FastUtilHackUtil.wrapReference(backing.values());
     }
 
     @Override
     public boolean containsKey(Object k) {
-        return map.containsKey(k);
+        return backing.containsKey(k);
     }
 
     @Override
     public int size() {
-        return map.size();
+        return backing.size();
     }
 
     @Override
     public void clear() {
-        map.clear();
+        backing.clear();
     }
 
     @Override
     public FastEntrySet<K, V> reference2ReferenceEntrySet() {
         FastEntrySet<K, V> es;
         if ((es = reference2ReferenceEntrySet) != null) return es;
-        return reference2ReferenceEntrySet = new FastUtilHackUtil.ConvertingObjectSetFast_Reference2Reference<>(map.entrySet(), FalseEntry::new, v->((FalseEntry)v).entry);
+        return reference2ReferenceEntrySet = new FastUtilHackUtil.ConvertingObjectSetFast_Reference2Reference<>(backing.entrySet(), FalseEntry::new, v->((FalseEntry)v).entry);
     }
 
     @Override
     public ObjectSet<Map.Entry<K, V>> entrySet() {
-        return new FastUtilHackUtil.WrappingObjectSortedSet<>(map.entrySet());
+        return new FastUtilHackUtil.WrappingObjectSortedSet<>(backing.entrySet());
     }
 
 
     @Override
     public V put(K key, V value) {
-        return map.put(key, value);
+        return backing.put(key, value);
     }
 
     @Override
     public V remove(Object key) {
-        return map.remove(key);
+        return backing.remove(key);
     }
 
     @Override
     public boolean remove(Object key, Object value) {
-        return map.remove(key, value);
+        return backing.remove(key, value);
     }
 
     @Override
     public V get(Object key) {
-        return map.get(key);
+        return backing.get(key);
     }
     public static class FixNull<K, V> extends FalseReference2ReferenceConcurrentHashMap2<K, V> {
         public FixNull(){
@@ -126,5 +128,55 @@ public class FalseReference2ReferenceConcurrentHashMap2<K, V> extends Reference2
         public final boolean equals(Object o) {
             return entry.equals(o);
         }
+    }
+
+    @Override
+    public V getOrDefault(Object key, V defaultValue) {
+        return backing.getOrDefault(key, defaultValue);
+    }
+
+    @Override
+    public V putIfAbsent(K k, V v) {
+        return backing.putIfAbsent(k, v);
+    }
+
+    @Override
+    public V compute(K k, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        return backing.compute(k, remappingFunction);
+    }
+
+    @Override
+    public V computeIfPresent(K k, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        return backing.computeIfPresent(k, remappingFunction);
+    }
+
+    @Override
+    public boolean replace(K k, V oldValue, V v) {
+        return backing.replace(k, oldValue, v);
+    }
+
+    @Override
+    public V replace(K k, V v) {
+        return backing.replace(k, v);
+    }
+
+    @Override
+    public void replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
+        backing.replaceAll(function);
+    }
+
+    @Override
+    public int hashCode() {
+        return backing.hashCode();
+    }
+
+    @Override
+    public V merge(K k, V v, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+        return backing.merge(k, v, remappingFunction);
+    }
+
+    @Override
+    public void forEach(BiConsumer<? super K, ? super V> consumer) {
+        backing.forEach(consumer);
     }
 }

@@ -3,13 +3,18 @@ package n1luik.K_multi_threading.core.util.concurrent;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FalseObjectLinkedOpenHashSet<T> extends ObjectLinkedOpenHashSet<T> {
 
@@ -180,5 +185,42 @@ public class FalseObjectLinkedOpenHashSet<T> extends ObjectLinkedOpenHashSet<T> 
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public @NotNull Stream<T> stream() {
+		return backing.stream();
+	}
 
+	@Override
+	public int hashCode() {
+		return backing.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return backing.toString();
+	}
+
+	@Override
+	public <T1> T1[] toArray(@NotNull IntFunction<T1[]> generator) {
+		return backing.toArray(generator);
+	}
+
+	@Override
+	public void forEach(Consumer<? super T> action) {
+		backing.forEach(action);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) return true;
+		if (!(o instanceof Set)) return false;
+		Set<?> s = (Set<?>)o;
+		if (s.size() != size()) return false;
+		return backing.containsAll(s);
+	}
+
+	@Override
+	public boolean removeIf(@NotNull Predicate<? super T> filter) {
+		return backing.removeIf(filter);
+	}
 }
