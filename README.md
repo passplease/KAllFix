@@ -91,6 +91,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 
 ##  可开启
 - -DKMT-Debug=true 启用多线程同步
+- -DKMT-SafeUnloadChunk=true 启用在区块生成线程运行情况卸载
 - -DIndependencePlayer=true 开启玩家异步，这玩意大概率是负优化
 - -DKAF-ServerGamePacketListenerImplMixin2=true 移除服务器移动距离的安全检查，这个可能跟一个模组不兼容会让玩家进不去服务器
 - -DKAF-gtceu.MedicalConditionTrackerMixin=true 禁止添加gtm的辐射
