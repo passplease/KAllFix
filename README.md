@@ -11,7 +11,7 @@ Code is committed to [Gitee](https://gitee.com/n1luik/k_multi_threadingK_multi_t
 
 可以用-DKMT_D=[任意字符]和-DKAllFix_D=[任意字符]禁用独立mod
 
-idea MinecraftDev有bug必须jar一下才可以正常查看源码
+idea的MinecraftDev插件有bug必须jar一下才可以正常查看源码
 
 debug的唯一作用就是连接多线程而不是替代专用工具，火花的基础单位是毫秒自带的工具是纳秒不到1毫秒的会强制转成1毫秒，这玩意把他当个装饰就可以，保存的json没有任何东西可以利用因为这个功能浪费我太多时间了
 
