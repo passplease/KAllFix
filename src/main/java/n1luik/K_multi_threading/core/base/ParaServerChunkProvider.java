@@ -254,7 +254,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
 
 
     private static int getShardIndex(long chunkPos) {
-        return (int)(chunkPos % 4);
+        return Math.abs((int)(chunkPos % 4));
     }
 
     // 修改查询方法
