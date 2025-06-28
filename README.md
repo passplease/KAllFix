@@ -1,3 +1,7 @@
+## 使用源码
+
+moonrise_fast_palette功能使用了moonrise的源码
+
 ##  状态
 目前是直接提交到[gitee](https://gitee.com/n1luik/k_multi_threadingK_multi_threading)在每天的会自动更新一次[github](https://github.com/1luik/KAllFix)
 
