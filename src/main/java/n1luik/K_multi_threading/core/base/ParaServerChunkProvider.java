@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
@@ -60,6 +61,7 @@ import java.io.File;
 /* */
 //从mcmt复制并修改 1.18.2原码
 public class ParaServerChunkProvider extends ServerChunkCache implements IWorldChunkLockedConfig {
+    private static final int SHARD_COUNT = 4;
     public static final Field currentlyLoading;
     public static final Thread generatorAllThread;
     protected static final TaskRun generatorAllRun = new TaskRun("generatorAllThread", ()->{
@@ -84,7 +86,8 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     //protected static final boolean level_lock_mode = false;
     //protected Thread cacheThread;
     //因为lootr 会返回null所以不能进行安全检查
-    protected final Map<ChunkCacheAddress, ChunkAccess> chunkCache = new FixNullConcurrentHashMap<>();
+    //protected final Map<ChunkCacheAddress, ChunkAccess> chunkCache = new FixNullConcurrentHashMap<>();
+    private final Long2ObjectOpenHashMap<ChunkAccess>[][] chunkCacheShards;
     //  protected Map<ChunkCacheAddress, GeneratorNode> chunkTask = new ConcurrentHashMap<>();
     //protected final AtomicInteger access = new AtomicInteger(Integer.MIN_VALUE);
     protected long clearTime = 0;
@@ -103,7 +106,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     protected final List<Runnable> tasks = new CopyOnWriteArrayList<>();
     protected final List<Runnable> tickTasks = new CopyOnWriteArrayList<>();
     protected final List<Runnable> generatorTasks = new CopyOnWriteArrayList<>();
-    protected final List<Object> locks = new CopyOnWriteArrayList<>();
+    //protected final List<Object> locks = new CopyOnWriteArrayList<>();
     protected final Map<Long, Thread> threadBlacklist = new ConcurrentHashMap<>();
     protected final Map<Long, Thread> waitList = new ConcurrentHashMap<>();
     public Thread lightChunk = null;
@@ -156,21 +159,9 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         //cacheThread = new Thread(this::chunkCacheCleanup, "Chunk Cache Cleaner " + worldIn.dimension().location().getPath());
         //cacheThread.start();
 
-        //这里出现过locks没有数据
-        try{
-            //BuiltInRegistries.CHUNK_STATUS
-            Class<?> aClass = Class.forName("net.minecraft.core.registries.BuiltInRegistries", true, ParaServerChunkProvider.class.getClassLoader());
-            initLocks(((IdMap<?>)aClass.getField("f_256940_").get(aClass)).size());
-        } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
-            try{
-                //net.minecraft.core.Registry#CHUNK_STATUS
-                Class<?> aClass = Class.forName("net.minecraft.core.Registry", true, ParaServerChunkProvider.class.getClassLoader());
-                initLocks(((IdMap<?>)aClass.getField("f_122833_").get(aClass)).size());
-            } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e2) {
-                throw new RuntimeException(e2);
-            }
-
-        }
+        int size = getStatusSize();
+        chunkCacheShards = new Long2ObjectOpenHashMap[size][SHARD_COUNT];
+        initchunkCacheShards(size);
     }
 
     /**
@@ -181,7 +172,9 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         //access = new AtomicInteger(Integer.MIN_VALUE);
         clearTime = 0;
 
-        Unsafe.unsafe.putObject(this, initId.getLong("chunkCache"), new FixNullConcurrentHashMap<ChunkCacheAddress, ChunkAccess>());
+        int size = getStatusSize();
+
+        //Unsafe.unsafe.putObject(this, initId.getLong("chunkCache"), new FixNullConcurrentHashMap<ChunkCacheAddress, ChunkAccess>());
         Unsafe.unsafe.putObject(this, initId.getLong("lock"), new Object());
         Unsafe.unsafe.putObject(this, initId.getLong("lock2"), new Object());
         Unsafe.unsafe.putObject(this, initId.getLong("lock3"), new Object());
@@ -196,38 +189,84 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         Unsafe.unsafe.putObject(this, initId.getLong("tasks"), new CopyOnWriteArrayList<>());
         Unsafe.unsafe.putObject(this, initId.getLong("tickTasks"), new CopyOnWriteArrayList<>());
         Unsafe.unsafe.putObject(this, initId.getLong("generatorTasks"), new CopyOnWriteArrayList<>());
-        Unsafe.unsafe.putObject(this, initId.getLong("locks"), new ArrayList<>(256));
+        //Unsafe.unsafe.putObject(this, initId.getLong("locks"), new ArrayList<>(256));
         Unsafe.unsafe.putObject(this, initId.getLong("threadBlacklist"), new ConcurrentHashMap<>());
         Unsafe.unsafe.putObject(this, initId.getLong("waitList"), new ConcurrentHashMap<>());
         //Unsafe.unsafe.putObject(this, initId.getLong("chunkTask"), new ConcurrentHashMap<>());
         Unsafe.unsafe.putObject(this, initId.getLong("generatorThread1"), new CopyOnWriteArrayList<>());
         Unsafe.unsafe.putObject(this, initId.getLong("condition4"), lock4.newCondition());
         Unsafe.unsafe.putObject(this, initId.getLong("condition5"), lock5.newCondition());
+        Unsafe.unsafe.putObject(this, initId.getLong("chunkCacheShards"), new Long2ObjectOpenHashMap[size][SHARD_COUNT]);
         //Unsafe.unsafe.putObject(this, initId.getLong("ChunkGeneratorTest"), new AtomicInteger());
         chunkCleaner = MarkerManager.getMarker("ChunkCleaner");
 
+        //try{
+        //    //BuiltInRegistries.CHUNK_STATUS
+        //    Class<?> aClass = Class.forName("net.minecraft.core.registries.BuiltInRegistries", true, ParaServerChunkProvider.class.getClassLoader());
+        //    initLocks(((IdMap<?>)aClass.getField("f_256940_").get(aClass)).size());
+        //} catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
+        //    try{
+        //        //net.minecraft.core.Registry#CHUNK_STATUS
+        //        Class<?> aClass = Class.forName("net.minecraft.core.Registry", true, ParaServerChunkProvider.class.getClassLoader());
+        //        initLocks(((IdMap<?>)aClass.getField("f_122833_").get(aClass)).size());
+        //    } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e2) {
+        //        throw new RuntimeException(e2);
+        //    }
+//
+        //}
+
+        ChunkGeneratorTest = 0;
+        initchunkCacheShards(size);
+
+
+    }
+
+    public static int getStatusSize(){
         try{
             //BuiltInRegistries.CHUNK_STATUS
             Class<?> aClass = Class.forName("net.minecraft.core.registries.BuiltInRegistries", true, ParaServerChunkProvider.class.getClassLoader());
-            initLocks(((IdMap<?>)aClass.getField("f_256940_").get(aClass)).size());
+            return  ((IdMap<?>) aClass.getField("f_256940_").get(aClass)).size();
         } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
             try{
                 //net.minecraft.core.Registry#CHUNK_STATUS
                 Class<?> aClass = Class.forName("net.minecraft.core.Registry", true, ParaServerChunkProvider.class.getClassLoader());
-                initLocks(((IdMap<?>)aClass.getField("f_122833_").get(aClass)).size());
+                return ((IdMap<?>) aClass.getField("f_122833_").get(aClass)).size();
             } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e2) {
                 throw new RuntimeException(e2);
             }
 
         }
-
-        ChunkGeneratorTest = 0;
     }
 
-    protected void initLocks(int size){
+    protected void initchunkCacheShards(int size){
         for (int i = 0; i < size; i++) {
-            locks.add(new Object());
+            for (int i2 = 0; i2 < SHARD_COUNT; i2++) {
+                chunkCacheShards[i][i2] = new Long2ObjectOpenHashMap<>(512, 0.4f);
+            }
         }
+    }
+
+    //protected void initLocks(int size){
+    //    for (int i = 0; i < size; i++) {
+    //        locks.add(new Object());
+    //    }
+    //}
+
+
+    private static int getShardIndex(long chunkPos) {
+        return (int)(chunkPos % 4);
+    }
+
+    // 修改查询方法
+    public ChunkAccess lookupChunk(long chunkPos, ChunkStatus status) {
+        int shard = getShardIndex(chunkPos);
+        return chunkCacheShards[status.getIndex()][shard].get(chunkPos);
+    }
+
+    // 修改缓存方法
+    public void cacheChunk(long chunkPos, ChunkAccess chunk, ChunkStatus status) {
+        int shard = getShardIndex(chunkPos);
+        chunkCacheShards[status.getIndex()][shard].put(chunkPos, chunk);
     }
 
     /*@Override
@@ -396,7 +435,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         //log.info("Thread: {}", Thread.currentThread().getName());
 
 
-        ChunkAccess c = lookupChunk(i, requiredStatus, false);
+        ChunkAccess c = lookupChunk(i, requiredStatus);
         if (c != null) {
             return c;
         }
@@ -420,7 +459,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         //    // Multithread but still limit to 1 load op per chunk
         //    long[] locks = loadingChunkLock.lock(i, 0);
         //    try {
-        //        if ((c = lookupChunk(i, requiredStatus, false)) != null) {
+        //        if ((c = lookupChunk(i, requiredStatus)) != null) {
         //            return c;
         //        }
         //        cl = super.getChunk(chunkX, chunkZ, requiredStatus, load);
@@ -432,7 +471,8 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
             synchronized (isBlacklistThread ? threadBlacklist : lock) {//代理并委托不能锁this会出现问题的
                 //log.debug("Missed chunk {} {} now", chunkX, chunkZ);
                 //synchronized (locks.get(requiredStatus.getIndex())) {
-                    if (chunkCache.containsKey(new ChunkCacheAddress(i, requiredStatus)) && (c = lookupChunk(i, requiredStatus, false)) != null) {
+                    c = lookupChunk(i, requiredStatus);
+                    if (c != null) {
                         return c;
                     }
                     if (isBlacklistThread){
@@ -529,7 +569,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
 
     @Override
     public CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> getChunkFuture(int p_8432_, int p_8433_, @NotNull ChunkStatus p_8434_, boolean p_8435_) {
-        ChunkAccess chunk = chunkCache.get(new ChunkCacheAddress(ChunkPos.asLong(p_8432_, p_8433_), p_8434_));
+        ChunkAccess chunk = lookupChunk(ChunkPos.asLong(p_8432_, p_8433_), p_8434_);//chunkCache.get(new ChunkCacheAddress(ChunkPos.asLong(p_8432_, p_8433_), p_8434_));
         if (chunk != null) {
             return CompletableFuture.completedFuture(Either.left(chunk));
         }
@@ -543,27 +583,40 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
 
     public void testChunkCache(){
         //if (Util.getMillis() + 14246622 % 28 == 0) {
-        List<ChunkCacheAddress> remove = new ArrayList<>();
+        //List<ChunkCacheAddress> remove = new ArrayList<>();
         Long2ObjectOpenHashMap<SortedArraySet<Ticket<?>>> tickets = distanceManager.tickets;
-        for (ChunkCacheAddress chunkCacheAddress : chunkCache.keySet()) {
-            //if (distanceManager.getTickets(chunkCacheAddress.chunk).isEmpty()) {
-            //    remove.add(chunkCacheAddress);
-            //}
-            SortedArraySet<Ticket<?>> tickets1 = tickets.get(chunkCacheAddress.chunk);
-            if (tickets1 == null) {
-                remove.add(chunkCacheAddress);
-            }else if (tickets1.isEmpty()) {
-                remove.add(chunkCacheAddress);
+        for (Long2ObjectOpenHashMap<ChunkAccess>[] chunkCacheShard : chunkCacheShards) {
+            for (Long2ObjectOpenHashMap<ChunkAccess> chunkCacheShard2 : chunkCacheShard) {
+                for (LongIterator iterator = chunkCacheShard2.keySet().iterator(); iterator.hasNext(); ) {
+                    long l = iterator.next();
+                    SortedArraySet<Ticket<?>> tickets1 = tickets.get(l);
+                    if (tickets1 == null) {
+                        iterator.remove();
+                    }else if (tickets1.isEmpty()) {
+                        iterator.remove();
+                    }
+                }
             }
         }
-        remove.forEach(chunkCache::remove);
+        //for (ChunkCacheAddress chunkCacheAddress : chunkCache.keySet()) {
+        //    //if (distanceManager.getTickets(chunkCacheAddress.chunk).isEmpty()) {
+        //    //    remove.add(chunkCacheAddress);
+        //    //}
+        //    SortedArraySet<Ticket<?>> tickets1 = tickets.get(chunkCacheAddress.chunk);
+        //    if (tickets1 == null) {
+        //        remove.add(chunkCacheAddress);
+        //    }else if (tickets1.isEmpty()) {
+        //        remove.add(chunkCacheAddress);
+        //    }
+        //}
+        //remove.forEach(chunkCache::remove);
         //}
     }
 
     @Override
     public void clearCache() {
         super.clearCache();
-        if (chunkCache != null) {
+        if (chunkCacheShards != null) {
             /*chunkCache.clear();/*/testChunkCache();
         }
     }
@@ -622,7 +675,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     public LevelChunk getChunkNow(int chunkX, int chunkZ) {
         long i = ChunkPos.asLong(chunkX, chunkZ);
 
-        ChunkAccess c = lookupChunk(i, ChunkStatus.FULL, false);
+        ChunkAccess c = lookupChunk(i, ChunkStatus.FULL);
         if (c != null) {
             return (LevelChunk) c;
         }
@@ -700,13 +753,16 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     }*/
 
     public ChunkAccess lookupChunk(long chunkPos, ChunkStatus status, boolean compute) {
-        return chunkCache.get(new ChunkCacheAddress(chunkPos, status));
+        return lookupChunk(chunkPos, status);
     }
-
-    //因为lootr 会返回null所以不能进行安全检查
-    public void cacheChunk(long chunkPos, ChunkAccess chunk, ChunkStatus status) {
-        chunkCache.put(new ChunkCacheAddress(chunkPos, status), chunk);
-    }
+    //public ChunkAccess lookupChunk(long chunkPos, ChunkStatus status) {
+    //    return chunkCache.get(new ChunkCacheAddress(chunkPos, status));
+    //}
+//
+    ////因为lootr 会返回null所以不能进行安全检查
+    //public void cacheChunk(long chunkPos, ChunkAccess chunk, ChunkStatus status) {
+    //    chunkCache.put(new ChunkCacheAddress(chunkPos, status), chunk);
+    //}
 
     /*@Deprecated
     public void chunkCacheCleanup() {
