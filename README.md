@@ -116,6 +116,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
   - Create Sabers
   - [深渊：第二章]TATOS
 - -DKMT-threadpool-async=true会崩
+- -DKAF-moonrise_fast_palette=true 移植的moonrise的fast_palette功能
 - 多线程jei和emi：
   - 操作
     - -DKAF-MultiThreadingJEI=true只能在客户端使用，多线程jei不兼容emi
