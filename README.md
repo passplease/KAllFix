@@ -1,6 +1,6 @@
 ## 使用源码
 
-moonrise_fast_palette功能使用了moonrise的源码
+moonrise_fast_palette功能使用了![moonrise](https://github.com/Tuinity/Moonrise)的源码
 
 ##  状态
 目前是直接提交到[gitee](https://gitee.com/n1luik/k_multi_threadingK_multi_threading)在每天的会自动更新一次[github](https://github.com/1luik/KAllFix)
@@ -57,7 +57,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 - (MCreator所有模组, terramity（尝试解决这一类问题）)
 - 添加可独立关闭的多线程
 - 解决alexscaves磁场依托答辩问题
-- 解决createdieselgenerators不会用导致他的mixin依托答辩问题
+- 解决createdieselgenerators不会用导致他的mixin性能有很大问题问题
 - (不安全)（需要开启-DKAF-NbtIoMixin_NotGZip=true)加一个try catch解决nbtio的gzip问题
 - 解决老destroy的数据库连不上就崩服问题
 - -DKMT-threadMax=[线程池的线程数] | 1.0.3
