@@ -50,6 +50,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 - 在启用调试模式的时候需要[火花]spark 任意版本（没有测试过低版本但是最好不要低于1.10.53要不然可能不能生成保存成火花的格式）放入mods
   
 ##  功能
+- 修复canary和gcyr的兼容问题
 - 修复[Petrolpark 的库]petrolpark 1.4.2服务器不可以在部分java使用问题
   - 可以使用-DKAF-DisablePetrolpark=false关闭
 - 修复Biolith兼容问题(范围包括重新生成MultiNoiseBiomeSource的mod，例如所有的使用MCreator的所有有这个操作的mod)
