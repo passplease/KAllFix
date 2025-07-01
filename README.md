@@ -1,7 +1,6 @@
 ## 使用源码
 
-moonrise_fast_palette功能使用了moonrise的源码
-修复canary和gcyr的兼容问题使用的功能使用了[Canary](https://github.com/AbdElAziz333/Canary)的源码
+moonrise_fast_palette功能使用了[moonrise](https://github.com/Tuinity/Moonrise)的源码
 
 ##  状态
 目前是直接提交到[gitee](https://gitee.com/n1luik/k_multi_threadingK_multi_threading)在每天的会自动更新一次[github](https://github.com/1luik/KAllFix)
@@ -51,7 +50,6 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 - 在启用调试模式的时候需要[火花]spark 任意版本（没有测试过低版本但是最好不要低于1.10.53要不然可能不能生成保存成火花的格式）放入mods
   
 ##  功能
-- 修复canary和gcyr的兼容问题
 - 修复[Petrolpark 的库]petrolpark 1.4.2服务器不可以在部分java使用问题
   - 可以使用-DKAF-DisablePetrolpark=false关闭
 - 修复Biolith兼容问题(范围包括重新生成MultiNoiseBiomeSource的mod，例如所有的使用MCreator的所有有这个操作的mod)
@@ -59,7 +57,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 - (MCreator所有模组, terramity（尝试解决这一类问题）)
 - 添加可独立关闭的多线程
 - 解决alexscaves磁场依托答辩问题
-- 解决createdieselgenerators不会用导致他的mixin依托答辩问题
+- 解决createdieselgenerators不会用导致他的mixin性能有很大问题问题
 - (不安全)（需要开启-DKAF-NbtIoMixin_NotGZip=true)加一个try catch解决nbtio的gzip问题
 - 解决老destroy的数据库连不上就崩服问题
 - -DKMT-threadMax=[线程池的线程数] | 1.0.3
@@ -146,14 +144,14 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
          "data": [
            {
               "type": "注册表名",
-              "name": "注册名"
+              "name": "注册名",
               "file": "文件名"
            }
          ],
          "tag": [
            {
               "type": "注册表名",
-              "tag": "标签名"
+              "tag": "标签名",
               "file": "文件名"
            }
          ],
