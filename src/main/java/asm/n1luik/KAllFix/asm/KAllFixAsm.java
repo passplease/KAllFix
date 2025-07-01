@@ -2,6 +2,8 @@ package asm.n1luik.KAllFix.asm;
 
 import asm.n1luik.KAllFix.asm.mod.RemoveMixin_ASM;
 import asm.n1luik.KAllFix.asm.mod.createdieselgenerators.EntityMixinAsm;
+import asm.n1luik.KAllFix.asm.mod.gcyr.CanaryConfig;
+import asm.n1luik.KAllFix.asm.mod.gcyr.GcyrCanaryMapping_Asm;
 import asm.n1luik.KAllFix.asm.mod.petrolpark.ITeamBoundItemAsm;
 import asm.n1luik.KAllFix.asm.mod.petrolpark.ShopMenuItemAsm;
 import asm.n1luik.KAllFix.asm.mod.tfmg.DestroyFix_Asm;
@@ -90,6 +92,9 @@ public class KAllFixAsm implements ITransformationService {
             //transformers.add(new PetrolparkAsm());
             transformers.add(new ShopMenuItemAsm());
             transformers.add(new ITeamBoundItemAsm());
+        }
+        if (CanaryConfig.ENABLED) {
+            transformers.add(new GcyrCanaryMapping_Asm());
         }
         return transformers;
     }

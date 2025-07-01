@@ -2,6 +2,7 @@ package n1luik.K_multi_threading.core.Imixin;
 
 import n1luik.K_multi_threading.core.UnsafeEnable;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.LoadingModList;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import org.objectweb.asm.tree.ClassNode;

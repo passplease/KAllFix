@@ -1,5 +1,6 @@
 package asm.n1luik.KAllFix.asm.mod;
 
+import asm.n1luik.KAllFix.asm.mod.gcyr.CanaryConfig;
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
@@ -23,8 +24,10 @@ public class RemoveMixin_ASM implements ITransformer<ClassNode> {
         if (Boolean.getBoolean("KAF-FixTFMGDestroy")){
             stringsList.add(new String[]{"com/petrolpark/destroy/mixin/FluidPropagatorMixin","matchOtherPumps"});
         }
+        if (CanaryConfig.ENABLED) {
+            stringsList.add(new String[]{"argent_matter/gcyr/mixin/EntityBorderMixin", "gcyr$modifySpaceStationBorder"});
+        }
     }
-
     @Override
     public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
 
