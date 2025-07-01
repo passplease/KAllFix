@@ -2,6 +2,8 @@
 
 moonrise_fast_palette功能使用了[moonrise](https://github.com/Tuinity/Moonrise)的源码
 
+修复gcyr和canary的兼容问题功能功能使用了[canary](https://github.com/AbdElAziz333/Canary)的源码
+
 ##  状态
 目前是直接提交到[gitee](https://gitee.com/n1luik/k_multi_threadingK_multi_threading)在每天的会自动更新一次[github](https://github.com/1luik/KAllFix)
 
