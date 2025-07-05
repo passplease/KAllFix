@@ -27,11 +27,6 @@ jobs:
         with:
           gradle-version: '8.1.1'
 
-      - name: All files
-        run: |
-         find .
-         ls -l
-
       - name: Delete first non-comment line of gradle.properties
         shell: pwsh
         run: |
@@ -86,5 +81,6 @@ jobs:
             **/logs/
             **/crash-reports/
             build/libs
+            gradle.properties
           retention-days: 1
         if: always()
