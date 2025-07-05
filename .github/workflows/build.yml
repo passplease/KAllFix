@@ -28,7 +28,7 @@ jobs:
       - name: Delete first non-comment line of gradle.properties
         shell: pwsh
         run: |
-            $filePath = "gradle.properties"
+            $filePath = "/home/runner/work/KAllFix/gradle.properties"
             # Read file content as a single string to preserve original line endings (assuming Windows CRLF)
             $content = Get-Content $filePath -Raw
             # Split into lines, handling Windows line endings
