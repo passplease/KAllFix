@@ -1,6 +1,7 @@
 name: Build
 
 on: 
+ workflow_dispatch:
  push: 
    branches:
       - Code
@@ -25,6 +26,7 @@ jobs:
           gradle-version: '8.1.1'
 
       - name: Delete first non-comment line of gradle.properties
+        shell: pwsh
         run: |
           $filePath = "gradle.properties"
           # Read file content as a single string to preserve original line endings (assuming Windows CRLF)
