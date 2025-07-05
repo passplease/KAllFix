@@ -1,0 +1,79 @@
+name: Build
+
+on: 
+ push: 
+   branches:
+      - Code
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.1.1'
+
+      - name: Delete first non-comment line of gradle.properties
+        run: |
+          $filePath = "gradle.properties"
+          # Read file content as a single string to preserve original line endings (assuming Windows CRLF)
+          $content = Get-Content $filePath -Raw
+          # Split into lines, handling Windows line endings
+          $lines = $content -split "`r`n"
+          # Find the index (0-based) of the first line that is not a comment or empty after trimming leading/trailing whitespace
+          $firstNonCommentIndex = -1
+          for ($i = 0; $i -lt $lines.Length; $i++) {
+           $line = $lines[$i].Trim() # Trim leading and trailing whitespace
+           # Check if the trimmed line is not empty and does not start with '#'
+           if ($line.Length -gt 0 -and -not $line.StartsWith("#")) {
+               $firstNonCommentIndex = $i
+               break # Found the first non-comment line, exit loop
+           }
+          }
+          if ($firstNonCommentIndex -ne -1) {
+           $newLines = @()
+           # Add lines before the target line
+           if ($firstNonCommentIndex -gt 0) {
+               $newLines += $lines[0..($firstNonCommentIndex - 1)]
+           }
+           # Add lines after the target line
+           if ($firstNonCommentIndex -lt ($lines.Length - 1)) {
+               $newLines += $lines
+
+      - name: Build with Gradle
+        run: gradle jar
+
+      - name: Create timestamp
+        id: create_timestamp
+        run: echo "timestamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-tag: 1.20.1-6.0.0-Forge_NeoForge-${{ steps.create_timestamp.outputs.timestamp }}
+          github-draft: false
+          github-prerelease: true
+          files: install/build/libs/*.jar
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Build Artifact
+          include-hidden-files: true
+          path: |
+            **/logs/
+            **/crash-reports/
+            build/libs
+          retention-days: 1
+        if: always()
