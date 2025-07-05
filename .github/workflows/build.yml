@@ -30,32 +30,27 @@ jobs:
       - name: Delete first non-comment line of gradle.properties
         shell: pwsh
         run: |
-            $filePath = "gradle.properties"
-            # Read file content as a single string to preserve original line endings (assuming Windows CRLF)
-            $content = Get-Content $filePath -Raw
-            # Split into lines, handling Windows line endings
-            $lines = $content -split "`r`n"
-            # Find the index (0-based) of the first line that is not a comment or empty after trimming leading/trailing whitespace
-            $firstNonCommentIndex = -1
-            for ($i = 0; $i -lt $lines.Length; $i++) {
-             $line = $lines[$i].Trim() # Trim leading and trailing whitespace
-             # Check if the trimmed line is not empty and does not start with '#'
-             if ($line.Length -gt 0 -and -not $line.StartsWith("#")) {
-                 $firstNonCommentIndex = $i
-                 break # Found the first non-comment line, exit loop
-             }
-            }
-            if ($firstNonCommentIndex -ne -1) {
-             $newLines = @()
-             # Add lines before the target line
-             if ($firstNonCommentIndex -gt 0) {
-                 $newLines += $lines[0..($firstNonCommentIndex - 1)]
-             }
-             # Add lines after the target line
-             if ($firstNonCommentIndex -lt ($lines.Length - 1)) {
-                 $newLines += $lines
-             }
-            }
+          $filePath = "gradle.properties"
+          $lines = Get-Content $filePath
+          $targetIndex = -1
+          # Find the index of the first non-comment, non-empty line
+          for ($i = 0; $i -lt $lines.Length; $i++) {
+          $line = $lines[$i].Trim() # Trim whitespace from the beginning and end
+          if ($line -ne "" -and $line -notlike "#*") {
+          $targetIndex = $i
+          break # Found the line, exit the loop
+          }
+          }
+          # If a non-comment line was found, remove it
+          if ($targetIndex -ne -1) {
+          Write-Host "Found first non-comment line at index $targetIndex: $($lines[$targetIndex])"
+          # Use Select-Object -ExcludeIndex to remove the line by index
+          $newContent = $lines | Select-Object -ExcludeIndex $targetIndex
+          Set-Content $filePath -Value $newContent -Force
+          Write-Host "Successfully removed the line."
+          } else {
+          Write-Host "No non-comment line found to remove in $($filePath)."
+          }
 
       - name: Build with Gradle
         run: gradle jar
