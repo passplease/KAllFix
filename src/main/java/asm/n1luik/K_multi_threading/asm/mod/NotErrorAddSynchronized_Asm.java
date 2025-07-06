@@ -21,6 +21,8 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
     public static final List<String[]> stringsList = new ArrayList<>(List.of(
             //canary
             ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/mixin/chunk/entity_class_groups/ClassInstanceMultiMapMixin.createAllOfGroupType(Lcom/abdelaziz/canary/common/entity/EntityClassGroup;)Ljava/util/Collection;"),
+            //lithium
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/chunk/entity_class_groups/TypeFilterableListMixin.createAllOfGroupType(Lme/jellysquid/mods/lithium/common/entity/EntityClassGroup;)Ljava/util/Collection;"),
             //机械动力
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/KineticNetwork.addSilently(Lcom/simibubi/create/content/kinetics/base/KineticBlockEntity;FF)V"),
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/KineticNetwork.updateCapacityFor(Lcom/simibubi/create/content/kinetics/base/KineticBlockEntity;F)V"),

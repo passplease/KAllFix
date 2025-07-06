@@ -6,6 +6,7 @@ import n1luik.KAllFix.DataCollectors;
 import n1luik.K_multi_threading.core.Base;
 import n1luik.K_multi_threading.core.dataCollectors.ValkyrienSkies;
 import n1luik.K_multi_threading.fix.canary.CanaryConfigAuto;
+import n1luik.K_multi_threading.fix.lithium.LithiumConfigAuto;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
@@ -51,6 +52,7 @@ public class ModInit {
         if (FMLEnvironment.dist == Dist.DEDICATED_SERVER) {
             event.dataCollectors.addTools(new ValkyrienSkies());
             event.dataCollectors.addTools(new CanaryConfigAuto());
+            event.dataCollectors.addTools(new LithiumConfigAuto());
         }
 
         try {

@@ -69,6 +69,22 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                     new MethodInfo("setNavigationActive", null, true, true)
             }
             ),
+            new AsmTarget("me.jellysquid.mods.lithium.mixin.collections.entity_filtering.TypeFilterableListMixin", false
+                    , new String[]{}
+                    ,new MethodInfo[]{
+                    new MethodInfo("createAllOfType", null, true, true)
+            }
+            ),
+            new AsmTarget("me.jellysquid.mods.lithium.mixin.entity.inactive_navigations.ServerWorldMixin", false
+                    , new String[]{"activeNavigations"}
+                    ,new MethodInfo[]{
+                    new MethodInfo("init", null, true, true),
+                    new MethodInfo("isConsistent", null, true, true),
+                    new MethodInfo("updateActiveListeners", null, true, true),
+                    new MethodInfo("setNavigationInactive", null, true, true),
+                    new MethodInfo("setNavigationActive", null, true, true)
+            }
+            ),
             //new AsmTarget("net.minecraft.world.level.gameevent.EuclideanGameEventListenerRegistry", false),
             //
             //Caused by: java.lang.UnsupportedOperationException

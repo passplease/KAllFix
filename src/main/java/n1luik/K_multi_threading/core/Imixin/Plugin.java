@@ -34,7 +34,7 @@ public class Plugin implements IMixinConfigPlugin {
         return switch (mixinClassName) {
             case "n1luik.K_multi_threading.core.mixin.minecraftfix.ChunkMapFix2" -> UnsafeEnable.INSTANCE.SafeUnloadChunk;
             case "n1luik.K_multi_threading.core.mixin.impl.MinecraftServerImpl2" -> UnsafeEnable.INSTANCE.IndependencePlayer;
-            case "n1luik.K_multi_threading.core.mixin.minecraftfix.ServerChunkCacheFix2" -> !isModLoaded("canary");
+            case "n1luik.K_multi_threading.core.mixin.minecraftfix.ServerChunkCacheFix2" -> !(isModLoaded("canary") || isModLoaded("radium") || isModLoaded("lithium"));
             default -> true;
         };
     }

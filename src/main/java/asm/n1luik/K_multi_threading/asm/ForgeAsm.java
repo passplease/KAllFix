@@ -148,7 +148,7 @@ public class ForgeAsm implements ITransformationService{
                 //new AddServerLevelSync1_Asm(),
                 new ModernfixGetChunkSynchronized_Asm(),
                 new LithiumGetChunkSynchronized_Asm(),
-                new Lithium$TypeFilterableListMixin_Asm(),
+                //new Lithium$TypeFilterableListMixin_Asm(),
                 new CreateGeneratingKineticBlockEntity_Asm(),
                 new ServerChunkCacheMixin_Asm(),
                 new AddMapConcurrent_ASM(),
