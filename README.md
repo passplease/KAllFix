@@ -13,6 +13,8 @@ Code is committed to [Gitee](https://gitee.com/n1luik/k_multi_threadingK_multi_t
 
 理论上1.17+ java11+都可以用但是需要改源码把没有的部分删除
 
+项目第一次部署可能需要编译2次才可以正常工作
+
 多线程只能在服务器使用客户端会进不去游戏
 
 可以用-DKMT_D=[任意字符]和-DKAllFix_D=[任意字符]禁用独立mod
@@ -163,6 +165,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 
 
 ## 问题
+- 某些模组可能需要再客户端安装KAllFix（即使他什么都没做）
 - 如果不手动设置-DKMT-threadMax=[cpu线程数]的话可能会导致地形生成莫名其妙卡死，还是的话继续调高这个
 - cupboard模组的logOffthreadEntityAdd功能可能不兼容，我不想直接让他直接消失而且被人发现，可以通过-DKAF-FixConfigAuto=true自动禁用
 - canary的world.tick_scheduler功能会覆盖ClassInstanceMultiMap的多线程修复只能关闭，可以通过-DKAF-FixConfigAuto=true自动禁用
