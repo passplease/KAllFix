@@ -1,5 +1,6 @@
 package n1luik.KAllFix.mixin.mixinfix.biolith;
 
+import n1luik.KAllFix.fix.biolith.BiolithCall;
 import n1luik.KAllFix.fix.biolith.Fun_biolith;
 import n1luik.K_multi_threading.core.Base;
 import net.minecraft.core.Holder;
@@ -20,6 +21,6 @@ public class MultiNoiseBiomeSourceMixin {
     public synchronized void fix1(CallbackInfoReturnable<Climate.ParameterList<Holder<Biome>>> cir) {
         if (KAllFix$fixBiolith)return;
         KAllFix$fixBiolith = true;
-        Fun_biolith.fixBiomeSource(Base.mcs.registryAccess());
+        BiolithCall.fixBiomeSource(Base.mcs.registryAccess());
     }
 }

@@ -1,3 +1,6 @@
+import net.minecraftforge.gradle.userdev.UserDevExtension
+import net.minecraftforge.gradle.userdev.MinecraftUserRepo
+import net.minecraftforge.gradle.userdev.DependencyManagementExtension
 buildscript{
     repositories {
 
@@ -195,6 +198,77 @@ repositories {
     }
 }
 
+protected File cache(String... path) {
+    return new File(getCacheRoot(), String.join(File.separator, path));
+}
+private File cacheMapped(String mapping, String classifier, String ext) {
+    return cache(GROUP.replace('.', File.separatorChar), NAME, getVersion(mapping), NAME + '-' + getVersion(mapping) + '-' + classifier + '.' + ext);
+}
+File getMappingFile() {
+    MinecraftUserRepo mcrepo = null;
+    //final DependencyManagementExtension  fgExtension = project.getExtensions().getByName(DependencyManagementExtension .EXTENSION_NAME)//.create(UserDevExtension.EXTENSION_NAME + "_private_kaf", UserDevExtension.class, project);
+    final UserDevExtension extension = project.getExtensions().getByName(UserDevExtension.EXTENSION_NAME)//.create(UserDevExtension.EXTENSION_NAME + "_private_kaf", UserDevExtension.class, project);
+    Configuration minecraft = project.getConfigurations().getByName("minecraft")
+    var i = new ArrayList<>(minecraft.getDependencies()).iterator();
+    while (i.hasNext()){
+        Dependency dep = i.next();
+        if (!(dep instanceof ExternalModuleDependency)) {
+            throw new IllegalArgumentException(minecraft.getName() + " configuration must contain a Maven dependency");
+        }
+        if (mcrepo != null) {
+            throw new IllegalArgumentException(minecraft.getName() + " configuration must contain exactly one dependency");
+        }
+        mcrepo = new MinecraftUserRepo(project, dep.getGroup(), dep.getName(), dep.getVersion(), new ArrayList<>(extension.getAccessTransformers().getFiles()), null)//extension.getMappings().get())
+
+        //String newDep = mcrepo.getDependencyString();
+        //ExternalModuleDependency ext = (ExternalModuleDependency) project.getDependencies().c(newDep);
+        ////fgExtension.getRepository().content(content -> content.excludeModule(dep.getGroup(), dep.getName())); // This is annoying but the content filter of the deobf repo does match the MC dependency
+//
+        //if (MinecraftUserRepo.CHANGING_USERDEV) {
+        //    ext.setChanging(true);
+        //}
+
+        String[] split = mcrepo.getDependencyString().split(":");
+
+
+        //return new File(new StringBuilder().append(mcrepo.getCacheRoot())
+        //        .append("/")
+        //        .append(dep.getGroup().replace('.'.charAt(0), File.separatorChar))
+        //        .append("/")
+        //        .append(split[1])
+        //        .append("/")
+        //        .append(split[2])
+        //        .append("/")
+        //        .append(split[1])
+        //        .append("-")
+        //        .append(split[2])
+        //        .append("-patched.jar").toString()
+        //)
+        return new File(new StringBuilder().append(mcrepo.getCacheRoot())
+                .append("/")
+                .append(dep.getGroup().replace('.'.charAt(0), File.separatorChar))
+                .append("/")
+                .append(split[1])
+                .append("/")
+                .append(split[2])
+                .append("/")
+                .append(split[1])
+                .append("-")
+                .append(split[2])
+                .append("-patched.jar").toString()
+        )
+       //return new StringBuilder(dep.getGroup()).append()
+       //        .append(":")
+       //        .append(split[1])
+       //        .append(":")
+       //        .append(split[2]).toString()
+
+        //return ext
+        //return mcrepo.getDependencyString()
+    }
+    throw new IllegalArgumentException(minecraft.getName() + " configuration must contain exactly one dependency");
+}
+
 dependencies {
 //    implementation 'com.google.protobuf:protobuf-javalite:3.15.6'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
@@ -228,6 +302,8 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    //biolithForgeImplementation
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -279,12 +355,26 @@ sourceSets {
         }
         compileClasspath += fileTree(dir: 'libs19', include: ['*.jar'])
     }
+    biolithForge {
+        java {
+            srcDirs = ['src/biolithForge/java'] // 指定自定义源码目录
+        }
+        resources {
+            srcDirs = ['src/biolithForge/resources']
+        }
+        compileClasspath += sourceSets.main.compileClasspath
+        //导入主项目的源码
+        compileClasspath += sourceSets.main.output
+        compileClasspath -= fileTree(dir: 'libs', include: ['biolith-1.0.0-beta.1_mapped_srg_1.20.1.jar'])
+        compileClasspath += fileTree(dir: 'libs_biolithForge', include: ['*.jar'])
+    }
 }
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
     if (Boolean.getBoolean("fixpack")) {
         from sourceSets.fixpack.output
     }
+    from sourceSets.biolithForge.output
     manifest {
         attributes([
                 'MixinConnector': 'n1luik.K_multi_threading.core.Imixin.MixinConnector',
@@ -325,6 +415,7 @@ tasks.withType(JavaCompile).configureEach {
 
 mixin {
     add sourceSets.main, "mixins.K_multi_threading.refmap.json"
+    add sourceSets.biolithForge, "mixins.K_multi_threading.refmap.json"
     //config "mixins.K_multi_threading.json"
 }
 

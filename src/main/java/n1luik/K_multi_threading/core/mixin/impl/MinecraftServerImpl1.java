@@ -49,7 +49,6 @@ public class MinecraftServerImpl1 implements IMinecraftServerTickMixin1 {
     @Inject(method = "<init>", at = @At("RETURN"))
     public void init(Thread p_236723_, LevelStorageSource.LevelStorageAccess p_236724_, PackRepository p_236725_, WorldStem p_236726_, Proxy p_236727_, DataFixer p_236728_, Services p_236729_, ChunkProgressListenerFactory p_236730_, CallbackInfo ci) {
         Base.regThread("Server base",Thread.currentThread());
-        Base.mcs = (MinecraftServer)(Object)this;
         K_multi_threading$taskList = new ArrayList<>();
         K_multi_threading$taskListBuff = new ArrayList<>();
     }

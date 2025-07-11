@@ -1,8 +1,16 @@
 package n1luik.KAllFix.Imixin;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import lombok.extern.slf4j.Slf4j;
+import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
+import net.minecraftforge.forgespi.language.IModInfo;
+import net.minecraftforge.forgespi.locating.IModFile;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -11,7 +19,9 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.LoadingModList;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 
+@Slf4j
 public class Plugin implements IMixinConfigPlugin {
+    private volatile Integer biolithFixVersion = null;
     @Override
     public void onLoad(String mixinPackage) {
     }
@@ -26,6 +36,43 @@ public class Plugin implements IMixinConfigPlugin {
         return test(targetClassName, mixinClassName) && !Boolean.getBoolean("KAF-RemoveMixin:"+mixinClassName);
     }
     public boolean test(String targetClassName, String mixinClassName) {
+        if (biolithFixVersion == null) {
+            synchronized (this) {
+                if (biolithFixVersion == null) {
+                    if (!isModLoaded("biolith")) {
+                        biolithFixVersion = 0;
+                    } else {
+                        InputStream biolith = getJarFile("biolith", "/com/terraformersmc/biolith/impl/biome/InterfaceBiomeSource.class").get();
+                        try {
+                            byte[] bytes = biolith.readAllBytes();
+                            ClassNode classNode = new ClassNode();
+                            new ClassReader(bytes).accept(classNode, 0);
+                            boolean debug_1 = false;
+                            for (var method : classNode.methods) {
+
+                                if (method.name.equals("biolith$getDimensionType")) {
+                                    debug_1 = true;
+                                    if (method.desc.equals("()Lnet/minecraft/resources/ResourceKey;")) {
+                                        biolithFixVersion = 1;
+                                    }else {
+                                        biolithFixVersion = 2;
+                                    }
+
+                                    break;
+                                }
+                            }
+                            if(!debug_1){
+                                throw new RuntimeException("biolith 当前版本未适配");
+                            }
+                            biolith.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    log.info("biolithFix: {}", biolithFixVersion);
+                }
+            }
+        }
         String s = "n1luik.KAllFix.mixin.unsafe.";
         String s8 = "n1luik.KAllFix.mixin.unsafe.path.";
         if (mixinClassName.startsWith(s8)){
@@ -73,14 +120,15 @@ public class Plugin implements IMixinConfigPlugin {
         }
         //KAF-NbtAZ
         return switch (mixinClassName) {
-            case "n1luik.KAllFix.mixin.mixinfix.biolith.MinecraftServerMixin" -> isModLoaded("biolith");
+            case "n1luik.KAllFix.mixin.mixinfix.biolith.MinecraftServerMixin" -> biolithFixVersion != 0;
             //case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> isModLoaded("biolith");
-            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> isModLoaded("biolith");
-            case "n1luik.KAllFix.mixin.mixinfix.biolith.mod.TerramityModBiomesMixin" -> isModLoaded("biolith");
-            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSource2" -> isModLoaded("biolith");
-            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin2" -> isModLoaded("biolith");
+            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> biolithFixVersion != 0;
+            case "n1luik.KAllFix.mixin.mixinfix.biolith.mod.TerramityModBiomesMixin" -> biolithFixVersion != 0;
+            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSource2" -> biolithFixVersion == 2;
+            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSource2Forge" -> biolithFixVersion == 1;
+            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin2" -> biolithFixVersion != 0;
             case "n1luik.KAllFix.mixin.mixinfix.biolith.terrablender.InitializationHandlerMixin" ->
-                    isModLoaded("biolith") && isModLoaded("terrablender");
+                    biolithFixVersion != 0 && isModLoaded("terrablender");
             default -> true;
         };
     }
@@ -107,5 +155,20 @@ public class Plugin implements IMixinConfigPlugin {
             return LoadingModList.get().getMods().stream().map(ModInfo::getModId).anyMatch(modId::equals);
         }
         return ModList.get().isLoaded(modId);
+    }
+    private static Optional<InputStream> getJarFile(String modId, String file) {
+        List<ModFileInfo> list = LoadingModList.get().getModFiles().stream().filter(anObject -> {
+            for (IModInfo modInfo2 : anObject.getMods()) {
+                if (modId.equals(modInfo2.getModId())) {
+                    return true;
+                }
+            }
+            return false;
+        }).toList();
+        if (list.isEmpty()) {
+            throw new RuntimeException("Mod not found: " + modId);
+        }
+        ModFileInfo modInfo = list.get(0);
+        return modInfo.getFile().getSecureJar().moduleDataProvider().open(file);
     }
 }

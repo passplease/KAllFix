@@ -1,5 +1,6 @@
 package n1luik.KAllFix.mixin.mixinfix.biolith;
 
+import n1luik.KAllFix.fix.biolith.BiolithCall;
 import n1luik.KAllFix.fix.biolith.Fun_biolith;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -23,6 +24,6 @@ public abstract class MinecraftServerMixin {
 
     @Inject(method = "loadLevel", at = @At("HEAD"))
     public void fix1(CallbackInfo ci) {
-        Fun_biolith.fixBiomeSource(registryAccess());
+        BiolithCall.fixBiomeSource(registryAccess());
     }
 }

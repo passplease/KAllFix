@@ -1,5 +1,6 @@
 package n1luik.KAllFix.mixin.mixinfix.biolith.terrablender;
 
+import n1luik.KAllFix.fix.biolith.BiolithCall;
 import n1luik.KAllFix.fix.biolith.Fun_biolith;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,6 +13,6 @@ import terrablender.handler.InitializationHandler;
 public class InitializationHandlerMixin {
     @Inject(method = "onServerAboutToStart", at = @At("HEAD"), remap = false)
     private static void fix1(ServerAboutToStartEvent event, CallbackInfo ci) {
-        Fun_biolith.fixBiomeSource(event.getServer().registryAccess());
+        BiolithCall.fixBiomeSource(event.getServer().registryAccess());
     }
 }
