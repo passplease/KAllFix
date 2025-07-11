@@ -163,7 +163,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 
 
 ## 问题
-- 某些模组可能需要再客户端安装KAllFix（即使他什么都没做）
+- 某些模组可能需要再客户端安装KAllFix（即使这个mod什么都没做）
 - 如果不手动设置-DKMT-threadMax=[cpu线程数]的话可能会导致地形生成莫名其妙卡死，还是的话继续调高这个
 - cupboard模组的logOffthreadEntityAdd功能可能不兼容，我不想直接让他直接消失而且被人发现，可以通过-DKAF-FixConfigAuto=true自动禁用
 - canary的world.tick_scheduler功能会覆盖ClassInstanceMultiMap的多线程修复只能关闭，可以通过-DKAF-FixConfigAuto=true自动禁用
