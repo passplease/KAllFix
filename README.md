@@ -13,8 +13,6 @@ Code is committed to [Gitee](https://gitee.com/n1luik/k_multi_threadingK_multi_t
 
 理论上1.17+ java11+都可以用但是需要改源码把没有的部分删除
 
-项目第一次部署可能需要编译2次才可以正常工作
-
 多线程只能在服务器使用客户端会进不去游戏
 
 可以用-DKMT_D=[任意字符]和-DKAllFix_D=[任意字符]禁用独立mod
