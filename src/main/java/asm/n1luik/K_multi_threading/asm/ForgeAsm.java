@@ -175,6 +175,7 @@ public class ForgeAsm implements ITransformationService{
         iTransformers.add(new SafeAddSynchronized_Asm());
         iTransformers.add(new IndependenceAddSynchronized_Asm());
         iTransformers.add(new NotErrorAddSynchronized_Asm());
+        iTransformers.add(new AllAddSynchronized_Asm());
         return iTransformers;
     }
 }

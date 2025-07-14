@@ -18,4 +18,8 @@ public abstract class MappingImpl {
         String[] split = orDefault.split("\\.");
         return new String[]{split[0], split[1]};
     }
+
+    public String mapClass(String name){
+        return map.getOrDefault(name, name);
+    }
 }
