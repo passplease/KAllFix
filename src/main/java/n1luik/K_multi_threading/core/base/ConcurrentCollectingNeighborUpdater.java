@@ -38,27 +38,29 @@ public class ConcurrentCollectingNeighborUpdater extends CollectingNeighborUpdat
         runUpdates(getTasks());
     }
     protected void runUpdates(OBListDeque<NeighborUpdates, NeighborUpdates> v) {
-        List<NeighborUpdates> t1 = v.t1;
-        Deque<NeighborUpdates> t2 = v.t2;
-        try {
-            while(!t2.isEmpty() || !t1.isEmpty()) {
-                for(int i = t1.size() - 1; i >= 0; --i) {
-                    t2.push(t1.get(i));
-                }
+        synchronized (v){
+            List<NeighborUpdates> t1 = v.t1;
+            Deque<NeighborUpdates> t2 = v.t2;
+            try {
+                while (!t2.isEmpty() || !t1.isEmpty()) {
+                    for (int i = t1.size() - 1; i >= 0; --i) {
+                        t2.push(t1.get(i));
+                    }
 
-                t1.clear();
-                CollectingNeighborUpdater.NeighborUpdates collectingneighborupdater$neighborupdates = t2.peek();
+                    t1.clear();
+                    CollectingNeighborUpdater.NeighborUpdates collectingneighborupdater$neighborupdates = t2.peek();
 
-                while(t1.isEmpty()) {
-                    if (!collectingneighborupdater$neighborupdates.runNext(this.level)) {
-                        t2.pop();
-                        break;
+                    while (t1.isEmpty()) {
+                        if (!collectingneighborupdater$neighborupdates.runNext(this.level)) {
+                            t2.pop();
+                            break;
+                        }
                     }
                 }
+            } finally {
+                t1.clear();
+                t2.clear();
             }
-        } finally {
-            t1.clear();
-            t2.clear();
         }
     }
 

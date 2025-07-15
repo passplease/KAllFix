@@ -34,8 +34,8 @@ import java.util.concurrent.Executor;
 
 @Mixin(ServerLevel.class)
 public abstract class ServerLevelFix1 {
-    @Unique
-    private final Object K_multi_threading$lockBlockEvents = new Object();
+    //@Unique
+    //private final Object K_multi_threading$lockBlockEvents = new Object();
 
     //@Unique
     //ParaServerChunkProvider paraServerChunkProvider;
@@ -59,7 +59,7 @@ public abstract class ServerLevelFix1 {
     //@Mutable
     @Shadow @Final private ObjectLinkedOpenHashSet<BlockEventData> blockEvents;
 
-    @Shadow protected abstract void runBlockEvents();
+    //@Shadow protected abstract void runBlockEvents();
 
     //@Inject(method = "<init>",at = @At("RETURN"))
     //public void fix1(MinecraftServer p_214999_, Executor p_215000_, LevelStorageSource.LevelStorageAccess p_215001_, ServerLevelData p_215002_, ResourceKey p_215003_, LevelStem p_215004_, ChunkProgressListener p_215005_, boolean p_215006_, long p_215007_, List p_215008_, boolean p_215009_, RandomSequences p_288977_, CallbackInfo ci){
@@ -76,21 +76,21 @@ public abstract class ServerLevelFix1 {
         while (this.isUpdatingNavigations) Thread.onSpinWait();
     }
 
-    /**
-     * @author
-     * @reason
-     */
-    @Overwrite
-    public void blockEvent(BlockPos p_8746_, Block p_8747_, int p_8748_, int p_8749_) {
-        synchronized (K_multi_threading$lockBlockEvents){
-            this.blockEvents.add(new BlockEventData(p_8746_, p_8747_, p_8748_, p_8749_));
-        }
-    }
-
-    @Redirect(method = "tick",at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;runBlockEvents()V"))
-    public void fix4(ServerLevel instance){
-        synchronized (K_multi_threading$lockBlockEvents) {
-            runBlockEvents();
-        }
-    }
+    ///**
+    // * @author
+    // * @reason
+    // */
+    //@Overwrite
+    //public void blockEvent(BlockPos p_8746_, Block p_8747_, int p_8748_, int p_8749_) {
+    //    synchronized (K_multi_threading$lockBlockEvents){
+    //        this.blockEvents.add(new BlockEventData(p_8746_, p_8747_, p_8748_, p_8749_));
+    //    }
+    //}
+//
+    //@Redirect(method = "tick",at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;runBlockEvents()V"))
+    //public void fix4(ServerLevel instance){
+    //    synchronized (K_multi_threading$lockBlockEvents) {
+    //        runBlockEvents();
+    //    }
+    //}
 }

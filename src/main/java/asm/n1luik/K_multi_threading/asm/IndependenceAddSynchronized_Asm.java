@@ -28,6 +28,8 @@ public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> 
 
         list2.addAll(List.of(
                 //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.startTickingChunk(Lnet/minecraft/world/level/chunk/LevelChunk;)V")
+                new ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.blockEvent(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Block;II)V"), "kmt-ServerLevel_blockEvent"),
+                new ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.runBlockEvents()V"), "kmt-ServerLevel_blockEvent"),
                 new ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/DistanceManager.addPlayer(Lnet/minecraft/core/SectionPos;Lnet/minecraft/server/level/ServerPlayer;)V"), "kmt-fixPlayer"),
                 new ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/DistanceManager.removePlayer(Lnet/minecraft/core/SectionPos;Lnet/minecraft/server/level/ServerPlayer;)V"), "kmt-fixPlayer"),
                 new ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.startTickingChunk(Lnet/minecraft/world/level/chunk/LevelChunk;)V"), null),
