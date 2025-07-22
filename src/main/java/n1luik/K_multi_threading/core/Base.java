@@ -3,6 +3,7 @@ package n1luik.K_multi_threading.core;
 import asm.n1luik.K_multi_threading.asm.MappingImpl;
 import asm.n1luik.K_multi_threading.asm.MappingTsrgImpl;
 import com.mojang.logging.LogUtils;
+import n1luik.KAllFix.forge.ModInit;
 import n1luik.K_multi_threading.core.base.CalculateTask;
 import n1luik.K_multi_threading.core.sync.GetterDataMap;
 import n1luik.K_multi_threading.core.util.NodeHashMap;
@@ -234,6 +235,7 @@ public class Base {
     }
 
     static {
+        ModInit.run1();
         int max = threadMax = Integer.getInteger("KMT-threadMax", Math.max(2, (int)(Runtime.getRuntime().availableProcessors() * 0.9)));
         CalculateTask.callMax = Integer.getInteger("KMT-callMax", Math.max(1, (int)(Runtime.getRuntime().availableProcessors() * 0.9)));
         ex = Base.setupThreadpool(threadMax, threadMax, Boolean.getBoolean("KMT-threadpool-async"));

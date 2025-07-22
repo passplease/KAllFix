@@ -573,7 +573,18 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         if (chunk != null) {
             return CompletableFuture.completedFuture(Either.left(chunk));
         }
-        return super.getChunkFuture(p_8432_, p_8433_, p_8434_, p_8435_);
+
+        Thread value = Thread.currentThread();
+        if (value == generatorAllThread) {
+            CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> completablefuture = super.getChunkFutureMainThread(p_8432_, p_8433_, p_8434_, p_8435_);
+            this.mainThreadProcessor.managedBlock(completablefuture::isDone);
+            return completablefuture;
+        }
+        synchronized ((!generatorThread1.contains(value) && threadBlacklist.containsValue(value)) ? threadBlacklist : this) {
+            CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> completablefuture = super.getChunkFutureMainThread(p_8432_, p_8433_, p_8434_, p_8435_);
+            KMT$genTestTickRun(()->this.mainThreadProcessor.managedBlock(completablefuture::isDone));
+            return completablefuture;
+        }
     }
 
     //@Override

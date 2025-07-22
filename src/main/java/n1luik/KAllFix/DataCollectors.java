@@ -98,9 +98,11 @@ public class DataCollectors {
                 version1.versions = new ArrayList<>();
             }
             List<Version.VersionData> versions = version1.versions;
+            List<String> names = new ArrayList<>();
             for (CollectTools<?> collectTools : up) {
                 if (!collectTools.job()) continue;
                 upSize++;
+                names.add(collectTools.name);
                 if (!isNew){
                     for (int i = 0; i < versions.size(); i++) {
                         if (versions.get(i).name.equals(collectTools.name)) {
@@ -121,12 +123,17 @@ public class DataCollectors {
             fileOutputStream.write(GSON.toJson(version1).getBytes(StandardCharsets.UTF_8));
             fileOutputStream.close();
             if (upSize > 0){
+                for (String name : names) {
+                    logger.info("{}",name);
+                }
                 logger.info("""
+                        ---------------
                         需要重新启动
                         A reboot is required
                         Требуется перезагрузка
                         再起動が必要です
                         """);
+
                 System.exit(0);
             }
         }

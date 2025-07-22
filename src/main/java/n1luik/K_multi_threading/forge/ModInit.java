@@ -32,37 +32,6 @@ public class ModInit {
         }
     }
     public ModInit(){
-        File file = new File("./_kmt_outc.txt");
-        if (file.isFile()){
-            try {
-                FileInputStream fileInputStream = new FileInputStream(file);
-                int i = 0;
-                for (String v : new String(fileInputStream.readAllBytes()).split("(\\r\\n|\\n)+")) {
-                    if (v.isEmpty())continue;
-
-                    String name = v.replace("/", ".");
-                    //try {
-                        TransformingClassLoader classLoader = (TransformingClassLoader) GetterClassFileCommand.class.getClassLoader();
-                        //classLoader.loadClass(name);
-                        byte[] bytes = getclass.apply(classLoader, name);
-                        try {
-                            File file2 = new File("debug_save_"+(i++)+".class");
-                            file2.createNewFile();
-                            FileOutputStream fileOutputStream = new FileOutputStream(file2);
-                            fileOutputStream.write(bytes);
-                            fileOutputStream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    //} catch (ClassNotFoundException e) {
-                    //    e.printStackTrace();
-                    //}
-                }
-                fileInputStream.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
 
     }
 }

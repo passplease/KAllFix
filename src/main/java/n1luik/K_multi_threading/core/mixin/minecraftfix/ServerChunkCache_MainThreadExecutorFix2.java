@@ -2,6 +2,7 @@ package n1luik.K_multi_threading.core.mixin.minecraftfix;
 
 import lombok.Getter;
 import lombok.Setter;
+import n1luik.K_multi_threading.core.Base;
 import n1luik.K_multi_threading.core.Imixin.IMainThreadExecutor;
 import n1luik.K_multi_threading.core.base.CalculateTask;
 import net.minecraft.server.level.ServerChunkCache;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.valkyrienskies.core.impl.shadow.R;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
@@ -134,6 +136,7 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
         synchronized (lockCall) {
             isCall++;
         }
+        //Base.LOGGER.info("managedBlockDebug", new Throwable());
         //isCall.getAndAdd(1);
         callThread = Thread.currentThread();
         super.managedBlock(p_18702_);
@@ -179,6 +182,23 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
 
         }
     */
+
+    @Unique
+    public boolean MpollTask() {
+        // 使用 poll 方法原子性地获取并移除队列头部元素
+        Runnable r = this.pendingRunnables.poll();
+        if (r == null) {
+            return false;
+        } else if (this.blockingCount == 0 && !this.shouldRun(r)) {
+            // 如果任务不符合执行条件，将任务重新放回队列
+            this.pendingRunnables.add(r);
+            return false;
+        } else {
+            this.doRunTask(r);
+            return true;
+        }
+    }
+
     @Redirect(method = "pollTask", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/thread/BlockableEventLoop;pollTask()Z"))
     public boolean pollTask_2(BlockableEventLoop<Runnable> eventLoop) {
         return K_multi_threading$pollTask_2();
@@ -211,7 +231,7 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
 
             return true;
         }
-        return !m2 && super.pollTask();//isCall && super.pollTask();//Runnable r = this.pendingRunnables.peek();
+        return !m2 && MpollTask();//isCall && super.pollTask();//Runnable r = this.pendingRunnables.peek();
         //if (r == null) {
         //    return false;
         //} else /*if (!this.shouldRun(r)) {

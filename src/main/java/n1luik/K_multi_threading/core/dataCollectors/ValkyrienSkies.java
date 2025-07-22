@@ -5,12 +5,14 @@ import cpw.mods.modlauncher.TransformingClassLoader;
 import n1luik.KAllFix.DataCollectors;
 import n1luik.KAllFix.util.UtilKAF;
 import n1luik.K_multi_threading.core.dataCollectors.data.MapConcurrentData;
+import n1luik.K_multi_threading.core.util.Util;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,9 +27,7 @@ public class ValkyrienSkies extends DataCollectors.CollectTools<ValkyrienSkies.D
     @Override
     public boolean test(Data data) {
         if (data == null)return false;
-        ClassNode classNode = new ClassNode();
-        byte[] classFile = getclass.apply((TransformingClassLoader) ValkyrienSkies.class.getClassLoader(), "org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld");
-        return data.fileHash1 == Arrays.hashCode(classFile);
+        return data.fileHash1 == Arrays.hashCode(UtilKAF.toMixinClassHashCheckDataByte(getclass.apply((TransformingClassLoader) ValkyrienSkies.class.getClassLoader(), "org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld")));
     }
 
     @Override
@@ -41,7 +41,6 @@ public class ValkyrienSkies extends DataCollectors.CollectTools<ValkyrienSkies.D
         ClassNode classNode = new ClassNode();
         //try {
             byte[] classFile = getclass.apply((TransformingClassLoader) ValkyrienSkies.class.getClassLoader(), "org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld");
-            data.fileHash1 = Arrays.hashCode(classFile);
             new ClassReader(classFile).accept(classNode, 0);
         //} catch (IOException e) {
         //    throw new RuntimeException(e);
@@ -61,6 +60,13 @@ public class ValkyrienSkies extends DataCollectors.CollectTools<ValkyrienSkies.D
                 }
             }
         }
+        byte[] mixinClassHashCheckDataByte = UtilKAF.toMixinClassHashCheckDataByte(classNode);
+        //try {
+        //    java.nio.file.Files.write(java.nio.file.Paths.get("./ValkyrienSkies.class"), mixinClassHashCheckDataByte);
+        //} catch (IOException e) {
+        //    throw new RuntimeException(e);
+        //}
+        data.fileHash1 = Arrays.hashCode(mixinClassHashCheckDataByte);
         return data;
     }
 

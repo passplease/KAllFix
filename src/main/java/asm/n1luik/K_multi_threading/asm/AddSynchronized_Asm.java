@@ -96,6 +96,7 @@ public class AddSynchronized_Asm implements ITransformer<ClassNode> {
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/util/thread/BlockableEventLoop.tell(Ljava/lang/Runnable;)V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/util/thread/BlockableEventLoop.pollTask()Z"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/util/thread/BlockableEventLoop.dropAllTasks()V"),
+            //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerChunkCache$MainThreadExecutor.pollTask()Z"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.fillFromNoise(Ljava/util/concurrent/Executor;Lnet/minecraft/world/level/levelgen/blending/Blender;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/StructureManager;Lnet/minecraft/world/level/chunk/ChunkAccess;)Ljava/util/concurrent/CompletableFuture;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/storage/DimensionDataStorage.computeIfAbsent(Ljava/util/function/Function;Ljava/util/function/Supplier;Ljava/lang/String;)Lnet/minecraft/world/level/saveddata/SavedData;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/storage/DimensionDataStorage.get(Ljava/util/function/Function;Ljava/lang/String;)Lnet/minecraft/world/level/saveddata/SavedData;"),
