@@ -83,7 +83,7 @@ public class AddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/TickingTracker.addTicket(JLnet/minecraft/server/level/Ticket;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/TickingTracker.removeTicket(JLnet/minecraft/server/level/Ticket;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/TickingTracker.getTickets(J)Lnet/minecraft/util/SortedArraySet;"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerChunkCache.runDistanceManagerUpdates()Z"),
+            //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerChunkCache.runDistanceManagerUpdates()Z"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerChunkCache.getChunkFutureMainThread(IILnet/minecraft/world/level/chunk/ChunkStatus;Z)Ljava/util/concurrent/CompletableFuture;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerChunkCache.getChunkNow(II)Lnet/minecraft/world/level/chunk/LevelChunk;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerChunkCache.removeEntity(Lnet/minecraft/world/entity/Entity;)V"),
