@@ -19,6 +19,10 @@ public class Event {
         AttributesPacket.AttributesRemove.getAndAdd(1);
     }
     @SubscribeEvent
+    public static void onPlayerRespawnEvent(PlayerEvent.PlayerRespawnEvent event) {
+        AttributesPacket.AttributesRemove.getAndAdd(1);
+    }
+    @SubscribeEvent
     public static void onServerEndTick(TickEvent.ServerTickEvent event) {
         if (ReOutputBufTime + ReOutputTime < System.currentTimeMillis()) {
             AttributesPacket.AttributesRemove.getAndAdd(1);

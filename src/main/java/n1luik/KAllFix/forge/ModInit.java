@@ -4,6 +4,7 @@ import com.abdelaziz.canary.common.Canary;
 import cpw.mods.modlauncher.TransformingClassLoader;
 import lombok.extern.slf4j.Slf4j;
 import n1luik.KAllFix.DataCollectors;
+import n1luik.KAllFix.api.OptimizeTagManager;
 import n1luik.K_multi_threading.core.Base;
 import n1luik.K_multi_threading.core.dataCollectors.ValkyrienSkies;
 import n1luik.K_multi_threading.debug.GetterClassFileCommand;
@@ -28,6 +29,7 @@ import static n1luik.K_multi_threading.forge.ModInit.getclass;
 @Slf4j
 @Mod(Base.MOD_ID2)
 public class ModInit {
+    public static final OptimizeTagManager OPTIMIZE_TAG_MANAGER = new OptimizeTagManager();
 
     //懒得折腾了，拉一点吧
     public static synchronized void registerKeyBinding(KeyMapping key)

@@ -52,6 +52,8 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 - 在启用调试模式的时候需要[火花]spark 任意版本（没有测试过低版本但是最好不要低于1.10.53要不然可能不能生成保存成火花的格式）放入mods
   
 ##  功能
+- 修复farm_and_charm 沉浸农艺[Let's Do] Farm & Charm 的大量发送无效数据包问题
+- 优化farm_and_charm 沉浸农艺[Let's Do] Farm & Charm 鸡窝的ai性能问题
 - 修复gcyr和canary的兼容问题，但是可能gcyr空间站边界会有碰撞箱问题
 - 修复[Petrolpark 的库]petrolpark 1.4.2服务器不可以在部分java使用问题
   - 可以使用-DKAF-DisablePetrolpark=false关闭
@@ -97,6 +99,9 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
         - RemoveRemoveErrorSize 让服务器不会纪录崩溃的次数，无限拦截
 
 ##  可开启
+- -DKAF-RenderOptimizer=true 渲染优化
+  - 功能：
+    - 缩放实体tick
 - -DKMT-Debug=true 启用多线程同步
 - -DKMT-SafeUnloadChunk=true 启用在区块生成线程运行区块卸载
 - -DIndependencePlayer=true 开启玩家异步，这玩意大概率是负优化

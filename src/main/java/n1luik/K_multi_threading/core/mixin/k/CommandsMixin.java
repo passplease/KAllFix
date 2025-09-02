@@ -1,6 +1,7 @@
 package n1luik.K_multi_threading.core.mixin.k;
 
 import com.mojang.brigadier.CommandDispatcher;
+import n1luik.KAllFix.debug.KAFGetterChunkTagCommand;
 import n1luik.K_multi_threading.debug.GetterClassFileCommand;
 import n1luik.K_multi_threading.debug.SetterWorldConfigCommand;
 import net.minecraft.commands.CommandBuildContext;
@@ -19,6 +20,7 @@ public class CommandsMixin {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void init(Commands.CommandSelection p_230943_, CommandBuildContext p_230944_, CallbackInfo ci){
+        KAFGetterChunkTagCommand.register(this.dispatcher);
         GetterClassFileCommand.register(this.dispatcher);
         SetterWorldConfigCommand.register(this.dispatcher, p_230944_);
     }

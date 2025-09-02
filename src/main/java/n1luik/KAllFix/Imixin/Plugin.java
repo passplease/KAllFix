@@ -120,6 +120,7 @@ public class Plugin implements IMixinConfigPlugin {
         }
         //KAF-NbtAZ
         return switch (mixinClassName) {
+            case "n1luik.KAllFix.mixin.mixinfix.farm_and_charm.This" -> isModLoaded("farm_and_charm");
             case "n1luik.KAllFix.mixin.mixinfix.biolith.MinecraftServerMixin" -> biolithFixVersion != 0;
             //case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> isModLoaded("biolith");
             case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> biolithFixVersion != 0;

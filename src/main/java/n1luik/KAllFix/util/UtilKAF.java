@@ -1,7 +1,14 @@
 package n1luik.KAllFix.util;
 
+import n1luik.KAllFix.Imixin.IOptimizeTag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Handle;
@@ -9,6 +16,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class UtilKAF {
     //ai生成，作者不会搓
@@ -381,5 +389,300 @@ public class UtilKAF {
             }
         }
 
+    }
+    //跟正常的有区别
+    /**
+     * 过滤区块标签的{@link net.minecraft.core.BlockPos#findClosestMatch}
+     */
+    public static Optional<BlockPos> tagFindClosestMatch(Level w, int id, BlockPos pos, int r, int h, Predicate<BlockPos> predicate) {
+        //部分代码会运行2次，懒得修了
+        int x = SectionPos.blockToSectionCoord(pos.getX());
+        int z = SectionPos.blockToSectionCoord(pos.getZ());
+        int xb = x * 16;
+        int zb = z * 16;
+        boolean xFlag = (pos.getX() % 16) != 0;
+        boolean zFlag = (pos.getZ() % 16) != 0;
+        int xEnd = (xFlag ? (
+                SectionPos.blockToSectionCoord(pos.getX() + r) == SectionPos.blockToSectionCoord(pos.getX()) ?
+                        (r >= 16 ? 1 : 2) : 1
+        ) : 0) + (r / 16);
+        int zEnd = (zFlag ? (
+                SectionPos.blockToSectionCoord(pos.getZ() + r) == SectionPos.blockToSectionCoord(pos.getZ()) ?
+                        (r >= 16 ? 1 : 2) : 1
+        ) : 0) + (r / 16);
+        int y = pos.getY();
+        //System.out.printf("tagFindClosestMatch-1 %s %s %s %s %s %s %s %s %s%n"
+        //        , pos, x, z, xb, zb, xFlag, zFlag, xEnd, zEnd);
+        BlockPos.MutableBlockPos mp = new BlockPos.MutableBlockPos();
+        if (xFlag || zFlag) {
+            for (int tx = 0; tx <= xEnd; tx++) {
+                for (int tz = 0; tz <= zEnd; tz++) {
+                    for (int tn = 0; tn < 2; tn++) {
+
+                        //System.out.println("tagFindClosestMatch-3");
+                        boolean n = tn == 0;
+                        int rcx = (n ? x + tx : x - tx);
+                        int rcz = (n ? z + tz : z - tz);
+                        IOptimizeTag chunkNow = (IOptimizeTag) w.getChunkSource().getChunkNow(rcx, rcz);
+                        if (chunkNow == null || !chunkNow.KAllFix$getOptimizeTag(id)) {
+                            //System.out.printf("tagFindClosestMatch-3 %s %s %s %s%n", rcx, rcz, chunkNow == null, chunkNow == null ? false : chunkNow.KAllFix$getOptimizeTag(id));
+                            continue;
+                        }
+                        //System.out.printf("tagFindClosestMatch-3 %s %s%n", rcx, rcz);
+                        //System.out.println("tagFindClosestMatch-4");
+                        if (tx == 0 || tz == 0 || tx == xEnd || tz == zEnd) {
+                            int xo, zo, xoe, zoe;
+
+                            if (tx == 0) {
+                                if (n) {
+                                    xo = (rcx * 16) + ((pos.getX()) - (SectionPos.blockToSectionCoord(pos.getX()) * 16));
+                                    xoe = xo + 16;
+                                } else {
+                                    xo = rcx * 16;
+                                    xoe = xo + (16 - (16 - ((pos.getX()) - (SectionPos.blockToSectionCoord(pos.getX()) * 16))));
+                                }
+                            } else {
+                                if (n) {
+                                    xo = rcx * 16;
+                                    if (tx == xEnd) {
+                                        xoe = xo + ((pos.getX() + r) - (SectionPos.blockToSectionCoord(pos.getX() + r) * 16));
+                                    } else {
+                                        xoe = xo + 16;
+                                    }
+                                } else {
+                                    if (tx == xEnd) {
+                                        xoe = (rcx * 16) + 16;
+                                        xo = (rcx * 16) + (16 - ((pos.getX() + r) - (SectionPos.blockToSectionCoord(pos.getX() + r) * 16)));
+                                    } else {
+                                        xo = rcx * 16;
+                                        xoe = xo + 16;
+                                    }
+                                }
+                            }
+
+                            if (tz == 0) {
+                                if (n) {
+                                    zo = (rcz * 16) + ((pos.getZ()) - (SectionPos.blockToSectionCoord(pos.getZ()) * 16));
+                                    zoe = (rcz * 16) + 16;
+                                } else {
+                                    zo = rcz * 16;
+                                    zoe = zo + (16 - (16 - ((pos.getZ()) - (SectionPos.blockToSectionCoord(pos.getZ()) * 16))));
+                                }
+                            } else {
+                                if (n) {
+                                    zo = rcz * 16;
+                                    if (tz == zEnd) {
+                                        zoe = zo + ((pos.getZ() + r) - (SectionPos.blockToSectionCoord(pos.getZ() + r) * 16));
+                                    } else {
+                                        zoe = zo + 16;
+                                    }
+                                } else {
+                                    if (tz == zEnd) {
+                                        zoe = (rcz * 16) + 16;
+                                        zo = (rcz * 16) + (16 - ((pos.getZ() + r) - (SectionPos.blockToSectionCoord(pos.getZ() + r) * 16)));
+                                    } else {
+                                        zo = rcz * 16;
+                                        zoe = zo + 16;
+                                    }
+                                }
+                            }
+
+                            for (int ty = 0; ty <= h; ty++) {
+                                for (int rn = 0; rn < 2; rn++) {
+                                    if (rn == 0) {
+                                        for (int tempx = xo; tempx < xoe; tempx++) {
+                                            for (int tempz = zo; tempz < zoe; tempz++) {
+                                                mp.set(tempx, (y + ty), tempz);
+                                                if (predicate.test(mp)) {
+                                                    return Optional.of(new BlockPos(mp));
+                                                }
+                                            }
+                                        }
+                                    }else {
+                                        for (int tempx = xo; tempx < xoe; tempx++) {
+                                            for (int tempz = zo; tempz < zoe; tempz++) {
+                                                mp.set(tempx, (y - ty), tempz);
+                                                if (predicate.test(mp)) {
+                                                    return Optional.of(new BlockPos(mp));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            continue;
+                        } else {
+                            int xo = rcx * 16;
+                            int zo = rcz * 16;
+                            for (int ty = 0; ty <= h; ty++) {
+                                for (int rn = 0; rn < 2; rn++) {
+                                    if (rn == 0) {
+                                        for (int tx2 = 0; tx2 < 16; tx2++) {
+                                            for (int tz2 = 0; tz2 < 16; tz2++) {
+                                                mp.set(xo + tx2, (y + ty), zo + tz2);
+                                                if (predicate.test(mp)) {
+                                                    return Optional.of(new BlockPos(mp));
+                                                }
+                                            }
+                                        }
+                                    }else {
+                                        for (int tx2 = 0; tx2 < 16; tx2++) {
+                                            for (int tz2 = 0; tz2 < 16; tz2++) {
+                                                mp.set(xo + tx2, (y - ty), zo + tz2);
+                                                if (predicate.test(mp)) {
+                                                    return Optional.of(new BlockPos(mp));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            for (int tx = 0; tx <= xEnd; tx++) {
+                for (int tz = 0; tz <= zEnd; tz++) {
+                    for (int tn = 0; tn < 2; tn++) {
+                        int n = tn == 0 ? 1 : -1;
+                        int rcx = (n * tx) + x;
+                        int rcz = (n * tz) + z;
+                        IOptimizeTag chunkNow = (IOptimizeTag) w.getChunkSource().getChunkNow(rcx, rcz);
+                        if (chunkNow == null || !chunkNow.KAllFix$getOptimizeTag(id)) {
+                            continue;
+                        }
+                        int xo = rcx * 16;
+                        int zo = rcz * 16;
+                        for (int ty = 0; ty <= h; ty++) {
+                            for (int rn = 0; rn < 2; rn++) {
+                                if (rn == 0) {
+                                    for (int tx2 = 0; tx2 < 16; tx2++) {
+                                        for (int tz2 = 0; tz2 < 16; tz2++) {
+                                            mp.set(xo + tx2, (y + ty), zo + tz2);
+                                            if (predicate.test(mp)) {
+                                                return Optional.of(new BlockPos(mp));
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    for (int tx2 = 0; tx2 < 16; tx2++) {
+                                        for (int tz2 = 0; tz2 < 16; tz2++) {
+                                            mp.set(xo + tx2, (y - ty), zo + tz2);
+                                            if (predicate.test(mp)) {
+                                                return Optional.of(new BlockPos(mp));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
+    public static Optional<BlockPos> tagAddFindClosestMatch(Level w, int id, BlockPos pos, int r, int h, Predicate<BlockPos> predicate){
+        int x = SectionPos.blockToSectionCoord(pos.getX());
+        int z = SectionPos.blockToSectionCoord(pos.getZ());
+        boolean xFlag = (pos.getX() % 16) != 0;
+        boolean zFlag = (pos.getZ() % 16) != 0;
+        int xEnd = (xFlag ? (
+                SectionPos.blockToSectionCoord(pos.getX() + r) == SectionPos.blockToSectionCoord(pos.getX()) ?
+                        1 : 2
+        ) : 0) + x + (r / 16);
+        int zEnd = (zFlag ? (
+                SectionPos.blockToSectionCoord(pos.getZ() + r) == SectionPos.blockToSectionCoord(pos.getZ()) ?
+                        1 : 2
+        ) : 0) + z + (r / 16);
+        int y = pos.getY();
+        int yEnd = pos.getY() + h;
+        BlockPos.MutableBlockPos mp = new BlockPos.MutableBlockPos();
+        if (xFlag || zFlag) {
+            for (int tx = x; tx <= xEnd; tx++) {
+                for (int tz = z; tz <= zEnd; tz++) {
+                    IOptimizeTag chunkNow = (IOptimizeTag) w.getChunkSource().getChunkNow(tx, tz);
+                    if (chunkNow == null || !chunkNow.KAllFix$getOptimizeTag(id)) {
+                        continue;
+                    }
+                    if (tx == x || tz == z || tx == xEnd || tz == zEnd) {
+                        int xo;
+                        int zo;
+                        int xoe;
+                        int zoe;
+                        if (tx == x) {
+                            xo = (tx * 16) + ((pos.getX()) - (SectionPos.blockToSectionCoord(pos.getX()) * 16));
+                            xoe = xo + 16;
+                        }else {
+                            xo = tx * 16;
+                            if (tx == xEnd) {
+                                xoe = xo + ((pos.getX() + r) - (SectionPos.blockToSectionCoord(pos.getX() + r) * 16));
+                            }else {
+                                xoe = xo + 16;
+                            }
+                        }
+                        if (tz == z) {
+                            zo = (tz * 16) + ((pos.getZ()) - (SectionPos.blockToSectionCoord(pos.getZ()) * 16));
+                            zoe = zo + 16;
+                        }else {
+                            zo = tz * 16;
+                            if (tz == zEnd) {
+                                zoe = zo + ((pos.getZ() + r) - (SectionPos.blockToSectionCoord(pos.getZ() + r) * 16));
+                            }else {
+                                zoe = zo + 16;
+                            }
+                        }
+
+                        for (int ty = y; ty <= yEnd; ty++) {
+                            for (int tempx = xo; tempx < xoe; tempx++) {
+                                for (int tempz = zo; tempz < zoe; tempz++) {
+                                    mp.set(tempx, ty, tempz);
+                                    if (predicate.test(mp)) {
+                                        return Optional.of(new BlockPos(mp));
+                                    }
+                                }
+                            }
+                        }
+                        continue;
+                    }else {
+                        int xo = tx * 16;
+                        int zo = tz * 16;
+                        for (int ty = y; ty <= yEnd; ty++) {
+                            for (int tx2 = 0; tx2 < 16; tx2++) {
+                                for (int tz2 = 0; tz2 < 16; tz2++) {
+                                    mp.set(xo + tx2, ty, zo + tz2);
+                                    if (predicate.test(mp)) {
+                                        return Optional.of(new BlockPos(mp));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }else {
+            for (int tx = x; tx <= xEnd; tx++) {
+                for (int tz = z; tz <= zEnd; tz++) {
+                    IOptimizeTag chunkNow = (IOptimizeTag) w.getChunkSource().getChunkNow(tx, tz);
+                    if (chunkNow == null || !chunkNow.KAllFix$getOptimizeTag(id)) {
+                        continue;
+                    }
+                    int xo = tx * 16;
+                    int zo = tz * 16;
+                    for (int ty = y; ty <= yEnd; ty++) {
+                        for (int tx2 = 0; tx2 < 16; tx2++) {
+                            for (int tz2 = 0; tz2 < 16; tz2++) {
+                                mp.set(xo + tx2, ty, zo + tz2);
+                                if (predicate.test(mp)) {
+                                    return Optional.of(new BlockPos(mp));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Optional.empty();
     }
 }
