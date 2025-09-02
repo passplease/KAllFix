@@ -99,9 +99,6 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
         - RemoveRemoveErrorSize 让服务器不会纪录崩溃的次数，无限拦截
 
 ##  可开启
-- -DKAF-RenderOptimizer=true 渲染优化
-  - 功能：
-    - 缩放实体tick
 - -DKMT-Debug=true 启用多线程同步
 - -DKMT-SafeUnloadChunk=true 启用在区块生成线程运行区块卸载
 - -DIndependencePlayer=true 开启玩家异步，这玩意大概率是负优化
