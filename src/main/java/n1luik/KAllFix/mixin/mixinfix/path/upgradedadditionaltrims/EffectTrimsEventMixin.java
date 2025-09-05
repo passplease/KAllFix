@@ -23,18 +23,19 @@ public abstract class EffectTrimsEventMixin {
     @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lcom/rolfmao/upgradedadditionaltrims/utils/AdditionalTrimsUtil;countPrismarineTrim(Lnet/minecraft/world/entity/LivingEntity;)I", ordinal = 0), remap = false)
     public int fix2(LivingEntity livingEntity) {
         Iupgradedadditionaltrims livingEntity1 = (Iupgradedadditionaltrims) livingEntity;
-        boolean b = livingEntity1.KAllFix$upgradedadditionaltrims$getArg();
+        byte b = livingEntity1.KAllFix$upgradedadditionaltrims$getArg();
         if (AdditionalTrimsUtil.countPrismarineTrim(livingEntity) > 0) {
-            if (!b) {
+            if (b != 1) {
                 livingEntity.getAttributes().addTransientAttributeModifiers(this.SwimAttributeMap(AdditionalTrimsUtil.countPrismarineTrim(livingEntity)));
-                livingEntity1.KAllFix$upgradedadditionaltrims$setArg(true);
+                livingEntity1.KAllFix$upgradedadditionaltrims$setArg((byte) 1);
                 return 0;
             }
         } else {
-            if (!b) {
+            if (b == 1) {
+                livingEntity.getAttributes().removeAttributeModifiers(this.SwimAttributeMap(0));
+                livingEntity1.KAllFix$upgradedadditionaltrims$setArg((byte) 2);
                 return 0;
             }
-            livingEntity.getAttributes().removeAttributeModifiers(this.SwimAttributeMap(0));
         }
         return 0;
     }
