@@ -14,7 +14,7 @@ public class EnchantmentEventsMixin {
     public boolean fix1(LivingEvent.LivingTickEvent instance) {
         LivingEntity entity = instance.getEntity();
         if (!instance.isCanceled() && entity != null){
-            Integer i = entity.getEntityData().get(UtilData.fancyenchantments_up_tag);
+            int i = entity.getEntityData().get(UtilData.fancyenchantments_up_tag);
             if (i > 0) {
 
                 entity.getEntityData().set(UtilData.fancyenchantments_up_tag, i-1);

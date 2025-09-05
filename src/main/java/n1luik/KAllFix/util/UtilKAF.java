@@ -417,12 +417,13 @@ public class UtilKAF {
         if (xFlag || zFlag) {
             for (int tx = 0; tx <= xEnd; tx++) {
                 for (int tz = 0; tz <= zEnd; tz++) {
-                    for (int tn = 0; tn < 2; tn++) {
+                    for (int tn = 0; tn < 4; tn++) {
 
                         //System.out.println("tagFindClosestMatch-3");
-                        boolean n = tn == 0;
-                        int rcx = (n ? x + tx : x - tx);
-                        int rcz = (n ? z + tz : z - tz);
+                        boolean nx = (tn & 0b01) == 0;
+                        boolean nz = (tn & 0b10) == 0;
+                        int rcx = (nx ? x + tx : x - tx);
+                        int rcz = (nz ? z + tz : z - tz);
                         IOptimizeTag chunkNow = (IOptimizeTag) w.getChunkSource().getChunkNow(rcx, rcz);
                         if (chunkNow == null || !chunkNow.KAllFix$getOptimizeTag(id)) {
                             //System.out.printf("tagFindClosestMatch-3 %s %s %s %s%n", rcx, rcz, chunkNow == null, chunkNow == null ? false : chunkNow.KAllFix$getOptimizeTag(id));
@@ -434,7 +435,7 @@ public class UtilKAF {
                             int xo, zo, xoe, zoe;
 
                             if (tx == 0) {
-                                if (n) {
+                                if (nx) {
                                     xo = (rcx * 16) + ((pos.getX()) - (SectionPos.blockToSectionCoord(pos.getX()) * 16));
                                     xoe = xo + 16;
                                 } else {
@@ -442,7 +443,7 @@ public class UtilKAF {
                                     xoe = xo + (16 - (16 - ((pos.getX()) - (SectionPos.blockToSectionCoord(pos.getX()) * 16))));
                                 }
                             } else {
-                                if (n) {
+                                if (nx) {
                                     xo = rcx * 16;
                                     if (tx == xEnd) {
                                         xoe = xo + ((pos.getX() + r) - (SectionPos.blockToSectionCoord(pos.getX() + r) * 16));
@@ -461,7 +462,7 @@ public class UtilKAF {
                             }
 
                             if (tz == 0) {
-                                if (n) {
+                                if (nz) {
                                     zo = (rcz * 16) + ((pos.getZ()) - (SectionPos.blockToSectionCoord(pos.getZ()) * 16));
                                     zoe = (rcz * 16) + 16;
                                 } else {
@@ -469,7 +470,7 @@ public class UtilKAF {
                                     zoe = zo + (16 - (16 - ((pos.getZ()) - (SectionPos.blockToSectionCoord(pos.getZ()) * 16))));
                                 }
                             } else {
-                                if (n) {
+                                if (nz) {
                                     zo = rcz * 16;
                                     if (tz == zEnd) {
                                         zoe = zo + ((pos.getZ() + r) - (SectionPos.blockToSectionCoord(pos.getZ() + r) * 16));
@@ -544,10 +545,10 @@ public class UtilKAF {
         }else{
             for (int tx = 0; tx <= xEnd; tx++) {
                 for (int tz = 0; tz <= zEnd; tz++) {
-                    for (int tn = 0; tn < 2; tn++) {
-                        int n = tn == 0 ? 1 : -1;
-                        int rcx = (n * tx) + x;
-                        int rcz = (n * tz) + z;
+                    for (int tn = 0; tn < 4; tn++) {
+                        //int n = tn == 0 ? 1 : -1;
+                        int rcx = ((tn & 0b01) == 0 ? tx : -tx) + x;
+                        int rcz = ((tn & 0b10) == 0 ? tz : -tz) + z;
                         IOptimizeTag chunkNow = (IOptimizeTag) w.getChunkSource().getChunkNow(rcx, rcz);
                         if (chunkNow == null || !chunkNow.KAllFix$getOptimizeTag(id)) {
                             continue;

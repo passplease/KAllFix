@@ -96,6 +96,7 @@ public class Plugin implements IMixinConfigPlugin {
         String s5 = "n1luik.KAllFix.mixin.FixConfigAll.";
         //String s6 = "n1luik.KAllFix.mixin.ex.CancelNio";
         String s7 = "n1luik.KAllFix.mixin.ex.FixAllPacket.";
+        String s9 = "n1luik.KAllFix.mixin.mixinfix.path.";
         //boolean fixBiolithBugMode2 = Boolean.getBoolean("FixBiolithBugMode2");
         //if (!biolith && mixinClassName.startsWith(s2) && fixBiolithBugMode2) {
         //    return false;
@@ -117,6 +118,9 @@ public class Plugin implements IMixinConfigPlugin {
                  return isModLoaded(mixinClassName.substring(s7.length()).split("\\.", 2)[0]);
             }
             return false;
+        }
+        if (mixinClassName.startsWith(s9)) {
+             return isModLoaded(mixinClassName.substring(s9.length()).split("\\.", 2)[0]);
         }
         //KAF-NbtAZ
         return switch (mixinClassName) {
