@@ -9,14 +9,14 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin implements Iupgradedadditionaltrims {
     @Unique
-    private boolean KAllFix$upgradedadditionaltrims$arg;
+    private byte KAllFix$upgradedadditionaltrims$arg;
     @Override
-    public final void KAllFix$upgradedadditionaltrims$setArg(boolean arg) {
+    public final void KAllFix$upgradedadditionaltrims$setArg(byte arg) {
         this.KAllFix$upgradedadditionaltrims$arg = arg;
     }
 
     @Override
-    public final boolean KAllFix$upgradedadditionaltrims$getArg() {
+    public final byte KAllFix$upgradedadditionaltrims$getArg() {
         return KAllFix$upgradedadditionaltrims$arg;
     }
 }
