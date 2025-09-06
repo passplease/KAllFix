@@ -53,7 +53,7 @@ public class TrimUtil2 {
         }
         if (livingEntity instanceof IUpgradedCoreArmorSlotsAPI api) {
             int i = api.KAllFix$upgradedcore$result1();
-            return i == api.KAllFix$upgradedcore$result2() && i != 0;
+            return i == api.KAllFix$upgradedcore$result2() && i != 0 && i == trimMaterials.hashCode();
         }
         return countTrim(livingEntity, trimMaterials) >= 4;
     }
