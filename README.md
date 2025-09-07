@@ -1,4 +1,4 @@
-有一些模组因为我的世界是一个单线程游戏所以模组的代码也是单线程的所以无无法保证彻底修复所有bug就无法关闭对应的issues。
+有一些模组因为我的世界是一个单线程游戏所以模组的代码也是单线程的所以无无法保证彻底修复所有bug就无法关闭对应的issues
 ## 使用源码
 
 moonrise_fast_palette功能使用了[moonrise](https://github.com/Tuinity/Moonrise)的源码
