@@ -14,8 +14,6 @@ Code is committed to [Gitee](https://gitee.com/n1luik/k_multi_threadingK_multi_t
 
 理论上1.17+ java11+都可以用但是需要改源码把没有的部分删除
 
-多线程只能在服务器使用客户端会进不去游戏
-
 可以用-DKMT_D=[任意字符]和-DKAllFix_D=[任意字符]禁用独立mod
 
 idea的MinecraftDev插件有bug必须jar一下才可以正常查看源码
@@ -57,7 +55,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 ##  功能
 - 优化[Upgraded Additional Trims]upgradedadditionaltrims的性能问题
 - 优化[Upgraded Core]upgradedcore的性能问题
-- 修复[灾变]L_Ender 's Cataclysm的性能问题
+- 修复[灾变]L_Ender 's Cataclysm在拥有数千实体的情况下出现性能问题
 - 修复farm_and_charm 沉浸农艺[Let's Do] Farm & Charm 的大量发送无效数据包问题
 - 优化farm_and_charm 沉浸农艺[Let's Do] Farm & Charm 鸡窝的ai性能问题
 - 修复gcyr和canary的兼容问题，但是可能gcyr空间站边界会有碰撞箱问题
@@ -172,6 +170,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 
 
 ## 问题
+- 里面的灾变mod大于了121mb了但是gitee单个文件只能100mb所以材质包
 - 某些模组可能需要再客户端安装KAllFix（即使这个mod什么都没做）
 - 如果不手动设置-DKMT-threadMax=[cpu线程数]的话可能会导致地形生成莫名其妙卡死，还是的话继续调高这个
 - cupboard模组的logOffthreadEntityAdd功能可能不兼容，我不想直接让他直接消失而且被人发现，可以通过-DKAF-FixConfigAuto=true自动禁用
