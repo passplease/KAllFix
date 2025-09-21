@@ -16,6 +16,7 @@ import asm.n1luik.K_multi_threading.asm.mod.lithium.Lithium$TypeFilterableListMi
 import asm.n1luik.K_multi_threading.asm.mod.lithium.LithiumGetChunkSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.mek.MekanismNetworkAcceptorCacheSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.noisium.NoiseChunkGeneratorMixinFix1_Asm;
+import asm.n1luik.K_multi_threading.asm.mod.valkyrienskies.ShipObjectServerWorld_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.vmp.MixinTACSCancelSendingFixAsm;
 import asm.n1luik.K_multi_threading.asm.mod.vmp.MixinTypeFilterableListAsm;
 import cpw.mods.modlauncher.api.IEnvironment;
@@ -126,11 +127,12 @@ public class ForgeAsm implements ITransformationService{
 
     @Override
     public @NotNull List<ITransformer> transformers() {
-        if (System.getProperty("KMT_D") != null || FMLLoader.getDist().isClient())
+        if (System.getProperty("KMT_D") != null || (FMLLoader.getDist().isClient() && !Boolean.getBoolean("KMT_Client")))
             return List.of();
         List<ITransformer> iTransformers = new ArrayList<>(List.of(
                 //new SyncImplGetterChunk_ASM(),
                 new ImplLevel1_Asm(),
+                new ShipObjectServerWorld_Asm(),
                 new ImplMetaMachine1_Asm(),
                 new FixMixinServerWorld1_Asm(),
                 new ImplServerLevel1_Asm(),

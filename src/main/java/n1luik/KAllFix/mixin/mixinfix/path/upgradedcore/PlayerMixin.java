@@ -1,6 +1,6 @@
 package n1luik.KAllFix.mixin.mixinfix.path.upgradedcore;
 
-import n1luik.KAllFix.Imixin.upgradedcore.IUpgradedCoreArmorSlotsAPI;
+import n1luik.KAllFix.Imixin.mod.upgradedcore.IUpgradedCoreArmorSlotsAPI;
 import n1luik.KAllFix.data.upgradedcore.ArmorSlotsAPI;
 import n1luik.KAllFix.data.upgradedcore.TrimUtil2;
 import net.minecraft.nbt.CompoundTag;

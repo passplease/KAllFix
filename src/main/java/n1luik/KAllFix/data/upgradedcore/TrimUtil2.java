@@ -1,6 +1,6 @@
 package n1luik.KAllFix.data.upgradedcore;
 
-import n1luik.KAllFix.Imixin.upgradedcore.IUpgradedCoreArmorSlotsAPI;
+import n1luik.KAllFix.Imixin.mod.upgradedcore.IUpgradedCoreArmorSlotsAPI;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EquipmentSlot;

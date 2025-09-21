@@ -3,7 +3,7 @@ package n1luik.KAllFix.mixin.mixinfix.path.upgradedadditionaltrims;
 import com.google.common.collect.Multimap;
 import com.rolfmao.upgradedadditionaltrims.handlers.EffectTrimsEvent;
 import com.rolfmao.upgradedadditionaltrims.utils.AdditionalTrimsUtil;
-import n1luik.KAllFix.Imixin.upgradedadditionaltrims.Iupgradedadditionaltrims;
+import n1luik.KAllFix.Imixin.mod.upgradedadditionaltrims.Iupgradedadditionaltrims;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;

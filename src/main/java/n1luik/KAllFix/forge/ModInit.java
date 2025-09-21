@@ -5,6 +5,7 @@ import cpw.mods.modlauncher.TransformingClassLoader;
 import lombok.extern.slf4j.Slf4j;
 import n1luik.KAllFix.DataCollectors;
 import n1luik.KAllFix.api.OptimizeTagManager;
+import n1luik.KAllFix.debug.KAFGetterChunkTagCommand;
 import n1luik.K_multi_threading.core.Base;
 import n1luik.K_multi_threading.core.dataCollectors.ValkyrienSkies;
 import n1luik.K_multi_threading.debug.GetterClassFileCommand;
@@ -14,6 +15,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLEnvironment;
@@ -92,7 +94,7 @@ public class ModInit {
         INIT_DATA_COLLECTORS_EVENT = true;
         InitDataCollectorsEvent event = new InitDataCollectorsEvent();
         MinecraftForge.EVENT_BUS.post(event);
-        if (FMLEnvironment.dist == Dist.DEDICATED_SERVER) {
+        if (FMLEnvironment.dist == Dist.DEDICATED_SERVER || Boolean.getBoolean("KMT_Client")) {
             event.dataCollectors.addTools(new ValkyrienSkies());
             event.dataCollectors.addTools(new CanaryConfigAuto());
             event.dataCollectors.addTools(new LithiumConfigAuto());
@@ -106,6 +108,10 @@ public class ModInit {
     }
 
     public static class EventRun{
+        @SubscribeEvent
+        public static void onRegisterCommandsEvent(final RegisterCommandsEvent registerCommandsEvent) {
+            KAFGetterChunkTagCommand.register(registerCommandsEvent.getDispatcher());
+        }
         //@SubscribeEvent
         //public void onInitDataCollectorsEvent(InitDataCollectorsEvent event){
         //    log.debug("K_multi_threading onInitDataCollectorsEvent");

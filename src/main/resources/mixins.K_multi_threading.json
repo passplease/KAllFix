@@ -4,7 +4,7 @@
   "package": "n1luik.K_multi_threading.core.mixin",
   "refmap": "mixins.K_multi_threading.refmap.json",
   "plugin": "n1luik.K_multi_threading.core.Imixin.Plugin",
-  "server": [
+  "mixins": [
     "ChunkAccessMixin",
     "UtilMixin1",
     "debug.ReportedExceptionMixin",
@@ -58,17 +58,13 @@
     "minecraftfix.ServerLevelFix1",
     "minecraftfix.ServerPlayerGameModeFix1",
     "minecraftfix.ServerWatchdogFix1",
+    "minecraftfix.LegacyRandomSourceFix2",
     "minecraftfix.ThreadedLevelLightEngineFix2",
     "minecraftfix.loginMultiThreading.DistanceManagerFix1",
     "minecraftfix.loginMultiThreading.MinecraftServerImpl3",
     "minecraftfix.loginMultiThreading.PacketUtilsFix1",
     "minecraftfix.loginMultiThreading.ServerGamePacketListenerImplFix2",
     "minecraftfix.loginMultiThreading.ServerLoginPacketListenerImplImpl1"
-  ],
-  "mixins": [
-    "debug.NbtIoDebug",
-    "k.CommandsMixin",
-    "minecraftfix.LegacyRandomSourceFix2"
   ],
   "error": [
     "minecraftfix.ChunkGeneratorFix3",

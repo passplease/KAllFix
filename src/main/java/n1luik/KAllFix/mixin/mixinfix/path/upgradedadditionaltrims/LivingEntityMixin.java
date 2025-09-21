@@ -1,6 +1,6 @@
 package n1luik.KAllFix.mixin.mixinfix.path.upgradedadditionaltrims;
 
-import n1luik.KAllFix.Imixin.upgradedadditionaltrims.Iupgradedadditionaltrims;
+import n1luik.KAllFix.Imixin.mod.upgradedadditionaltrims.Iupgradedadditionaltrims;
 
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;

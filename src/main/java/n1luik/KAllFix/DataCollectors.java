@@ -127,7 +127,7 @@ public class DataCollectors {
                     logger.info("{}",name);
                 }
                 logger.info("""
-                        ---------------
+                        ------KAllFix------
                         需要重新启动
                         A reboot is required
                         Требуется перезагрузка

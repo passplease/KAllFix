@@ -24,6 +24,8 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 
 停止开发debug太消耗时间了直到我需要这个功能了
 
+想在客户端需要使用-DKMT_Client=true jvm参数，需要再1.0.4.0一后才可以
+
 ##  使用方法
 
 1: 把gradle.properties里的代理删了 
@@ -55,6 +57,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 ##  功能
 - 优化[Upgraded Additional Trims]upgradedadditionaltrims的性能问题
 - 优化[Upgraded Core]upgradedcore的性能问题
+- 修复[灾变]L_Ender 's Cataclysm的性能问题
 - 修复farm_and_charm 沉浸农艺[Let's Do] Farm & Charm 的大量发送无效数据包问题
 - 优化farm_and_charm 沉浸农艺[Let's Do] Farm & Charm 鸡窝的ai性能问题
 - 修复gcyr和canary的兼容问题，但是可能gcyr空间站边界会有碰撞箱问题
