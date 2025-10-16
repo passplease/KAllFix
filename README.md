@@ -53,6 +53,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 - 在启用调试模式的时候需要[火花]spark 任意版本（没有测试过低版本但是最好不要低于1.10.53要不然可能不能生成保存成火花的格式）放入mods
   
 ##  功能
+- 优化[悠然一派]Atmospheric的检测愚人节每一次都要计算Calendar的性能问题
 - 优化[Upgraded Additional Trims]upgradedadditionaltrims的性能问题
 - 优化[Upgraded Core]upgradedcore的性能问题
 - 修复[灾变]L_Ender 's Cataclysm在拥有数千实体的情况下出现性能问题

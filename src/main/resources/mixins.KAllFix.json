@@ -24,6 +24,7 @@
     "mixinfix.MinecraftServerMixin",
     "mixinfix.MinecraftServerMixin2",
     "mixinfix.alexscaves.MagnetUtilMixin",
+    "mixinfix.atmospheric.AtmosphericEventsMixin",
     "mixinfix.biolith.MinecraftServerMixin",
     "mixinfix.biolith.MultiNoiseBiomeSource2",
     "mixinfix.biolith.MultiNoiseBiomeSource2Forge",
@@ -79,6 +80,8 @@
   ],
   "client": [
     "ex.FixAllPacket.mekanismexplosives.client.MinecraftMixin",
+    "unsafe.debug.MinecraftDebug1",
+    "unsafe.path.FixSetScreenAsync.MinecraftMixin",
     "unsafe.path.MultiThreadingEMI.PluginCallerMixin",
     "unsafe.path.MultiThreadingJEI.PluginCallerMixin",
     "unsafe.path.MultiThreadingJEICommon.ErrorUtilMixin",

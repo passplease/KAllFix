@@ -45,6 +45,8 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_183237_(JLjava/util/function/Function;)Lnet/minecraft/nbt/ListTag;"),
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_193171_(J)V"),
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/chunk/entity_class_groups/TypeFilterableListMixin.createAllOfGroupType(Lme/jellysquid/mods/lithium/common/entity/EntityClassGroup;)Ljava/util/Collection;"),
+            //血魔法
+            ForgeAsm.minecraft_map.mapMethod("wayoftime/bloodmagic/util/handler/event/WillHandler.onServerWorldTick(Lnet/minecraftforge/event/TickEvent$LevelTickEvent;)V"),
             //机械动力
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/KineticNetwork.addSilently(Lcom/simibubi/create/content/kinetics/base/KineticBlockEntity;FF)V"),
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/KineticNetwork.updateCapacityFor(Lcom/simibubi/create/content/kinetics/base/KineticBlockEntity;F)V"),
