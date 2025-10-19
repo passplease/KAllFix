@@ -19,6 +19,8 @@ public class AllAddSynchronized_Asm implements ITransformer<ClassNode> {
     public static final List<String> stringsList = new ArrayList<>(List.of(
             //canary
             ForgeAsm.minecraft_map.mapClass("com/abdelaziz/canary/common/world/listeners/WorldBorderListenerOnceMulti"),
+            //Ponder
+            ForgeAsm.minecraft_map.mapClass("net/createmod/catnip/data/WorldAttached"),
             //lithium
             ForgeAsm.minecraft_map.mapClass("me/jellysquid/mods/lithium/common/world/listeners/WorldBorderListenerOnceMulti")
     ));

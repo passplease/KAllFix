@@ -27,6 +27,11 @@ public class RemoveMixin_ASM implements ITransformer<ClassNode> {
         if (CanaryConfig.ENABLED) {
             stringsList.add(new String[]{"argent_matter/gcyr/mixin/EntityBorderMixin", "gcyr$modifySpaceStationBorder"});
         }
+        if (Boolean.getBoolean("KAF-packetOptimize")) {
+            stringsList.add(new String[]{"me/wesley1808/servercore/mixin/optimizations/ticking/chunk/broadcast/ChunkHolderMixin", "servercore$onBlockChanged"});
+            stringsList.add(new String[]{"me/wesley1808/servercore/mixin/optimizations/ticking/chunk/broadcast/ChunkHolderMixin", "servercore$onLightChanged"});
+            stringsList.add(new String[]{"me/wesley1808/servercore/mixin/optimizations/ticking/chunk/broadcast/ServerChunkCacheMixin", "servercore$broadcastChanges"});
+        }
     }
     @Override
     public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {

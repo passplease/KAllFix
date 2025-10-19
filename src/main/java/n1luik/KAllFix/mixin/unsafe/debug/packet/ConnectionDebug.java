@@ -1,4 +1,4 @@
-package n1luik.K_multi_threading.core.mixin.k;
+package n1luik.KAllFix.mixin.unsafe.debug.packet;
 
 import io.netty.channel.Channel;
 import net.minecraft.network.Connection;
@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Connection.class)
-@Deprecated
 public class ConnectionDebug {
     @Unique
     private static final Logger k_multi_threading$logger = LoggerFactory.getLogger("[handleDisconnection-debug]");
