@@ -114,6 +114,10 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
             new AsmTarget("net.minecraft.world.level.levelgen.structure.StructureCheck", false),
             new AsmTarget("net.minecraft.world.level.block.ComposterBlock", false),
             new AsmTarget("net.minecraft.world.entity.ai.attributes.AttributeInstance", false),
+            new AsmTarget("mods.railcraft.charge.ChargeProviderImpl", false, new String[]{"networks"}, AsmTarget.EMPTY_METHODS5),
+            new AsmTarget("reliquary.item.MobCharmItem$CharmInventoryHandler", false),
+            new AsmTarget("mcjty.lostcities.worldgen.GlobalTodo", false),
+            new AsmTarget("mcjty.lostcities.worldgen.lost.cityassets.AssetRegistries", false),
             new AsmTarget("appeng.me.service.CraftingService", false),
             new AsmTarget("appeng.api.stacks.KeyCounter", true)
     ));
@@ -131,6 +135,8 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
         typeMapping.put("it/unimi/dsi/fastutil/objects/Object2ObjectArrayMap", "java/util/concurrent/ConcurrentHashMap");
         //////////////////////////////////
         typeMapping.put("it/unimi/dsi/fastutil/objects/Reference2ReferenceArrayMap", "n1luik/K_multi_threading/core/util/concurrent/FalseReference2ReferenceConcurrentHashMap2");
+        //////////////////////////////////
+        typeMapping.put("it/unimi/dsi/fastutil/objects/Reference2ReferenceOpenHashMap", "n1luik/K_multi_threading/core/util/concurrent/FalseReference2ReferenceConcurrentHashMap2");
         //////////////////////////////////
         typeMapping.put("java/util/HashSet", "java/util/concurrent/ConcurrentHashMap$KeySetView");
         //////////////////////////////////
@@ -354,6 +360,17 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                                         method.instructions.add(instruction);
                                     }
                                     break;
+                                case "it/unimi/dsi/fastutil/objects/Reference2ReferenceOpenHashMap":
+                                    if (methodInsnNode.name.equals("<init>") && methodInsnNode.desc.equals("()V")) {
+                                        if (orDefault.fixNull) {
+                                            method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/FalseReference2ReferenceConcurrentHashMap2$FixNull", "<init>", "()V", false));
+                                        } else {
+                                            method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/FalseReference2ReferenceConcurrentHashMap2", "<init>", "()V", false));
+                                        }
+                                    } else {
+                                        method.instructions.add(instruction);
+                                    }
+                                    break;
                                 case "it/unimi/dsi/fastutil/objects/Object2ObjectArrayMap":
                                 case "java/util/HashMap":
                                     if (methodInsnNode.name.equals("<init>") && methodInsnNode.desc.equals("()V")) {
@@ -453,7 +470,8 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                                         method.instructions.add(new TypeInsnNode(Opcodes.NEW, "java/util/concurrent/ConcurrentHashMap"));
                                     }
                                 }
-                                case "it/unimi/dsi/fastutil/objects/Reference2ReferenceArrayMap" -> {
+                                case "it/unimi/dsi/fastutil/objects/Reference2ReferenceArrayMap",
+                                     "it/unimi/dsi/fastutil/objects/Reference2ReferenceOpenHashMap" -> {
                                     if (orDefault.fixNull) {
                                         method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/FalseReference2ReferenceConcurrentHashMap2$FixNull"));
                                     } else {
@@ -497,6 +515,14 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
                     if (methodInfo.mappingAll) {
                         for (AbstractInsnNode instruction : abstractInsnNodes) {
                             switch (instruction.getOpcode()) {
+                                case Opcodes.PUTFIELD, Opcodes.GETFIELD -> {
+                                    if (instruction instanceof FieldInsnNode fieldInsnNode){
+                                        if (fieldInsnNode.desc.startsWith("L")) {
+                                            String substring = fieldInsnNode.desc.substring(1, fieldInsnNode.desc.length() - 1);
+                                            fieldInsnNode.desc = "L"+typeMapping.getOrDefault(substring, substring)+";";
+                                        }
+                                    }
+                                }
                                 case Opcodes.INVOKEINTERFACE, Opcodes.INVOKEVIRTUAL, Opcodes.INVOKESTATIC, Opcodes.INVOKESPECIAL -> {
                                     if (instruction instanceof MethodInsnNode methodInsnNode){
                                         methodInsnNode.owner = typeMapping.getOrDefault(methodInsnNode.owner, methodInsnNode.owner);
