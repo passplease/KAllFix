@@ -106,7 +106,7 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
      * @reason
      */
     @Overwrite//@Redirect(method = "getRunningThread", at = @At(value = "FIELD", target = "Lnet/minecraft/server/level/ServerChunkCache;mainThread:Ljava/lang/Thread;"))
-    protected Thread getRunningThread() {
+    public Thread getRunningThread() {
         return callThread;
     }
 

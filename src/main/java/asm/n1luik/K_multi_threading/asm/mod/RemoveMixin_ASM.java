@@ -17,6 +17,8 @@ import java.util.Set;
 @Slf4j
 public class RemoveMixin_ASM implements ITransformer<ClassNode> {
     public final List<String[]> stringsList = new ArrayList<>(List.of(
+            new String[]{"com/ishland/c2me/fixes/general/threading_issues/mixin/asynccatchers/MixinThreadedAnvilChunkStorage","preventAsyncEntityLoad"},
+            new String[]{"com/ishland/c2me/fixes/general/threading_issues/mixin/asynccatchers/MixinThreadedAnvilChunkStorage","preventAsyncEntityUnload"},
             new String[]{"com/ishland/vmp/mixins/playerwatching/MixinTACSCancelSending","beforeWatchPacketsOnMoving"},
             new String[]{"com/ishland/vmp/mixins/general/collections/MixinTypeFilterableList","redirectSetElementsByType"},
             new String[]{"com/ishland/vmp/mixins/general/collections/MixinTypeFilterableList","redirectSetAllElements"},

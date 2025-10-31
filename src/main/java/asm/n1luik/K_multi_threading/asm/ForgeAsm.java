@@ -6,6 +6,7 @@ import asm.n1luik.K_multi_threading.asm.mod.*;
 import asm.n1luik.K_multi_threading.asm.mod.Modernfix.ModernfixGetChunkSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.ae2.PathingCalculation_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.biolith.FixMixinServerWorld1_Asm;
+import asm.n1luik.K_multi_threading.asm.mod.c2me.*;
 import asm.n1luik.K_multi_threading.asm.mod.canary.ServerChunkCacheMixin_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateGeneratingKineticBlockEntity_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateTrackBlockSynchronized_Asm;
@@ -136,6 +137,11 @@ public class ForgeAsm implements ITransformationService{
                 new ImplMetaMachine1_Asm(),
                 new FixMixinServerWorld1_Asm(),
                 new ImplServerLevel1_Asm(),
+                new MixinMinecraftServer2_Asm(),
+                new MixinMinecraftServer_Asm(),
+                new MixinServerChunkManager3_Asm(),
+                new MixinServerChunkManager2_Asm(),
+                new MixinServerChunkManager_Asm(),
                 new ImplLevelChunkTicks1_Asm(),
                 //new MekanismStructureSynchronized_Asm(),//jvm检测过不了
                 //new MekanismVoxelPlaneSynchronized_Asm(),

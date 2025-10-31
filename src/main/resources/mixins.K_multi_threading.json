@@ -15,6 +15,7 @@
     "fix.ae2.PlatformFix1",
     "fix.ae2.TickHandlerFix1",
     "fix.alexscaves.CommonEventsFix1",
+    "fix.c2me.CheckedThreadLocalRandomFix1",
     "fix.create.CreateRegistrateFix1",
     "fix.create.ItemVaultBlockEntityFix1",
     "fix.destroy.DestroyCommonEventsFix1",
