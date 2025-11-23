@@ -8,6 +8,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +16,42 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class ModLocator extends AbstractJarFileModLocator {
-    public File file;
+    public final File file;
+    private final List<File> libs;
+
     public ModLocator() {
-        File file1;
+        this.file = loadModFile();
+        // 注册关闭钩子，在 JVM 关闭时删除文件
+        libs = new ArrayList<>();
+        libs.add(file);
+        //if (Boolean.getBoolean("KAF-SaveFileCompression")) {
+        //    File file1 = new File("rocksdbjni-6.12.7.jar");
+        //    if (file1.isFile()){
+        //        libs.add(file1);
+        //    }else {
+        //        file1 = new File("./lib/rocksdbjni-6.12.7.jar");
+        //        if (file1.isFile()){
+        //            libs.add(file1);
+        //        }else {
+        //            throw new RuntimeException("rocksdbjni-6.12.7.jar");
+        //        }
+        //    }
+        //}
+        //没用我服了
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                Files.deleteIfExists(file.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
+    }
+    
+    /**
+     * 加载模组文件到临时目录
+     * @return 加载后的模组文件
+     */
+    private File loadModFile() {
         try {
             InputStream resourceAsStream = Install.class.getResourceAsStream("/k_multi_threading-base.jar");
             byte[] b = resourceAsStream.readAllBytes();
@@ -34,7 +68,7 @@ public class ModLocator extends AbstractJarFileModLocator {
                     FileInputStream fileInputStream = new FileInputStream(file);
                     if (Arrays.equals(fileInputStream.readAllBytes(), b)){
                         fileInputStream.close();
-                        return;
+                        return file;
                     }else {
                         fileInputStream.close();
                     }
@@ -49,19 +83,10 @@ public class ModLocator extends AbstractJarFileModLocator {
             fileOutputStream.write(b);
             fileOutputStream.close();
             resourceAsStream.close();
-            file1 = file;
+            return file;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        this.file = file1;
-        // 注册关闭钩子，在 JVM 关闭时删除文件
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                Files.deleteIfExists(file.toPath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }));
     }
 
     @Override
@@ -76,6 +101,6 @@ public class ModLocator extends AbstractJarFileModLocator {
 
     @Override
     public Stream<Path> scanCandidates() {
-        return Stream.of(file.toPath());
+        return libs.stream().map(File::toPath);
     }
 }

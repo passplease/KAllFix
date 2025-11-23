@@ -6,6 +6,7 @@ import n1luik.KAllFix.DataCollectors;
 import n1luik.KAllFix.util.UtilKAF;
 import n1luik.K_multi_threading.core.dataCollectors.data.MapConcurrentData;
 import n1luik.K_multi_threading.core.util.Util;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.*;
 
@@ -32,7 +33,7 @@ public class ValkyrienSkies extends DataCollectors.CollectTools<ValkyrienSkies.D
 
     @Override
     public boolean job() {
-        return DataCollectors.isModLoaded("valkyrienskies");
+        return DataCollectors.isModLoaded("valkyrienskies") && !(System.getProperty("KMT_D") != null || (FMLLoader.getDist().isClient() && !Boolean.getBoolean("KMT_Client")));
     }
 
     @Override

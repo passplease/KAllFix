@@ -113,6 +113,14 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 - -DKAF-gtceu.MedicalConditionTrackerMixin=true 禁止添加gtm的辐射
 - -DKAF-RemoveClientboundKeepAlivePacket=true 禁用ClientboundKeepAlivePacket功能
 - -DKAF-Fix_fabric-object-builder-api.jar=true 修复信雅互联的fabric-object-builder-api不兼容47.3.27的问题，我因为这个问题让这个mod晚发了半个月他们还没有解决
+- -DKAF-SaveFileCompression=true启用存档压缩，我使用的rocksdb不可以使用非8bit的字符作为目录并且c++部分我找不到源码做不到自己修复，按b友15869232的要求添加
+  - kallfix是不会内置的rocksdbjni的需要自行修改环境添加或联系作者（官群）
+  - 需要环境有rocsdbjni库（使用-cp rocsdbjni库的文件位置;模组安装之后使用-base.jar库的文件位置）
+  - 然后使用n1luik.KAllFix.util.data.RocksdbRegionFileRead
+  - （最jvm参数最后面加上启动的类作为参数，还不懂：（"-cp" "rocksdb库的文件位置;模组安装之后使用-base.jar库的文件位置" "n1luik.KAllFix.util.data.RocksdbRegionFileRead"））
+  - 参数是存档的Region格式数据的位置，在-jar .jar或者类名后面的都是参数前面的jvm参数
+  - 演示：
+    - java "-cp" rocksdbjni-6.12.7.jar;mods/k_multi_threading-base.jar n1luik.KAllFix.util.data.RocksdbRegionFileRead ./world/region ./world/poi ./world/entities
 - -DKAF-FixTFMGDestroy=true修复[坍毁化合]destroy和[机械动力：工业长路]tfmg的兼容问题，需如果在没有安装2个的情况下会直接出现[坍毁化合]destroy的Creative Pump无法正常连接机械动力的管道
 - -DKAF-FixConfigAuto=true自动修改配置文件为正确的选项
 - -DKAF-RemoveFlyingTest=true移除飞行检查

@@ -16,6 +16,11 @@ buildscript{
             url = 'https://repo.spongepowered.org/maven'
         }
 
+        maven {
+            name = "MixinExtras"
+            url = "https://repo.advntr.dev/"
+        }
+
         mavenCentral()
     }
     dependencies {
@@ -275,7 +280,14 @@ dependencies {
 
     annotationProcessor 'org.projectlombok:lombok:1.18.26'
     implementation 'org.projectlombok:lombok:1.18.26'
-
+    jarJar('com.github.luben:zstd-jni:1.5.7-2') {
+        jarJar.ranged(it, "[1.5.7-2,1.5.7-3)")
+    }
+    jarJar('org.rocksdb:rocksdbjni:6.12.7') {
+        jarJar.ranged(it, "[6.12.7,6.12.8)")
+    }
+    implementation 'org.rocksdb:rocksdbjni:6.12.7'
+    implementation "io.github.llamalad7:mixinextras-common:0.5.0"
     implementation 'com.alibaba:fastjson:1.2.28'
     implementation 'com.github.luben:zstd-jni:1.5.7-2'
     //implementation 'com.github.luben:zstd-jni:1.5.7-2:win'

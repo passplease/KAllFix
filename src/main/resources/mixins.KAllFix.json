@@ -79,7 +79,9 @@
     "unsafe.path.packetOptimize.This",
     "unsafe.path.packetOptimize.blockEentity.ServerChunkCacheMixin2",
     "unsafe.path.PlainTextSearchTreeMultiThreading.FullTextSearchTreeMixin",
-    "unsafe.path.RemoveFlyingTest.ServerGamePacketListenerImplMixin"
+    "unsafe.path.RemoveFlyingTest.ServerGamePacketListenerImplMixin",
+    "unsafe.path.SaveFileCompression.RegionFileMixin",
+    "unsafe.path.SaveFileCompression.RegionFileStorageMixin"
   ],
   "client": [
     "ex.FixAllPacket.mekanismexplosives.client.MinecraftMixin",
