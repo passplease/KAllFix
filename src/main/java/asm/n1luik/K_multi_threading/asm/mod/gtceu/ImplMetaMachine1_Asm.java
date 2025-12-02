@@ -67,8 +67,21 @@ public class ImplMetaMachine1_Asm implements ITransformer<ClassNode> {
         //                                    "n1luik/K_multi_threading/core/util/concurrent/FastUtilHackUtil",
         //                                    "concurrentMap",
         //                                    "(Ljava/util/Map;)Ljava/util/concurrent/ConcurrentHashMap;"))
-        if (!(debug_add1 && debug_add2 && debug_add3 && debug_add4)){
-            throw new RuntimeException("Not mapping error: com.gregtechceu.gtceu.api.machine.MetaMachine: %s %s %s %s".formatted(debug_add1, debug_add2, debug_add3, debug_add4));
+        boolean isGTO = false;
+        for (FieldNode field : input.fields) {
+            if (field.name.equals("itemHandlerModifiableCache")) {
+                isGTO = true;
+                break;
+            }
+        }
+        if (isGTO) {//gto特供版
+            if (!(debug_add1 && debug_add2)) {
+                throw new RuntimeException("Not mapping error: com.gregtechceu.gtceu.api.machine.MetaMachine: %s %s %s %s".formatted(debug_add1, debug_add2, debug_add3, debug_add4));
+            }
+        }else {
+            if (!(debug_add1 && debug_add2 && debug_add3 && debug_add4)) {
+                throw new RuntimeException("Not mapping error: com.gregtechceu.gtceu.api.machine.MetaMachine: %s %s %s %s".formatted(debug_add1, debug_add2, debug_add3, debug_add4));
+            }
         }
 
 

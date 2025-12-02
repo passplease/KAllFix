@@ -27,7 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-@Mixin(Level.class)
+@Mixin(value = Level.class, priority = 1001)
 public abstract class LevelFix1 {
     @Shadow @Final private Thread thread;
 

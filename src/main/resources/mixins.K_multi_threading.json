@@ -31,6 +31,7 @@
     "fix.nuclearcraft.FluidHandlerWrapperFix1",
     "fix.petrolpark.CommonEventsMixin",
     "fix.rats.RatFix1",
+    "fix.rootoffear.ServerUpdateClientEffectsEventFix1",
     "impl.LevelImpl1",
     "impl.LevelTicksImpl1",
     "impl.MinecraftServerImpl1",

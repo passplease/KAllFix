@@ -119,6 +119,7 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
             new AsmTarget("mcjty.lostcities.worldgen.GlobalTodo", false),
             new AsmTarget("mcjty.lostcities.worldgen.lost.cityassets.AssetRegistries", false),
             new AsmTarget("net.minecraft.util.profiling.ActiveProfiler", false),
+            new AsmTarget("com.github.alexthe668.domesticationinnovation.server.CommonProxy", false),
             new AsmTarget("appeng.me.service.CraftingService", false),
             new AsmTarget("appeng.api.stacks.KeyCounter", true)
     ));
