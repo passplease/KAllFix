@@ -4,12 +4,14 @@ import asm.n1luik.K_multi_threading.asm.ForgeAsm;
 import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerVotingContext;
 import cpw.mods.modlauncher.api.TransformerVoteResult;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.util.Set;
 
+@Slf4j
 public class NoiseChunkGeneratorMixinFix1_Asm implements ITransformer<ClassNode> {
     @NotNull
     @Override
@@ -43,13 +45,19 @@ public class NoiseChunkGeneratorMixinFix1_Asm implements ITransformer<ClassNode>
 
         if (!add1){
             String[] strings2 = ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.doFill(Lnet/minecraft/world/level/levelgen/blending/Blender;Lnet/minecraft/world/level/StructureManager;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/chunk/ChunkAccess;II)Lnet/minecraft/world/level/chunk/ChunkAccess;");
-            //对函数进行扫描，如果检测到getSections是高版本就直接退出因为没有这段代码不需要修改
+            //对函数进行扫描，如果检测到getSections是高版本就直接退出因为没有这段代码不需要修改，如果检测到m_224284_就是老版本没有需要修复的代码
             boolean canExit = false;
             for (MethodNode method : input.methods) {
                 if (method.name.equals(strings2[1]) && method.desc.equals(strings2[2])){
                     canExit = true;
+                    break;
                 }
-
+            }
+            for (MethodNode method : input.methods) {
+                if (method.name.equals("m_224284_")){
+                    canExit = false;
+                    break;
+                }
             }
             if (canExit)throw new RuntimeException("Not mapping error: io/github/steveplays28/noisium/mixin/NoiseChunkGeneratorMixin");
         }
