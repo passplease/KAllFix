@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import cpw.mods.modlauncher.TransformingClassLoader;
 import lombok.extern.slf4j.Slf4j;
+import n1luik.K_multi_threading.debug.GetterClassFileCommand;
 import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
 import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.forgespi.locating.IModFile;
@@ -134,7 +136,15 @@ public class Plugin implements IMixinConfigPlugin {
         }
         //KAF-NbtAZ
         return switch (mixinClassName) {
-            case "n1luik.KAllFix.mixin.mixinfix.farm_and_charm.This" -> isModLoaded("farm_and_charm");
+            case "n1luik.KAllFix.mixin.mixinfix.farm_and_charm.This" -> {
+                try{
+                    GetterClassFileCommand.getclass.apply((TransformingClassLoader)Plugin.class.getClassLoader(), "net.satisfy.farm_and_charm.core.util.SaturationTracker$SaturatedAnimal");
+                    yield isModLoaded("farm_and_charm");
+                }catch (Exception e){
+                    log.error("KAllFix: farm_and_charm 加载失败", e);
+                    yield false;
+                }
+            }
             case "n1luik.KAllFix.mixin.mixinfix.biolith.MinecraftServerMixin" -> biolithFixVersion != 0;
             //case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> isModLoaded("biolith");
             case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> biolithFixVersion != 0;

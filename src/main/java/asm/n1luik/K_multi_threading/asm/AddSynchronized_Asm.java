@@ -52,7 +52,7 @@ public class AddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.removeBlockEntity(Lnet/minecraft/core/BlockPos;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.clearAllBlockEntities()V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.postProcessGeneration()V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.setBlockState(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/level/block/state/BlockState;"),
+            //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.setBlockState(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/level/block/state/BlockState;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.removeGameEventListenerRegistry(I)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.unpackTicks(J)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkHolder.setTicketLevel(I)V"),

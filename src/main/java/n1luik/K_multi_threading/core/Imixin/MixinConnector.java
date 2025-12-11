@@ -10,8 +10,13 @@ public class MixinConnector implements IMixinConnector {
         if (System.getProperty("KMT_D") == null) {
             if (FMLLoader.getDist().isDedicatedServer() || Boolean.getBoolean("KMT_Client")){
                 Mixins.addConfigurations("mixins.K_multi_threading.json");
+                String s = FMLLoader.versionInfo().mcVersion();
+                if (s.startsWith("1.19.")){
+                    Mixins.addConfigurations("mixins.K_multi_threading-1.19.2.json");
+                }
             }
             Mixins.addConfigurations("mixins.K_multi_threadingAll.json");
+
         }
         if (System.getProperty("KAllFix_D") == null)
             Mixins.addConfigurations("mixins.KAllFix.json");

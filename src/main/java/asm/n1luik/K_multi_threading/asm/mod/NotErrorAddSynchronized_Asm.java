@@ -32,6 +32,13 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/mixin/world/tick_scheduler/LevelChunkTicksMixin.m_183574_()I"),
             ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/mixin/world/tick_scheduler/LevelChunkTicksMixin.m_183237_(JLjava/util/function/Function;)Lnet/minecraft/nbt/ListTag;"),
             ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/mixin/world/tick_scheduler/LevelChunkTicksMixin.m_193171_(J)V"),
+            ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/common/util/collections/ReferenceMaskedList.addOrSet(Ljava/lang/Object;Z)V"),
+            ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/common/util/collections/ReferenceMaskedList.setVisible(Ljava/lang/Object;Z)V"),
+            ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/common/util/collections/ReferenceMaskedList.iterator()Ljava/util/Iterator;"),
+            ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/common/util/collections/ReferenceMaskedList.spliterator()Ljava/util/Spliterator;"),
+            ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/common/util/collections/ReferenceMaskedList.add(Ljava/lang/Object;)Z"),
+            ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/common/util/collections/ReferenceMaskedList.remove(ljava/lang/Object;)Z"),
+            ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/common/util/collections/ReferenceMaskedList.get(I)Ljava/lang/Object;"),
             //圣遗物
             ForgeAsm.minecraft_map.mapMethod("reliquary/item/MobCharmItem$CharmInventoryHandler.playerHasMobCharm(Lnet/minecraft/world/entity/player/Player;Lreliquary/item/MobCharmDefinition;)Z"),
             //Neruina
@@ -40,6 +47,13 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
             ForgeAsm.minecraft_map.mapMethod("auviotre/enigmatic/addon/contents/items/RevivalLeaf.onUnequip(Ltop/theillusivec4/curios/api/SlotContext;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)V"),
             ForgeAsm.minecraft_map.mapMethod("auviotre/enigmatic/addon/contents/items/RevivalLeaf.handleFlight(Lnet/minecraft/world/entity/player/Player;)V"),
             //lithium
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/common/util/collections/ReferenceMaskedList.addOrSet(Ljava/lang/Object;Z)V"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/common/util/collections/ReferenceMaskedList.setVisible(Ljava/lang/Object;Z)V"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/common/util/collections/ReferenceMaskedList.iterator()Ljava/util/Iterator;"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/common/util/collections/ReferenceMaskedList.spliterator()Ljava/util/Spliterator;"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/common/util/collections/ReferenceMaskedList.add(Ljava/lang/Object;)Z"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/common/util/collections/ReferenceMaskedList.remove(ljava/lang/Object;)Z"),
+            ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/common/util/collections/ReferenceMaskedList.get(I)Ljava/lang/Object;"),
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.updateNextTickQueue(Z)V"),
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_183393_(Lnet/minecraft/world/ticks/ScheduledTick;)V"),
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.queueTick(Lnet/minecraft/world/ticks/ScheduledTick;)V"),

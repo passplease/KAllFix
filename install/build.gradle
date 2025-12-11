@@ -41,7 +41,7 @@ import java.util.jar.JarOutputStream
 
 // 创建自定义任务 splitJar
 tasks.register('splitJar') {
-    var taskName = ':jar'//':jarjar'
+    var taskName = ':_createAllJar'//':jar'//':jarjar'
     // 执行任务时的操作
     dependsOn(taskName)
     doLast {
@@ -67,7 +67,9 @@ tasks.register('splitJar') {
         ]
 
         // 打开源 JAR 文件
-        def sourceJar = new JarFile(files(tasks.getByPath(taskName).outputs).first())
+        def parentTask = tasks.getByPath(taskName)
+        def sourceJarPath = new File(parentTask.destinationDirectory.get().asFile, "all.jar")
+        def sourceJar = new JarFile(sourceJarPath)
         def jarBase = new JarOutputStream(new FileOutputStream(baseJar))
         def jarAsm = new JarOutputStream(new FileOutputStream(asmJar))
 

@@ -1,3 +1,4 @@
+//子项目任务archiveFile用不了
 import net.minecraftforge.gradle.userdev.UserDevExtension
 import net.minecraftforge.gradle.userdev.MinecraftUserRepo
 import net.minecraftforge.gradle.userdev.DependencyManagementExtension
@@ -27,7 +28,7 @@ buildscript{
 
         classpath files('gradle/gradle-trust-all.jar')
 
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.+', changing: true
         classpath 'org.spongepowered:mixingradle:0.7.+'
     }
 }
@@ -36,7 +37,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'net.minecraftforge.gradle' version '[6.0,)'
 
     //id 'com.google.protobuf' version '0.8.16'
 }
@@ -435,14 +436,40 @@ mixin {
     //config "mixins.K_multi_threading.json"
 }
 
-// 创建一个自定义任务，用于生成 debug.jar
-tasks.register('_copyDebugJar', Copy) {
-    var t = tasks.getByName("reobfJar")
-    dependsOn(t) // 确保在执行此任务前先执行 jar 任务
+// 创建一个自定义任务，用于生成 all.jar
+tasks.register('_createAllJar', Jar) {
+    // 确保任务依赖关系，dependsOn确保在任务执行前依赖任务完成
+    dependsOn "reobfJar", ":19_2:jar"
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-    from jar.archiveFile // 获取默认 jar 文件的路径
-    into jar.destinationDirectory // 将文件复制到默认 jar 的输出目录
-    rename { "debug.jar" } // 将文件重命名为 debug.jar
+    // 配置输出
+    archiveFileName = "all.jar"
+    destinationDirectory = file("build/libs")
+
+    // 明确设置MANIFEST.MF，使用与主项目相同的配置
+    manifest {
+        attributes([
+                'MixinConnector': 'n1luik.K_multi_threading.core.Imixin.MixinConnector',
+                "Main-Class"     : "n1luik.K_multi_threading.core.util.Util",
+                "Specification-Title"     : mod_id,
+                "Specification-Vendor"    : mod_authors,
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : project.jar.archiveVersion,
+                "Implementation-Vendor"   : mod_authors,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+    
+    // 先包含子项目19_2的内容，排除META-INF目录
+    from(zipTree(project.file("19_2/build/libs/19_2-1.0.jar"))) {
+        exclude "META-INF/**"
+    }
+    
+    // 再包含主项目 reobfJar 的内容（混淆后的代码）
+    from(zipTree(tasks.jar.archiveFile.get().asFile)) {
+        exclude "META-INF/MANIFEST.MF" // 避免覆盖我们明确设置的MANIFEST.MF
+    }
 }
 //
 //protobuf {
