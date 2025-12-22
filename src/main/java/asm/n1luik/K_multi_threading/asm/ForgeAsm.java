@@ -1,5 +1,7 @@
 package asm.n1luik.K_multi_threading.asm;
 
+import asm.n1luik.K_multi_threading.asm.JavaAgent.AgentAPI;
+import asm.n1luik.K_multi_threading.asm.mapping.*;
 import asm.n1luik.K_multi_threading.asm.mc1_19.LevelChunk_Asm;
 import asm.n1luik.K_multi_threading.asm.mc1_19.TruePacketThreadTestAsm;
 import asm.n1luik.K_multi_threading.asm.mod.*;
@@ -13,29 +15,22 @@ import asm.n1luik.K_multi_threading.asm.mod.create.CreateTrackBlockSynchronized_
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateTrackGraphSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.createenchantmentindustry.FluidTankBlockIsNullFix1_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.gtceu.ImplMetaMachine1_Asm;
-import asm.n1luik.K_multi_threading.asm.mod.lithium.Lithium$TypeFilterableListMixin_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.lithium.LithiumGetChunkSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.mek.MekanismNetworkAcceptorCacheSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.noisium.NoiseChunkGeneratorMixinFix1_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.valkyrienskies.ShipObjectServerWorld_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.vmp.MixinTACSCancelSendingFixAsm;
 import asm.n1luik.K_multi_threading.asm.mod.vmp.MixinTypeFilterableListAsm;
-import cpw.mods.modlauncher.api.IEnvironment;
-import cpw.mods.modlauncher.api.ITransformationService;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.IncompatibleEnvironmentException;
-import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.fml.loading.LoadingModList;
-import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
+import asm.n1luik.K_multi_threading.asm.util.AsmApi;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-public class ForgeAsm implements ITransformationService{
+public class ForgeAsm extends AgentAPI {
     public static final MappingImpl minecraft_map;
     public static final MappingImpl srg$Forge$_map;
     static {
@@ -45,11 +40,15 @@ public class ForgeAsm implements ITransformationService{
         try {
             if (resourceAsStream == null)throw new IOException("找不到映射表[/K_multi_threading.mapping/map.tsrg]，可以尝试检查是否正确编译");
             if (resourceAsStream2 == null)throw new IOException("找不到映射表[/K_multi_threading.mapping/map_srg.srg]，可以尝试检查是否正确编译");
-            minecraft_map = new MappingTsrgImpl(new String(resourceAsStream.readAllBytes()));
-            srg$Forge$_map = new MappingSrgImpl(new String(resourceAsStream2.readAllBytes()));
+            minecraft_map = new MappingTsrgImplForge(new String(resourceAsStream.readAllBytes()));
+            srg$Forge$_map = new MappingSrgImplForge(new String(resourceAsStream2.readAllBytes()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ForgeAsm() {
+        super("K_multi_threading");
     }
 
     /*static {
@@ -106,31 +105,10 @@ public class ForgeAsm implements ITransformationService{
     }*/
 
     @Override
-    public @NotNull String name() {
-        return "K_multi_threading";
-    }
-
-    @Override
-    public void initialize(IEnvironment environment) {
-    }
-
-    @Override
-    public void onLoad(IEnvironment env, Set<String> otherServices) throws IncompatibleEnvironmentException {
-
-    }
-
-    public static boolean isModLoaded(String modId) {
-        //if (ModList.get() == null) {
-            return LoadingModList.get().getMods().stream().map(ModInfo::getModId).anyMatch(modId::equals);
-        //}
-        //return ModList.get().isLoaded(modId);
-    }
-
-    @Override
-    public @NotNull List<ITransformer> transformers() {
-        if (System.getProperty("KMT_D") != null || (FMLLoader.getDist().isClient() && !Boolean.getBoolean("KMT_Client")))
+    public @NotNull List<ITransformer2> transformers() {
+        if (System.getProperty("KMT_D") != null || (AsmApi.isClient && !Boolean.getBoolean("KMT_Client")))
             return List.of();
-        List<ITransformer> iTransformers = new ArrayList<>(List.of(
+        List<ITransformer2> iTransformers = new ArrayList<>(List.of(
                 //new SyncImplGetterChunk_ASM(),
                 new ImplLevel1_Asm(),
                 new ShipObjectServerWorld_Asm(),
@@ -162,21 +140,21 @@ public class ForgeAsm implements ITransformationService{
                 new ServerChunkCacheMixin_Asm(),
                 new AddMapConcurrent_ASM(),
                 new NoiseChunkGeneratorMixinFix1_Asm(),
-                new MixinTypeFilterableListAsm(),
+                new MixinTypeFilterableListAsm()//,
                 //new ChunkMapSynchronized_Asm(),
-                new FastUtilTransformerService()
+                //new FastUtilTransformerService()
         ));
         //在这里不可以使用插件
         if (Boolean.getBoolean("KAF-FixConfigAuto")) {
             //iTransformers.add(new CanaryConfigAsm());
 
         }
-        String s = FMLLoader.versionInfo().mcVersion();
+        String s = AsmApi.mcVersion;
         if (s.startsWith("1.19.")){
             iTransformers.add(new TruePacketThreadTestAsm());
             iTransformers.add(new LevelChunk_Asm());
         }
-        if (isModLoaded("vmp")){
+        if (AsmApi.isModLoaded("vmp")){
             iTransformers.add(new MixinTACSCancelSendingFixAsm());
         }
         iTransformers.add(new SafeIndependenceAddSynchronized_Asm());

@@ -4,6 +4,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.lang.constant.DynamicCallSiteDesc;
+import java.lang.reflect.Method;
 
 public class StackUtil {
 
@@ -296,5 +297,20 @@ public class StackUtil {
             currentInsn = currentInsn.getPrevious();
         }
         return null;
+    }
+
+    public static void replaceMethodName(ClassNode node, Method method, String name, String owner) {
+        node.methods.forEach(methodNode -> replaceMethodName(methodNode, method, name, owner));
+    }
+
+    public static void replaceMethodName(MethodNode mn, Method method, String name, String owner) {
+        for (AbstractInsnNode instruction : mn.instructions) {
+            if (instruction instanceof MethodInsnNode methodInsnNode) {
+                if (methodInsnNode.name.equals(name) && (owner == null || owner.equals(methodInsnNode.owner))) {
+                    methodInsnNode.owner = method.getDeclaringClass().getName().replace(".", "/");
+                    methodInsnNode.name = method.getName();
+                }
+            }
+        }
     }
 }

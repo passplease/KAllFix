@@ -1,0 +1,21 @@
+package n1luik.K_multi_threading.core.util;
+
+import lombok.Getter;
+import lombok.Setter;
+
+public class OB2F<T1, T2> {
+    @Setter
+    public final T1 t1;
+    @Setter
+    public final T2 t2;
+
+    public OB2F() {
+        t1 = null;
+        t2 = null;
+    }
+
+    public OB2F(T1 t1, T2 t2) {
+        this.t1 = t1;
+        this.t2 = t2;
+    }
+}

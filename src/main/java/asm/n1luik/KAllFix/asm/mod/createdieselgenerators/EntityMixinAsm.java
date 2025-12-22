@@ -1,9 +1,7 @@
 package asm.n1luik.KAllFix.asm.mod.createdieselgenerators;
 
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
@@ -12,9 +10,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class EntityMixinAsm implements ITransformer<ClassNode> {
+public class EntityMixinAsm extends ITransformer2 {
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
         String[] strings = ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.getSelfAndPassengers()Ljava/util/stream/Stream;");
         //input.access |= Opcodes.ACC_ABSTRACT;
         //if (input.interfaces == null) input.interfaces = new ArrayList<>();
@@ -78,15 +76,12 @@ public class EntityMixinAsm implements ITransformer<ClassNode> {
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         return Set.of(
-                Target.targetClass("com.jesz.createdieselgenerators.mixins.EntityMixin")
+                "com.jesz.createdieselgenerators.mixins.EntityMixin"
         );
     }
 }

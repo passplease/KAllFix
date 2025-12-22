@@ -1,11 +1,9 @@
 package asm.n1luik.KAllFix.asm.impl;
 
 import asm.n1luik.KAllFix.asm.KAllFixAsm;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
 import cpw.mods.modlauncher.TransformingClassLoader;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassReader;
@@ -14,10 +12,10 @@ import org.objectweb.asm.tree.*;
 
 import java.util.Set;
 //先将就将就吧台麻烦了
-public class PlainTextSearchTreeMultiThreading_Asm implements ITransformer<ClassNode> {
+public class PlainTextSearchTreeMultiThreading_Asm extends ITransformer2 {
     @NotNull
     @Override
-    public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public ClassNode transform(ClassNode input) {
         //String[] strings = ForgeAsm.minecraft_map.mapMethod("net/minecraft/client/searchtree/PlainTextSearchTree.create(Ljava/util/List;Ljava/util/function/Function;)Lnet/minecraft/client/searchtree/PlainTextSearchTree;");
         //String[] strings2 = ForgeAsm.minecraft_map.mapField("net/minecraft/server/level/ServerLevel.serverLevelData");
         //Class<?> def;
@@ -90,14 +88,11 @@ public class PlainTextSearchTreeMultiThreading_Asm implements ITransformer<Class
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         return Set.of(
-                Target.targetClass("n1luik.KAllFix.impl.PlainTextSearchTreeMultiThreadingUtil$Call"));
+                "n1luik.KAllFix.impl.PlainTextSearchTreeMultiThreadingUtil$Call");
     }
 }

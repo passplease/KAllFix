@@ -1,9 +1,7 @@
 package asm.n1luik.KAllFix.asm.mod.petrolpark;
 
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
@@ -12,9 +10,9 @@ import org.objectweb.asm.tree.*;
 import java.util.Set;
 @Deprecated
 @Slf4j
-public class PetrolparkAsm implements ITransformer<ClassNode> {
+public class PetrolparkAsm extends ITransformer2 {
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
         int debug1 = 0;
 
         for (MethodNode method : input.methods) {
@@ -65,15 +63,12 @@ public class PetrolparkAsm implements ITransformer<ClassNode> {
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         return Set.of(
-                Target.targetClass("com.petrolpark.Petrolpark")
+                "com.petrolpark.Petrolpark"
         );
     }
 }

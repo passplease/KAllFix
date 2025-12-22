@@ -2,6 +2,7 @@ package n1luik.K_multi_threading.core.mixin.minecraftfix;
 
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
+import n1luik.K_multi_threading.core.Imixin.IChunkMap;
 import n1luik.K_multi_threading.core.Imixin.IWorldChunkLockedConfig;
 import n1luik.K_multi_threading.core.util.Unsafe;
 import net.minecraft.server.level.*;
@@ -64,6 +65,14 @@ public abstract class ServerChunkCacheFix1 {
     @Inject(method = "tick", at = @At("HEAD"))
     public void fix4(BooleanSupplier p_201913_, boolean p_201914_, CallbackInfo ci) {
         //iMainThreadExecutor.setM2(true);
+    }
+    @Inject(method = "runDistanceManagerUpdates", at = @At("HEAD"))
+    public void fix7(CallbackInfoReturnable<Boolean> cir) {
+        if (chunkMap instanceof IChunkMap cm)cm.KAK$AddNot1();
+    }
+    @Inject(method = "runDistanceManagerUpdates", at = @At("RETURN"))
+    public void fix6(CallbackInfoReturnable<Boolean> cir) {
+        if (chunkMap instanceof IChunkMap cm)cm.KAK$RemoveNot1();
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))

@@ -1,8 +1,6 @@
 package asm.n1luik.K_multi_threading.asm;
 
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import n1luik.K_multi_threading.core.base.ParaServerChunkProvider;
 import org.jetbrains.annotations.NotNull;
@@ -14,10 +12,10 @@ import java.util.Set;
 
 @Deprecated
 @Slf4j
-public class ServerChunkCache_Asm implements ITransformer<ClassNode> {
+public class ServerChunkCache_Asm extends ITransformer2 {
     @NotNull
     @Override
-    public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public ClassNode transform(ClassNode input) {
         boolean debug_add1 = false;
 
         for (MethodNode method : input.methods) {
@@ -48,14 +46,11 @@ public class ServerChunkCache_Asm implements ITransformer<ClassNode> {
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         return Set.of(
-                Target.targetClass("net/minecraft/server/level/ServerLevel"));
+                "net/minecraft/server/level/ServerLevel");
     }
 }

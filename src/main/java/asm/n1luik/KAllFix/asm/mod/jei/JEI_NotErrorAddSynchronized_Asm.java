@@ -1,9 +1,7 @@
 package asm.n1luik.KAllFix.asm.mod.jei;
 
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
@@ -16,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 @Slf4j
-public class JEI_NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
+public class JEI_NotErrorAddSynchronized_Asm extends ITransformer2 {
     public static final List<String[]> stringsList = new ArrayList<>(List.of(
             ForgeAsm.minecraft_map.mapMethod("mezz/jei/library/load/registration/GuiHandlerRegistration.addGhostIngredientHandler((Ljava/lang/Class;Lmezz/jei/api/gui/handlers/IGhostIngredientHandler;)V"),
             ForgeAsm.minecraft_map.mapMethod("mezz/jei/library/load/registration/GuiHandlerRegistration.addGuiScreenHandler((Ljava/lang/Class;Lmezz/jei/api/gui/handlers/IScreenHandler;)V"),
@@ -44,7 +42,7 @@ public class JEI_NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> 
             /*| Opcodes.ACC_ABSTRACT*/ | Opcodes.ACC_BRIDGE;
 
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
 
         for (String[] strings : stringsList) {
             if (input.name.equals(strings[0])){
@@ -145,13 +143,10 @@ public class JEI_NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> 
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
 
         File f = new File("config/jei-sync-ModMethod-list.txt");
         if (f.exists()) {
@@ -191,6 +186,6 @@ public class JEI_NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> 
             }
         }
 
-        return Set.of(list.stream().map(Target::targetClass).toArray(Target[]::new));
+        return Set.of(list.stream().toArray(String[]::new));
     }
 }

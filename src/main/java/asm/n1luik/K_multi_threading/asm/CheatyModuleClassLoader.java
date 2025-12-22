@@ -21,13 +21,13 @@ public class CheatyModuleClassLoader extends ModuleClassLoader {
 		//if (bypass != null) {
 		//	return bypass.
 		//}
-		if (!ts.targets().stream().anyMatch(t->t.getClassName().equals(name))) {
+		if (!ts.targets().stream().map(n->n.replace(".", "/")).anyMatch(name::equals)) {
 			return bytes;
 		}
 		ClassReader cr = new ClassReader(bytes);
 		ClassNode cn = new ClassNode();
 		cr.accept(cn, 0);
-		ts.transform(cn, null);
+		ts.transform(cn);
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 		cn.accept(cw);
 		return cw.toByteArray();

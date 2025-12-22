@@ -1,6 +1,7 @@
 package asm.n1luik.KAllFix.asm.mod.gcyr;
 
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
+import asm.n1luik.K_multi_threading.asm.util.AsmApi;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -12,8 +13,8 @@ import java.util.Properties;
 public class CanaryConfig {
     public final static boolean ENABLED;
     static {
-        if (ForgeAsm.isModLoaded("gcyr")) {
-            if (ForgeAsm.isModLoaded("canary")) {
+        if (AsmApi.isModLoaded("gcyr")) {
+            if (AsmApi.isModLoaded("canary")) {
 
                 File file = new File("./config/canary.properties");
                 if (file.isFile()) {

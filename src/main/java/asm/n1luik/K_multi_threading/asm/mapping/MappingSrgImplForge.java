@@ -1,13 +1,12 @@
-package asm.n1luik.K_multi_threading.asm;
+package asm.n1luik.K_multi_threading.asm.mapping;
 
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
-public class MappingSrgImpl extends MappingImpl {
+public class MappingSrgImplForge extends MappingImpl {
 
-    public MappingSrgImpl(String m) {
+    public MappingSrgImplForge(String m) {
         Map<String,String> map2 = new HashMap<>();
 
         for (String s : m.split("(\n|\r\n)+")) {
@@ -24,6 +23,7 @@ public class MappingSrgImpl extends MappingImpl {
                     String[] split3 = split1[1].split("/(?!(.+)/)");
 
                     map.put(split2[0] + "." + split2[1], split3[0] + "." + split3[1]);
+                    map.put(split2[1], split3[1]);
                 }
                 case "MD"->{
 
@@ -32,6 +32,7 @@ public class MappingSrgImpl extends MappingImpl {
 
                     map.put(split2[0] + "." + split2[1] + split1[1], split3[0] + "." + split3[1] + split1[3]);
                     map.put(split2[0] + "." + split2[1] + "}{", split3[0] + "." + split3[1]);
+                    map.put(split2[1], split3[1]);
                 }
                 default -> {
                     throw new RuntimeException();

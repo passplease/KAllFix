@@ -1,8 +1,6 @@
 package asm.n1luik.KAllFix.asm.mod.jei;
 
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +12,7 @@ import java.io.*;
 import java.util.*;
 
 @Slf4j
-public class JEI_AddMapConcurrent_ASM implements ITransformer<ClassNode> {
+public class JEI_AddMapConcurrent_ASM extends ITransformer2 {
     /*public static BiFunction<TransformingClassLoader, String, byte[]> getclass;
 
     static {
@@ -172,7 +170,7 @@ public class JEI_AddMapConcurrent_ASM implements ITransformer<ClassNode> {
 
 
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
         log.info("[{}]", input.name);
         AsmTarget orDefault = nameMap.getOrDefault(input.name, Empty);
 
@@ -418,13 +416,10 @@ public class JEI_AddMapConcurrent_ASM implements ITransformer<ClassNode> {
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
 
         File f = new File("config/K_multi_threading-AddMapConcurrent-list.txt");
         if (f.exists()) {
@@ -533,7 +528,7 @@ public class JEI_AddMapConcurrent_ASM implements ITransformer<ClassNode> {
             stringStringMap.addAll(Arrays.asList(asmTarget.mappingFields));
 
         }
-        return Set.of(stringsList.stream().map(AsmTarget::className).map(Target::targetClass).toArray(Target[]::new));
+        return Set.of(stringsList.stream().map(AsmTarget::className).toArray(String[]::new));
     }
 
     public static record MethodInfo(@Nullable String name, @Nullable String desc, boolean mappingLocal, boolean mappingAll) {

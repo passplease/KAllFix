@@ -1,14 +1,9 @@
 package asm.n1luik.K_multi_threading.asm.mod.valkyrienskies;
 
 import asm.n1luik.KAllFix.asm.util.StackUtil;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import org.objectweb.asm.tree.*;
 
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
@@ -17,10 +12,10 @@ import java.util.Set;
 
 import java.util.Set;
 
-public class ShipObjectServerWorld_Asm  implements ITransformer<ClassNode>{
+public class ShipObjectServerWorld_Asm  extends ITransformer2{
     @NotNull
     @Override
-    public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public ClassNode transform(ClassNode input) {
         boolean debug_add1 = false;
         boolean debug_add2 = false;
 
@@ -60,14 +55,11 @@ public class ShipObjectServerWorld_Asm  implements ITransformer<ClassNode>{
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         return Set.of(
-                ITransformer.Target.targetClass("org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld"));
+                "org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld");
     }
 }

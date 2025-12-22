@@ -1,8 +1,6 @@
 package asm.n1luik.K_multi_threading.asm;
 
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Label;
@@ -15,13 +13,13 @@ import java.util.function.IntFunction;
 
 
 @Slf4j
-public class SafeIndependenceAddSynchronized_Asm implements ITransformer<ClassNode> {
+public class SafeIndependenceAddSynchronized_Asm extends ITransformer2 {
     public final Map<String ,List<IndependenceAddSynchronized_Asm.MethodNameInfo[]>> data = new HashMap<>();
     public final List<String> targetClass = new ArrayList<>();
 
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         List<IndependenceAddSynchronized_Asm.ReadBuf> list2 = new ArrayList<>();
         list2.addAll(List.of(
                 //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.startTickingChunk(Lnet/minecraft/world/level/chunk/LevelChunk;)V")
@@ -107,7 +105,7 @@ public class SafeIndependenceAddSynchronized_Asm implements ITransformer<ClassNo
             data.put(stringMapEntry.getKey(), methodNameInfos);
         }
 
-        return Set.of(map.keySet().stream().map(Target::targetClass).toArray(Target[]::new));
+        return Set.of(map.keySet().stream().toArray(String[]::new));
     }
 
 
@@ -117,7 +115,7 @@ public class SafeIndependenceAddSynchronized_Asm implements ITransformer<ClassNo
 
 
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
         try {
 
             if (targetClass.contains(input.name) && !input.name.contains("$")) {
@@ -277,8 +275,5 @@ public class SafeIndependenceAddSynchronized_Asm implements ITransformer<ClassNo
         }
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 }

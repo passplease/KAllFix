@@ -1,9 +1,7 @@
 package asm.n1luik.K_multi_threading.asm;
 
 import appeng.shaded.flatbuffers.ReadBuf;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,13 +14,13 @@ import java.util.function.IntFunction;
 
 
 @Slf4j
-public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> {
+public class IndependenceAddSynchronized_Asm extends ITransformer2 {
     public final Map<String ,List<MethodNameInfo[]>> data = new HashMap<>();
     public final List<String> targetClass = new ArrayList<>();
 
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         List<ReadBuf> list2 = new ArrayList<>();
 
 
@@ -110,7 +108,7 @@ public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> 
             data.put(stringMapEntry.getKey(), methodNameInfos);
         }
 
-        return Set.of(map.keySet().stream().map(Target::targetClass).toArray(Target[]::new));
+        return Set.of(map.keySet().stream().toArray(String[]::new));
     }
 
 
@@ -120,7 +118,7 @@ public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> 
 
 
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
         try {
 
             if (targetClass.contains(input.name) && !input.name.contains("$")) {
@@ -269,10 +267,7 @@ public class IndependenceAddSynchronized_Asm implements ITransformer<ClassNode> 
         }
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     public record ReadBuf(String[] data, @Nullable String group) {
 

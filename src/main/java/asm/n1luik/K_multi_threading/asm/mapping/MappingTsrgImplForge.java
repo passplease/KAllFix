@@ -1,11 +1,13 @@
-package asm.n1luik.K_multi_threading.asm;
+package asm.n1luik.K_multi_threading.asm.mapping;
 
+
+import asm.n1luik.K_multi_threading.asm.Util;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MappingTsrgImpl extends MappingImpl {
-    public MappingTsrgImpl(String m) {
+public class MappingTsrgImplForge extends MappingImpl {
+    public MappingTsrgImplForge(String m) {
         Map<String,String> map2 = new HashMap<>();
         String n1 = null;//类名
         String m1 = null;//类名
@@ -23,10 +25,12 @@ public class MappingTsrgImpl extends MappingImpl {
                     switch (split.length){
                         case 2->{
                             map2.put(n1 + "." + split[0], m1 + "." + split[1]);
+                            map2.put(split[0], split[1]);
                         }
                         case 3->{
                             map2.put(n1 + "." + split[0] + split[1], m1 + "." + split[2]);
                             map2.put(n1 + "." + split[0] + "}{", m1 + "." + split[2]);
+                            map2.put(split[0], split[2]);
                         }
                     }
                 }

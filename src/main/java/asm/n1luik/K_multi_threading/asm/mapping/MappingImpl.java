@@ -1,4 +1,4 @@
-package asm.n1luik.K_multi_threading.asm;
+package asm.n1luik.K_multi_threading.asm.mapping;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +17,9 @@ public abstract class MappingImpl {
         String orDefault = map.getOrDefault(name, name);
         String[] split = orDefault.split("\\.");
         return new String[]{split[0], split[1]};
+    }
+    public String map_(String name) {
+        return map.getOrDefault(name, name);
     }
 
     public String mapClass(String name){

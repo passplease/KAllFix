@@ -1,8 +1,6 @@
 package asm.n1luik.KAllFix.asm.util;
 
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
@@ -10,9 +8,20 @@ import org.objectweb.asm.tree.ClassNode;
 import java.io.IOException;
 import java.util.Set;
 
-public record NoModuleReadClassAsm(String file, String version, String target, Set<Target> classs) implements ITransformer<ClassNode> {
+public class NoModuleReadClassAsm extends ITransformer2 {
+    private final String file;
+    private final String version;
+    private final String target;
+    private final Set<String> classs;
+    
+    public NoModuleReadClassAsm(String file, String version, String target, Set<String> classs) {
+        this.file = file;
+        this.version = version;
+        this.target = target;
+        this.classs = classs;
+    }
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
         try {
             ClassNode classNode = new ClassNode();
             byte[] bytes = NoModuleReadClassAsm.class.getResourceAsStream("/asm/KAllFix.fix/"+file+"/"+version+"/"+target+".fix").readAllBytes();
@@ -28,13 +37,10 @@ public record NoModuleReadClassAsm(String file, String version, String target, S
         }
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         return classs;
     }
 }

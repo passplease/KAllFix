@@ -1,22 +1,23 @@
 package n1luik.K_multi_threading.core.base;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
 import com.mojang.datafixers.util.Either;
+import it.unimi.dsi.fastutil.longs.Long2ObjectAVLTreeMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
@@ -28,12 +29,12 @@ import n1luik.K_multi_threading.core.Base;
 import n1luik.K_multi_threading.core.Imixin.IMainThreadExecutor;
 import n1luik.K_multi_threading.core.Imixin.IWorldChunkLockedConfig;
 import n1luik.K_multi_threading.core.util.*;
-import n1luik.K_multi_threading.core.util.concurrent.FixNullConcurrentHashMap;
+import n1luik.K_multi_threading.core.util.concurrent.VolatileLong2ObjectOpenHashMap;
 import net.minecraft.core.IdMap;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.Ticket;
 import net.minecraft.util.SortedArraySet;
+import net.minecraft.world.level.chunk.*;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,10 +47,6 @@ import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.progress.ChunkProgressListener;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.chunk.ChunkStatus;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.entity.ChunkStatusUpdateListener;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraft.world.level.storage.LevelStorageSource;
@@ -64,7 +61,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     private static final int SHARD_COUNT = 4;
     public static final Field currentlyLoading;
     public static final Thread generatorAllThread;
-    protected static final TaskRun generatorAllRun = new TaskRun("generatorAllThread", ()->{
+    protected static final TaskRun generatorAllRun = new TaskRun("generatorAllThread", () -> {
         Base.regThread("generatorAllThread", Thread.currentThread());
     });
 
@@ -87,18 +84,28 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     //protected Thread cacheThread;
     //因为lootr 会返回null所以不能进行安全检查
     //protected final Map<ChunkCacheAddress, ChunkAccess> chunkCache = new FixNullConcurrentHashMap<>();
-    private final Long2ObjectOpenHashMap<ChunkAccess>[][] chunkCacheShards;
+    private final LockLong2ObjectAVLTreeMap<ChunkAccess>[] chunkCacheShards;//Long2ObjectOpenHashMap<ChunkAccess>[][] chunkCacheShards;
     //  protected Map<ChunkCacheAddress, GeneratorNode> chunkTask = new ConcurrentHashMap<>();
     //protected final AtomicInteger access = new AtomicInteger(Integer.MIN_VALUE);
-    protected long clearTime = 0;
+    protected final AtomicInteger lockGenLock = new AtomicInteger();
+    protected final AtomicInteger lockGenLock2 = new AtomicInteger();
+    protected final AtomicReference<Thread> lockGenLock3 = new AtomicReference<>();
+    //protected final LongOpenHashSet lockGenKey = new LongOpenHashSet();
+    protected final ArrayDeque<LockObj//VOB3_OOI_LockC<ChunkAccess, Throwable>
+            > locks = new ArrayDeque<>(64);
+    protected final LockLong2ObjectAVLTreeMap<LockObj//VOB3_OOI_LockC<ChunkAccess, Throwable>
+                > lockGen = new LockLong2ObjectAVLTreeMap<>();
+    protected volatile Thread managedBlockThread = null;
+    protected final Queue<OB2F<BooleanSupplier, Thread>> managedBlockTest = new ConcurrentLinkedQueue<>();
+    //protected long clearTime = 0;
     protected final Object lock = new Object();
     protected final Object lock2 = new Object();
     protected final Object lock3 = new Object();
     //这样不需要new lock
-    protected final ReentrantLock lock4 = new ReentrantLock();
-    protected final ReentrantLock lock5 = new ReentrantLock();
-    protected final Condition condition4 = lock4.newCondition();
-    protected final Condition condition5 = lock5.newCondition();
+    //protected final ReentrantLock lock4 = new ReentrantLock();
+    //protected final ReentrantLock lock5 = new ReentrantLock();
+    //protected final Condition condition4 = lock4.newCondition();
+    //protected final Condition condition5 = lock5.newCondition();
     protected final Object tasksRunLock = new Object();
     protected final Object tasksRunLock2 = new Object();
     protected volatile boolean isCallTick = false;
@@ -134,12 +141,12 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         }
     }
 
-    public static ParaServerChunkProvider toPara(ServerChunkCache chunkSource){
+    public static ParaServerChunkProvider toPara(ServerChunkCache chunkSource) {
         ParaServerChunkProvider clone;
         try {
             if (chunkSource instanceof ParaServerChunkProvider) {
-                clone = (ParaServerChunkProvider)chunkSource;
-            }else {
+                clone = (ParaServerChunkProvider) chunkSource;
+            } else {
                 clone = ParaServerChunkProvider.UnsafeClone.clone(chunkSource);
                 //Unsafe.setfinal(ServerLevel.class.getDeclaredField("f_8547_"), chunkSource.level, clone);
             }
@@ -160,17 +167,20 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         //cacheThread.start();
 
         int size = getStatusSize();
-        chunkCacheShards = new Long2ObjectOpenHashMap[size][SHARD_COUNT];
+        chunkCacheShards = new LockLong2ObjectAVLTreeMap[size];
         initchunkCacheShards(size);
+        if (mainThreadProcessor instanceof IMainThreadExecutor me) {
+            me.KMT$setParaServerChunkProvider(this);
+        }
     }
 
     /**
      * UnsafeInit顾名思义跟他需要实现跟ParaServerChunkProvider完全一样的功能
-     *
-     * */
+     */
     public void UnsafeInit() {
         //access = new AtomicInteger(Integer.MIN_VALUE);
-        clearTime = 0;
+        //clearTime = 0;
+        managedBlockThread = null;
 
         int size = getStatusSize();
 
@@ -178,8 +188,8 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         Unsafe.unsafe.putObject(this, initId.getLong("lock"), new Object());
         Unsafe.unsafe.putObject(this, initId.getLong("lock2"), new Object());
         Unsafe.unsafe.putObject(this, initId.getLong("lock3"), new Object());
-        Unsafe.unsafe.putObject(this, initId.getLong("lock4"), new ReentrantLock());
-        Unsafe.unsafe.putObject(this, initId.getLong("lock5"), new ReentrantLock());
+        //Unsafe.unsafe.putObject(this, initId.getLong("lock4"), new ReentrantLock());
+        //Unsafe.unsafe.putObject(this, initId.getLong("lock5"), new ReentrantLock());
         Unsafe.unsafe.putObject(this, initId.getLong("tasksRunLock"), new Object());
         Unsafe.unsafe.putObject(this, initId.getLong("tasksRunLock2"), new Object());
         isCallTick = false;
@@ -194,9 +204,20 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         Unsafe.unsafe.putObject(this, initId.getLong("waitList"), new ConcurrentHashMap<>());
         //Unsafe.unsafe.putObject(this, initId.getLong("chunkTask"), new ConcurrentHashMap<>());
         Unsafe.unsafe.putObject(this, initId.getLong("generatorThread1"), new CopyOnWriteArrayList<>());
-        Unsafe.unsafe.putObject(this, initId.getLong("condition4"), lock4.newCondition());
-        Unsafe.unsafe.putObject(this, initId.getLong("condition5"), lock5.newCondition());
-        Unsafe.unsafe.putObject(this, initId.getLong("chunkCacheShards"), new Long2ObjectOpenHashMap[size][SHARD_COUNT]);
+        //Unsafe.unsafe.putObject(this, initId.getLong("condition4"), lock4.newCondition());
+        //Unsafe.unsafe.putObject(this, initId.getLong("condition5"), lock5.newCondition());
+        LockLong2ObjectAVLTreeMap[] x = new LockLong2ObjectAVLTreeMap[size];
+        for (int i = 0; i < size; i++) {
+            x[i] = new LockLong2ObjectAVLTreeMap<>();
+        }
+        Unsafe.unsafe.putObject(this, initId.getLong("chunkCacheShards"), x);//new Long2ObjectOpenHashMap[size][SHARD_COUNT]);
+        Unsafe.unsafe.putObject(this, initId.getLong("lockGenLock"), new AtomicInteger(0));
+        Unsafe.unsafe.putObject(this, initId.getLong("lockGenLock2"), new AtomicInteger(0));
+        Unsafe.unsafe.putObject(this, initId.getLong("lockGenLock3"), new AtomicReference<>(null));
+        //Unsafe.unsafe.putObject(this, initId.getLong("lockGenKey"), new LongOpenHashSet());
+        Unsafe.unsafe.putObject(this, initId.getLong("locks"), new ArrayDeque<>(64));
+        Unsafe.unsafe.putObject(this, initId.getLong("lockGen"), new LockLong2ObjectAVLTreeMap<>());
+        Unsafe.unsafe.putObject(this, initId.getLong("managedBlockTest"), new ConcurrentLinkedQueue<>());
         //Unsafe.unsafe.putObject(this, initId.getLong("ChunkGeneratorTest"), new AtomicInteger());
         chunkCleaner = MarkerManager.getMarker("ChunkCleaner");
 
@@ -216,33 +237,82 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         //}
 
         ChunkGeneratorTest = 0;
-        initchunkCacheShards(size);
+        //initchunkCacheShards(size);//jvm会在设置前读取
+        if (mainThreadProcessor instanceof IMainThreadExecutor me) {
+            me.KMT$setParaServerChunkProvider(this);
+        }
 
 
     }
 
-    public static int getStatusSize(){
-        try{
+    public <T> T KMT$LockChunk(long pos, Function<LockObj//VOB3_OOI_LockC<ChunkAccess, Throwable>
+            , T> f) {
+        while (!lockGenLock.compareAndSet(0, 1)) ;
+        LockObj//VOB3_OOI_LockC<ChunkAccess, Throwable>
+                lock = lockGen.get(pos);
+        boolean get = lock == null;
+        if (lock == null) {
+            lock = locks.poll();
+            if (lock == null) {
+                lock = new LockObj();//VOB3_OOI_LockC<>();
+            }
+            lockGen.put(pos, lock);
+        }
+        lockGenLock.set(0);
+        try {
+            synchronized (lock) {
+                return f.apply(lock);
+            }
+        } finally {
+            if (get) {
+                while (!lockGenLock.compareAndSet(0, 1)) ;
+                LockObj//VOB3_OOI_LockC<ChunkAccess, Throwable>
+                        lock2 = lockGen.remove(pos);
+                if (locks.size() < 64) {
+                    locks.add(lock);
+                }
+                if (lock2 != lock && lock2 != null) {
+                    lockGen.put(pos, lock2);
+                }
+                lockGenLock.set(0);
+                if (lock2 != lock) {
+                    if (lock2 != null) {
+                        log.warn("Unlock chunk failed, lock not match [{}, {}]", ChunkPos.getX(pos), ChunkPos.getZ(pos));
+                    } else {
+                        log.warn("Unlock chunk failed, lock is null [{}, {}]", ChunkPos.getX(pos), ChunkPos.getZ(pos));
+                    }
+                }
+            }
+        }
+    }
+
+    public static int getStatusSize() {
+        try {
             //BuiltInRegistries.CHUNK_STATUS
             Class<?> aClass = Class.forName("net.minecraft.core.registries.BuiltInRegistries", true, ParaServerChunkProvider.class.getClassLoader());
-            return  ((IdMap<?>) aClass.getField("f_256940_").get(aClass)).size();
+            return ((IdMap<?>) aClass.getField("f_256940_").get(aClass)).size();
         } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
-            try{
+            try {
                 //net.minecraft.core.Registry#CHUNK_STATUS
                 Class<?> aClass = Class.forName("net.minecraft.core.Registry", true, ParaServerChunkProvider.class.getClassLoader());
                 return ((IdMap<?>) aClass.getField("f_122833_").get(aClass)).size();
             } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e2) {
-                throw new RuntimeException(e2);
+                throw new RuntimeException("Failed to get CHUNK_STATUS size", e2);
             }
 
         }
     }
 
-    protected void initchunkCacheShards(int size){
+    //protected void initchunkCacheShards(int size){
+    //    for (int i = 0; i < size; i++) {
+    //        for (int i2 = 0; i2 < SHARD_COUNT; i2++) {
+    //            chunkCacheShards[i][i2] = new Long2ObjectOpenHashMap<>(512, 0.4f);
+    //        }
+    //    }
+    //}
+    protected void initchunkCacheShards(int size) {
         for (int i = 0; i < size; i++) {
-            for (int i2 = 0; i2 < SHARD_COUNT; i2++) {
-                chunkCacheShards[i][i2] = new Long2ObjectOpenHashMap<>(512, 0.4f);
-            }
+            chunkCacheShards[i] = new LockLong2ObjectAVLTreeMap<>();
         }
     }
 
@@ -254,19 +324,21 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
 
 
     private static int getShardIndex(long chunkPos) {
-        return Math.abs((int)(chunkPos % 4));
+        return Math.abs((int) (chunkPos % 4));
     }
 
     // 修改查询方法
     public ChunkAccess lookupChunk(long chunkPos, ChunkStatus status) {
-        int shard = getShardIndex(chunkPos);
-        return chunkCacheShards[status.getIndex()][shard].get(chunkPos);
+        //int shard = getShardIndex(chunkPos);
+        return chunkCacheShards[status.getIndex()]//[shard]
+                .get(chunkPos);
     }
 
     // 修改缓存方法
     public void cacheChunk(long chunkPos, ChunkAccess chunk, ChunkStatus status) {
-        int shard = getShardIndex(chunkPos);
-        chunkCacheShards[status.getIndex()][shard].put(chunkPos, chunk);
+        //int shard = getShardIndex(chunkPos);
+        chunkCacheShards[status.getIndex()]//[shard]
+                .put(chunkPos, chunk);
     }
 
     /*@Override
@@ -298,6 +370,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         wait.waitTask();
         return wait.getRet();
     }
+
     //就是正常的不多线程非main线程执行的效果lockGetChunk是修复锁过多问题的
     @Nullable
     public ChunkAccess joinLockGetChunk(int chunkX, int chunkZ, ChunkStatus requiredStatus, boolean load) {
@@ -369,41 +442,52 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         }
     }
 
-    protected ChunkAccess KMT$basePush(int chunkX, int chunkZ, ChunkStatus requiredStatus, boolean load, Consumer<ChunkAccess> out, Consumer<Throwable> err){
-        synchronized (lock3) {
-            ChunkGeneratorTest++;//.getAndAdd(1);
-            if (Thread.currentThread() != generatorAllThread) {
-                Runnable runnable = () -> KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, out, err);
+    protected ChunkAccess KMT$basePush(int chunkX, int chunkZ, ChunkStatus requiredStatus, boolean load, Consumer<ChunkAccess> out, Consumer<Throwable> err) {
+        //    synchronized (lock3) {
+        //        ChunkGeneratorTest++;//.getAndAdd(1);
+        //        if (Thread.currentThread() != generatorAllThread) {
+        //            Runnable runnable = () -> KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, out, err);
+//
+        //            if (mainThreadProcessor instanceof IMainThreadExecutor iMainThreadExecutor){
+        //                boolean b;
+        //                synchronized (iMainThreadExecutor.getLockCall()) {
+        //                    if (iMainThreadExecutor.isCall()) {
+        //                        mainThreadProcessor.execute(runnable);
+        //                        b = false;
+        //                    }else {
+        //                        b = true;
+        //                    }
+        //                }
+        //                if (b) {
+        //                    generatorAllRun.execute(runnable);
+        //                }
+        //            }else {
+        //                if (ChunkGeneratorTest-1 > 0) {
+        //                    mainThreadProcessor.tell(runnable);
+        //                }else {
+        //                    generatorAllRun.execute(runnable);
+        //                }
+        //            }
+        //            return null;
+        //        }
+        //    }
 
-                if (mainThreadProcessor instanceof IMainThreadExecutor iMainThreadExecutor){
-                    boolean b;
-                    synchronized (iMainThreadExecutor.getLockCall()) {
-                        if (iMainThreadExecutor.isCall()) {
-                            mainThreadProcessor.execute(runnable);
-                            b = false;
-                        }else {
-                            b = true;
-                        }
-                    }
-                    if (b) {
-                        generatorAllRun.execute(runnable);
-                    }
-                }else {
-                    if (ChunkGeneratorTest-1 > 0) {
-                        mainThreadProcessor.tell(runnable);
-                    }else {
-                        generatorAllRun.execute(runnable);
-                    }
-                }
-                return null;
-            }
-        }
         return KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, out, err);
     }
 
-    protected ChunkAccess KMT$baseGetChunk(int chunkX, int chunkZ, ChunkStatus requiredStatus, boolean load, Consumer<ChunkAccess> out, Consumer<Throwable> err){
+    protected ChunkAccess KMT$baseGetChunk(int chunkX, int chunkZ, ChunkStatus requiredStatus, boolean load, Consumer<ChunkAccess> out, Consumer<Throwable> err) {
+        Thread thread = Thread.currentThread();
+        while (!lockGenLock3.compareAndSet(null, thread)) ;
+
         try {
-            ChunkAccess chunk = super.getChunk(chunkX, chunkZ, requiredStatus, load);
+            ChunkAccess chunk = lookupChunk(ChunkPos.asLong(chunkX, chunkZ), requiredStatus);
+            if (chunk == null) {
+                chunk = KMT$LockChunk(ChunkPos.asLong(chunkX, chunkZ), l ->super.getChunk(chunkX, chunkZ, requiredStatus, load));
+                if (requiredStatus == ChunkStatus.FULL) {
+                    if (chunk instanceof ImposterProtoChunk)
+                        log.info("FULL ImposterProtoChunk: {} {}", chunkX, chunkZ, new Throwable());
+                }
+            };
             synchronized (lock3) {
                 cacheChunk(ChunkPos.asLong(chunkX, chunkZ), chunk, requiredStatus);
                 if (out != null)
@@ -411,17 +495,19 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
                 ChunkGeneratorTest--;//.getAndAdd(-1);
             }
             return chunk;
-        }catch (Throwable e){
+        } catch (Throwable e) {
             synchronized (lock3) {
                 if (err != null) {
                     err.accept(e);
                     ChunkGeneratorTest--;//.getAndAdd(-1);
                     return null;
-                }else {
+                } else {
                     ChunkGeneratorTest--;//.getAndAdd(-1);
                     throw e;
                 }
             }
+        } finally {
+            if (lockGenLock3.get() == thread) lockGenLock3.set(null);
         }
     }
 
@@ -441,20 +527,21 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         }
 
         Thread thisThread = Thread.currentThread();
-        if (waitList.containsValue(thisThread)){
-            return joinLockGetChunk(chunkX, chunkZ, requiredStatus, load);
-        }
-        if (thisThread == generatorAllThread){
-            return KMT$basePush(chunkX, chunkZ, requiredStatus, load, null, null);
-        }
-        boolean isBlacklistThread = !generatorThread1.contains(thisThread) && threadBlacklist.containsValue(thisThread);
+        return KMT$basePush(chunkX, chunkZ, requiredStatus, load, null, null);
+        //if (waitList.containsValue(thisThread)){
+        //    return joinLockGetChunk(chunkX, chunkZ, requiredStatus, load);
+        //}
+        //if (thisThread == generatorAllThread){
+        //    return KMT$basePush(chunkX, chunkZ, requiredStatus, load, null, null);
+        //}
+        //boolean isBlacklistThread = !generatorThread1.contains(thisThread) && threadBlacklist.containsValue(thisThread);
         //log.info("Thread: {}, threadBlacklist : {}", Thread.currentThread().getName(), Arrays.toString(threadBlacklist.values().stream().map(Thread::getId).toArray()));
         //if (!Base.isThreadPooled() && !isBlacklistThread){
         //    return waitGetChunk(chunkX, chunkZ, requiredStatus, load);
         //}
 
 
-        ChunkAccess cl;
+        //ChunkAccess cl;
         //if (ASMHookTerminator.shouldThreadChunks()) {
         //    // Multithread but still limit to 1 load op per chunk
         //    long[] locks = loadingChunkLock.lock(i, 0);
@@ -468,103 +555,110 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         //    }
         //} else {
         //if (requiredStatus != ChunkStatus.FULL && !iMainThreadExecutor.isCall() && Thread.currentThread() != iMainThreadExecutor.getCallThread()){
-            synchronized (isBlacklistThread ? threadBlacklist : lock) {//代理并委托不能锁this会出现问题的
-                //log.debug("Missed chunk {} {} now", chunkX, chunkZ);
-                //synchronized (locks.get(requiredStatus.getIndex())) {
-                    c = lookupChunk(i, requiredStatus);
-                    if (c != null) {
-                        return c;
-                    }
-                    if (isBlacklistThread){
-                        generatorThread2 = thisThread;
-                    }else {
-                        //generatorThread1 = thisThread;
-                        generatorThread1.add(thisThread);
-                    }
-                    VOB3_OOI<ChunkAccess, Throwable> run = new VOB3_OOI<>(null, null, 0);
-                    ReentrantLock lock = isBlacklistThread ? lock4 : lock5;
-                    Condition condition = isBlacklistThread ? condition4 : condition5; // 根据锁选择 Condition
-                    try {
-                        KMT$basePush(chunkX, chunkZ, requiredStatus, load, v -> {
-                            //因为lootr 会返回null所以不能进行安全检查
-                            run.setT1_(v);
-                            lock.lock();
-                            try {
-                                synchronized (run){
-                                    run.setT3_(2);
-                                    condition.signal(); // 异步任务完成时发送信号
-                                }
-                            } finally {
-                                lock.unlock();
-                            }
-                        }, e -> {
-                            run.setT2_(e);
-                            lock.lock();
-                            try {
-                                synchronized (run){
-                                    run.setT3_(2);
-                                    condition.signal(); // 异步任务完成时发送信号
-                                }
-                            } finally {
-                                lock.unlock();
-                            }
-                        });
-
-                        lock.lock();
-                        try {
-                            synchronized (run){
-                                if (run.getT3_() == 0) {
-                                    run.setT3_(1);
-                                }
-                            }
-                            while (run.getT3_() < 2) {
-                                condition.await(10, TimeUnit.MILLISECONDS); // 带超时的等待
-                            }
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        } finally {
-                            lock.unlock();
-                        }
-
-                        if (run.getT2_() != null) {
-                            throw new RuntimeException(run.getT2_());
-                        }
-                        cl = run.getT1_();
-                        //run.t3 = 1;
-                        //while (run.getT3_() < 2){
-                        //    Unsafe.unsafe.park(true, 10);
-                        //    //Base.LOGGER.info("KMT$basePushEnd$Debug {}", run.getT3_());
-                        //}
-                        //lock.unlock();
-                        ////这里直接访问变量只能读到null
-                        //if (run.getT2_() != null) {
-                        //    throw new RuntimeException(run.getT2_());
-                        //}else {
-                        //    cl = run.getT1_();//Objects.requireNonNull(run.getT1_());
-                        //}
-                    }finally {
-                        if (isBlacklistThread){
-                            generatorThread2 = null;
-                        }else {
-                            //generatorThread1 = null;
-                            generatorThread1.remove(thisThread);
-                        }
-                    }
-                //}
-            }
-            ////测试
-            //if (isBlacklistThread){
-            //    synchronized(threadBlacklist) {
-            //        cl = KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, true);
-            //    }
-            //}else {
-            //    cl = KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, false);
-            //}
+        //synchronized (isBlacklistThread ? threadBlacklist : lock) {//代理并委托不能锁this会出现问题的
+        //    c = lookupChunk(i, requiredStatus);
+        //    if (c != null) {
+        //        return c;
+        //    }
+        //    if (isBlacklistThread){
+        //        generatorThread2 = thisThread;
+        //    }else {
+        //        //generatorThread1 = thisThread;
+        //        generatorThread1.add(thisThread);
+        //    }
+        //    try {
+        //        cl = KMT$getChunk_(chunkX, chunkZ, requiredStatus, load, isBlacklistThread);
+        //    }finally {
+        //        if (isBlacklistThread){
+        //            generatorThread2 = null;
+        //        }else {
+        //            //generatorThread1 = null;
+        //            generatorThread1.remove(thisThread);
+        //        }
+        //    }
+        //}
+        ////测试
+        //if (isBlacklistThread){
+        //    synchronized(threadBlacklist) {
+        //        cl = KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, true);
+        //    }
+        //}else {
+        //    cl = KMT$baseGetChunk(chunkX, chunkZ, requiredStatus, load, false);
+        //}
         //}else {
         //    return waitGetChunk(chunkX, chunkZ, requiredStatus, load);
         //}
         //}
-        return cl;
+        //return cl;
+    }
+
+    public ChunkAccess KMT$getChunk_(int chunkX, int chunkZ, ChunkStatus requiredStatus, boolean load, VOB3_OOI_LockC<ChunkAccess, Throwable> run) {
+        synchronized (run) {
+            //log.debug("Missed chunk {} {} now", chunkX, chunkZ);
+            //synchronized (locks.get(requiredStatus.getIndex())) {
+            run.t1 = null;
+            run.t2 = null;
+            run.t3 = 0;
+            Condition condition = run.condition; // 根据锁选择 Condition
+            KMT$basePush(chunkX, chunkZ, requiredStatus, load, v -> {
+                //因为lootr 会返回null所以不能进行安全检查
+                run.setT1_(v);
+                run.lock();
+                try {
+                    synchronized (run) {
+                        run.setT3_(2);
+                        condition.signal(); // 异步任务完成时发送信号
+                    }
+                } finally {
+                    run.unlock();
+                }
+            }, e -> {
+                run.setT2_(e);
+                run.lock();
+                try {
+                    synchronized (run) {
+                        run.setT3_(2);
+                        condition.signal(); // 异步任务完成时发送信号
+                    }
+                } finally {
+                    run.unlock();
+                }
+            });
+
+            run.lock();
+            try {
+                synchronized (run) {
+                    if (run.getT3_() == 0) {
+                        run.setT3_(1);
+                    }
+                }
+                while (run.getT3_() < 2) {
+                    condition.await(10, TimeUnit.MILLISECONDS); // 带超时的等待
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } finally {
+                run.unlock();
+            }
+
+            if (run.getT2_() != null) {
+                throw new RuntimeException(run.getT2_());
+            }
+            return run.getT1_();
+            //run.t3 = 1;
+            //while (run.getT3_() < 2){
+            //    Unsafe.unsafe.park(true, 10);
+            //    //Base.LOGGER.info("KMT$basePushEnd$Debug {}", run.getT3_());
+            //}
+            //lock.unlock();
+            ////这里直接访问变量只能读到null
+            //if (run.getT2_() != null) {
+            //    throw new RuntimeException(run.getT2_());
+            //}else {
+            //    cl = run.getT1_();//Objects.requireNonNull(run.getT1_());
+            //}
+            //}
+        }
     }
 
     @Override
@@ -582,7 +676,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         }
         synchronized ((!generatorThread1.contains(value) && threadBlacklist.containsValue(value)) ? threadBlacklist : this) {
             CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> completablefuture = super.getChunkFutureMainThread(p_8432_, p_8433_, p_8434_, p_8435_);
-            KMT$genTestTickRun(()->this.mainThreadProcessor.managedBlock(completablefuture::isDone));
+            KMT$genTestTickRun(() -> this.mainThreadProcessor.managedBlock(completablefuture::isDone));
             return completablefuture;
         }
     }
@@ -592,23 +686,25 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     //    return thisGenerator = super.runDistanceManagerUpdates();
     //}
 
-    public void testChunkCache(){
+    public void testChunkCache() {
         //if (Util.getMillis() + 14246622 % 28 == 0) {
         //List<ChunkCacheAddress> remove = new ArrayList<>();
         Long2ObjectOpenHashMap<SortedArraySet<Ticket<?>>> tickets = distanceManager.tickets;
-        for (Long2ObjectOpenHashMap<ChunkAccess>[] chunkCacheShard : chunkCacheShards) {
-            for (Long2ObjectOpenHashMap<ChunkAccess> chunkCacheShard2 : chunkCacheShard) {
-                for (LongIterator iterator = chunkCacheShard2.keySet().iterator(); iterator.hasNext(); ) {
-                    long l = iterator.next();
-                    SortedArraySet<Ticket<?>> tickets1 = tickets.get(l);
-                    if (tickets1 == null) {
-                        iterator.remove();
-                    }else if (tickets1.isEmpty()) {
-                        iterator.remove();
-                    }
+        //for (Long2ObjectOpenHashMap<ChunkAccess>[] chunkCacheShard : chunkCacheShards) {
+        //    for (Long2ObjectOpenHashMap<ChunkAccess> chunkCacheShard2 : chunkCacheShard) {
+        for (LockLong2ObjectAVLTreeMap<ChunkAccess> chunkCacheShard2 : chunkCacheShards) {
+            for (LongIterator iterator = chunkCacheShard2.keySet().iterator(); iterator.hasNext(); ) {
+                long l = iterator.nextLong();
+                SortedArraySet<Ticket<?>> tickets1 = tickets.get(l);
+                if (tickets1 == null) {
+                    iterator.remove();
+                } else if (tickets1.isEmpty()) {
+                    iterator.remove();
                 }
             }
         }
+        //    }
+        //}
         //for (ChunkCacheAddress chunkCacheAddress : chunkCache.keySet()) {
         //    //if (distanceManager.getTickets(chunkCacheAddress.chunk).isEmpty()) {
         //    //    remove.add(chunkCacheAddress);
@@ -628,7 +724,8 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     public void clearCache() {
         super.clearCache();
         if (chunkCacheShards != null) {
-            /*chunkCache.clear();/*/testChunkCache();
+            /*chunkCache.clear();/*/
+            testChunkCache();
         }
     }
 
@@ -646,37 +743,40 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         }
 
         isCallTick = false;
+        KMT$managedBlockRun();
 
     }
 
-    public void KMT$addTickRun(Runnable runnable){
+    public void KMT$addTickRun(Runnable runnable) {
         tickTasks.add(runnable);
     }
-    public void KMT$addRun(Runnable runnable){
+
+    public void KMT$addRun(Runnable runnable) {
         tasks.add(runnable);
     }
+
     /**
      * 用于兼容在生成区块时运行任务
-     * */
-    public void KMT$genTestTickRun(Runnable runnable){
+     */
+    public void KMT$genTestTickRun(Runnable runnable) {
         if (Thread.currentThread() == generatorAllThread) {
             runnable.run();
             return;
         }
-        if (mainThreadProcessor instanceof IMainThreadExecutor iMainThreadExecutor){
+        if (mainThreadProcessor instanceof IMainThreadExecutor iMainThreadExecutor) {
             boolean b;
             synchronized (iMainThreadExecutor.getLockCall()) {
                 if (iMainThreadExecutor.isCall()) {
                     mainThreadProcessor.execute(runnable);
                     b = false;
-                }else {
+                } else {
                     b = true;
                 }
             }
             if (b) {
                 runnable.run();
             }
-        }else {
+        } else {
             tasks.add(runnable);
         }
     }
@@ -691,10 +791,10 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
             return (LevelChunk) c;
         }
 
-        for(int j = 0; j < 4; ++j) {
+        for (int j = 0; j < 4; ++j) {
             if (i == lastChunkPos[j] && lastChunkStatus[j] == ChunkStatus.FULL) {
-                    ChunkAccess chunkaccess = lastChunk[j];
-                return chunkaccess instanceof LevelChunk ? (LevelChunk)chunkaccess : null;
+                ChunkAccess chunkaccess = lastChunk[j];
+                return chunkaccess instanceof LevelChunk ? (LevelChunk) chunkaccess : null;
             }
         }
         ChunkHolder chunkholder = chunkMap.getVisibleChunkIfPresent(i);
@@ -703,7 +803,8 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         } else {
             try {
                 Object o = currentlyLoading.get(chunkholder);
-                if (o != null) return (LevelChunk)o; // Forge: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
+                if (o != null)
+                    return (LevelChunk) o; // Forge: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
             } catch (IllegalAccessException e) {
                 return null;
             }
@@ -715,7 +816,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
                 if (chunkaccess1 != null) {
                     //this.storeInCache(i, chunkaccess1, ChunkStatus.FULL);
                     if (chunkaccess1 instanceof LevelChunk) {
-                        return (LevelChunk)chunkaccess1;
+                        return (LevelChunk) chunkaccess1;
                     }
                 }
 
@@ -770,7 +871,8 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     //    return chunkCache.get(new ChunkCacheAddress(chunkPos, status));
     //}
 //
-    ////因为lootr 会返回null所以不能进行安全检查
+
+    /// /因为lootr 会返回null所以不能进行安全检查
     //public void cacheChunk(long chunkPos, ChunkAccess chunk, ChunkStatus status) {
     //    chunkCache.put(new ChunkCacheAddress(chunkPos, status), chunk);
     //}
@@ -816,11 +918,21 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         }
         log.debug(chunkCleaner, "ChunkCleaner terminating");
     }*/
+    @Override
+    public boolean isPushThread(long id) {
+        return threadBlacklist.containsKey(id);
+    }
+
+    @Override
+    public boolean isPushThread() {
+        return threadBlacklist.containsKey(Thread.currentThread().getId());
+    }
 
     @Override
     public void pushThread(long id) {
         Thread value = Thread.currentThread();
-        if (threadBlacklist.containsKey(id)) throw new IllegalStateException("Thread " + id + " is already blacklisted");
+        if (threadBlacklist.containsKey(id))
+            throw new IllegalStateException("Thread " + id + " is already blacklisted");
         //if (value != generatorThread1) {
         if (!generatorThread1.contains(value)) {
             threadBlacklist.put(id, value);
@@ -837,12 +949,15 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         }
         return -1;
     }
+
     public void lightChunkThread() {
         lightChunk = Thread.currentThread();
     }
+
     public void lightChunkThreadEnd() {
         lightChunk = null;
     }
+
     @Override
     public void pushWaitThread(long id) {
         Thread value = Thread.currentThread();
@@ -886,7 +1001,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
 
     @Override
     public void execTasks() {
-        synchronized (lock2){
+        synchronized (lock2) {
             isCallGeneratorTick = true;
             generatorTasks.forEach(Runnable::run);
             generatorTasks.clear();
@@ -905,12 +1020,69 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
 
     @Override
     public void execWaitTask(Runnable task) {
-        generatorTasks.add(task);while (isCallGeneratorTick) Thread.onSpinWait();
+        generatorTasks.add(task);
+        while (isCallGeneratorTick) Thread.onSpinWait();
     }
 
     @Override
     public boolean isGeneratorWait() {
         return ChunkGeneratorTest > 0;
+    }
+
+    public boolean KMT$managedBlockRun() {
+        Iterator<OB2F<BooleanSupplier, Thread>> iterator = managedBlockTest.iterator();
+        while (iterator.hasNext()) {
+            OB2F<BooleanSupplier, Thread> booleanSupplier = iterator.next();
+            if (booleanSupplier.t1.getAsBoolean()) {
+                iterator.remove();
+                LockSupport.unpark(booleanSupplier.t2);
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void KMT$managedBlockEnd() {
+        if (KMT$managedBlockRun()){
+            Base.getEx().execute(()->mainThreadProcessor.managedBlock(new BooleanSupplier() {
+                volatile boolean b = !ParaServerChunkProvider.this.KMT$managedBlockRun();
+                volatile boolean r = false;
+                @Override
+                public boolean getAsBoolean() {
+                    if (b){
+                        if(!ParaServerChunkProvider.this.KMT$managedBlockRun() && !r){
+                            r = true;
+                            KMT$managedBlockEnd();
+                        }
+                    }else {
+                        return b = !ParaServerChunkProvider.this.KMT$managedBlockRun();
+                    }
+                    return true;
+                }
+            }));
+        }
+        managedBlockThread = null;
+    }
+    public boolean KMT$managedBlock(BooleanSupplier p18702) {
+        Thread thread = Thread.currentThread();
+        if (lockGenLock3.get() == thread) lockGenLock3.set(null);
+        while (!lockGenLock2.compareAndSet(0, 1)) ;
+        if (managedBlockThread == null) {
+            managedBlockThread = thread;
+            lockGenLock2.set(0);
+            return false;
+        } else {
+            if (managedBlockThread == thread) {
+                lockGenLock2.set(0);
+                return false;
+            } else {
+                managedBlockTest.add(new OB2F<>(p18702, thread));
+                lockGenLock2.set(0);
+                while (!p18702.getAsBoolean()) Unsafe.unsafe.park(true, 500);
+                return true;
+            }
+        }
     }
 
     //@Override
@@ -981,4 +1153,13 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
             }
         }
     }*/
+
+    /**
+     * 保证jvm始终可以内连而不是激活重写
+     */
+    public static final class LockLong2ObjectAVLTreeMap<V> extends Long2ObjectAVLTreeMap<V> {
+    }
+
+    public static final class LockObj {
+    }
 }

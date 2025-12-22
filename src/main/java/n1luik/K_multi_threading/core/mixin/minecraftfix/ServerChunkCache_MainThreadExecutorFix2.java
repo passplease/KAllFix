@@ -2,9 +2,9 @@ package n1luik.K_multi_threading.core.mixin.minecraftfix;
 
 import lombok.Getter;
 import lombok.Setter;
-import n1luik.K_multi_threading.core.Base;
 import n1luik.K_multi_threading.core.Imixin.IMainThreadExecutor;
 import n1luik.K_multi_threading.core.base.CalculateTask;
+import n1luik.K_multi_threading.core.base.ParaServerChunkProvider;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.level.Level;
@@ -15,9 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.core.impl.shadow.R;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
 
@@ -45,6 +43,13 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
     private boolean m2 = K_multi_threading$StartMode2;
     @Unique
     private int multiThreadingSize = K_multi_threading$MultiThreadingSize;
+    @Unique
+    private volatile ParaServerChunkProvider paraServerChunkProvider;
+
+    @Override
+    public void KMT$setParaServerChunkProvider(ParaServerChunkProvider paraServerChunkProvider) {
+        this.paraServerChunkProvider = paraServerChunkProvider;
+    }
 
     @Override
     public boolean isCall() {
@@ -135,6 +140,9 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
 
     @Override
     public void managedBlock(BooleanSupplier p_18702_) {
+        ParaServerChunkProvider paraServerChunkProvider1 = paraServerChunkProvider;
+        boolean b = paraServerChunkProvider1 != null;
+        if(b && paraServerChunkProvider1.KMT$managedBlock(p_18702_))return;
         synchronized (lockCall) {
             isCall++;
         }
@@ -166,6 +174,7 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
         }else{
             runAllTasks();
         }
+        if(b)paraServerChunkProvider1.KMT$managedBlockEnd();
     }
 
     /*

@@ -288,10 +288,10 @@ dependencies {
     jarJar('com.github.luben:zstd-jni:1.5.7-2') {
         jarJar.ranged(it, "[1.5.7-2,1.5.7-3)")
     }
-    jarJar('org.rocksdb:rocksdbjni:6.12.7') {
-        jarJar.ranged(it, "[6.12.7,6.12.8)")
+    jarJar('org.rocksdb:rocksdbjni:10.2.1') {
+        jarJar.ranged(it, "[10.2.1,999)")
     }
-    implementation 'org.rocksdb:rocksdbjni:6.12.7'
+    implementation 'org.rocksdb:rocksdbjni:10.2.1'
     implementation "io.github.llamalad7:mixinextras-common:0.5.0"
     implementation 'com.alibaba:fastjson:1.2.28'
     implementation 'com.github.luben:zstd-jni:1.5.7-2'
@@ -394,6 +394,9 @@ jar {
     from sourceSets.biolithForge.output
     manifest {
         attributes([
+                'Can-Retransform-Classes': true,
+                'Can-Redefine-Classes': false,
+                'Premain-Class': 'asm.n1luik.K_multi_threading.asm.JavaAgent.JavaAgent',
                 'MixinConnector': 'n1luik.K_multi_threading.core.Imixin.MixinConnector',
                 "Main-Class"     : "n1luik.K_multi_threading.core.util.Util",
                 "Specification-Title"     : mod_id,
@@ -449,6 +452,9 @@ tasks.register('_createAllJar', Jar) {
     // 明确设置MANIFEST.MF，使用与主项目相同的配置
     manifest {
         attributes([
+                'Can-Retransform-Classes': true,
+                'Can-Redefine-Classes': false,
+                'Premain-Class': 'asm.n1luik.K_multi_threading.asm.JavaAgent.JavaAgent',
                 'MixinConnector': 'n1luik.K_multi_threading.core.Imixin.MixinConnector',
                 "Main-Class"     : "n1luik.K_multi_threading.core.util.Util",
                 "Specification-Title"     : mod_id,
@@ -469,6 +475,58 @@ tasks.register('_createAllJar', Jar) {
     // 再包含主项目 reobfJar 的内容（混淆后的代码）
     from(zipTree(tasks.jar.archiveFile.get().asFile)) {
         exclude "META-INF/MANIFEST.MF" // 避免覆盖我们明确设置的MANIFEST.MF
+    }
+    
+    // 配置将映射文件包含到jar中
+    from {
+        // 创建临时目录
+        def tempDir = file("${buildDir}/tmp/mapping")
+        tempDir.mkdirs()
+        
+        def mapFile = file("${tempDir}/map_class.txt")
+        def classPaths = []
+        
+        // 遍历子项目19_2的jar文件中的所有.class文件
+        def subProjectJar = project.file("19_2/build/libs/19_2-1.0.jar")
+        if (subProjectJar.exists()) {
+            zipTree(subProjectJar).visit {
+                if (it.path.endsWith('.class')) {
+                    // 保持原路径格式，仅去掉末尾的.class后缀
+                    def classPath = it.path.substring(0, it.path.length() - 6) // 安全移除末尾的.class
+                    classPaths.add(classPath)
+                }
+            }
+        }
+        
+        // 遍历主项目jar文件中的所有.class文件
+        def mainJar = tasks.jar.archiveFile.get().asFile
+        if (mainJar.exists()) {
+            zipTree(mainJar).visit {
+                if (it.path.endsWith('.class')) {
+                    // 保持原路径格式，仅去掉末尾的.class后缀
+                    def classPath = it.path.substring(0, it.path.length() - 6) // 安全移除末尾的.class
+                    classPaths.add(classPath)
+                }
+            }
+        }
+        
+        // 去重并排序
+        classPaths = classPaths.unique().sort()
+        
+        // 写入到临时文件
+        mapFile.withWriter('UTF-8') {
+            classPaths.each { classPath ->
+                it.writeLine(classPath)
+            }
+        }
+        
+        println "已生成 ${classPaths.size()} 个.class文件路径映射到 ${mapFile.absolutePath}"
+        
+        // 返回包含映射文件的目录，以便将其包含到jar中
+        tempDir
+    } {
+        // 将映射文件放在jar的根目录
+        into ""
     }
 }
 //

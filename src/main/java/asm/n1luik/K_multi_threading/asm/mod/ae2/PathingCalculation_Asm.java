@@ -1,17 +1,15 @@
 package asm.n1luik.K_multi_threading.asm.mod.ae2;
 
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.util.Set;
 
-public class PathingCalculation_Asm implements ITransformer<ClassNode> {
+public class PathingCalculation_Asm extends ITransformer2 {
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
         boolean stopAdd = false;
         for (MethodNode method : input.methods) {
             if (method.name.equals("<init>") && method.desc.equals("(Lappeng/api/networking/IGrid;)V")){
@@ -40,13 +38,10 @@ public class PathingCalculation_Asm implements ITransformer<ClassNode> {
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
-        return Set.of(Target.targetClass("appeng/me/pathfinding/PathingCalculation"));
+    public @NotNull Set<String> targets() {
+        return Set.of("appeng/me/pathfinding/PathingCalculation");
     }
 }

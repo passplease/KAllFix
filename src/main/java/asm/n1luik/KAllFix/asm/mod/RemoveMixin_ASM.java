@@ -2,9 +2,8 @@ package asm.n1luik.KAllFix.asm.mod;
 
 import asm.n1luik.KAllFix.asm.mod.gcyr.CanaryConfig;
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 @Slf4j
-public class RemoveMixin_ASM implements ITransformer<ClassNode> {
+public class RemoveMixin_ASM extends ITransformer2 {
     public final List<String[]> stringsList = new ArrayList<>();
 
     {
@@ -34,7 +33,7 @@ public class RemoveMixin_ASM implements ITransformer<ClassNode> {
         }
     }
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
 
         for (String[] strings : stringsList) {
             if (input.name.equals(strings[0])){
@@ -60,12 +59,7 @@ public class RemoveMixin_ASM implements ITransformer<ClassNode> {
     }
 
     @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
-
-    @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
 
         File f = new File("config/K_all_fix-RemoveMixin-list.txt");
         if (f.exists()) {
@@ -106,6 +100,6 @@ public class RemoveMixin_ASM implements ITransformer<ClassNode> {
             }
         }
 
-        return Set.of(list.stream().map(Target::targetClass).toArray(Target[]::new));
+        return Set.copyOf(list);
     }
 }

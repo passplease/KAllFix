@@ -1,19 +1,17 @@
 package asm.n1luik.KAllFix.asm.mod.gcyr;
 
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.util.Set;
 
-public class GcyrCanaryMapping_Asm implements ITransformer<ClassNode> {
+public class GcyrCanaryMapping_Asm extends ITransformer2 {
     @NotNull
     @Override
-    public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public ClassNode transform(ClassNode input) {
 
         for (MethodNode method : input.methods) {
 
@@ -31,15 +29,10 @@ public class GcyrCanaryMapping_Asm implements ITransformer<ClassNode> {
     }
 
     @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
-
-    @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         return Set.of(
-                Target.targetClass("com.abdelaziz.canary.mixin.entity.collisions.intersection.LevelMixin"),
-                Target.targetClass("com.abdelaziz.canary.mixin.entity.collisions.movement.EntityMixin")
+                "com.abdelaziz.canary.mixin.entity.collisions.intersection.LevelMixin",
+                "com.abdelaziz.canary.mixin.entity.collisions.movement.EntityMixin"
         );
     }
 }

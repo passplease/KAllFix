@@ -1,10 +1,8 @@
 package asm.n1luik.K_multi_threading.asm.test;
 
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import asm.n1luik.K_multi_threading.asm.OB2_ASM;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.*;
@@ -15,7 +13,7 @@ import java.util.*;
 
 @Deprecated
 @Slf4j
-public class WorldTickMultiThreading  implements ITransformer<ClassNode> {
+public class WorldTickMultiThreading  extends ITransformer2 {
 
     protected boolean isStartCopy1 = false;
     protected boolean isStartCopy2 = true;
@@ -27,7 +25,7 @@ public class WorldTickMultiThreading  implements ITransformer<ClassNode> {
 
     @NotNull
     @Override
-    public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public ClassNode transform(ClassNode input) {
         String[] mn1 = ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/MinecraftServer.tickChildren(Ljava/util/function/BooleanSupplier;)V");
         String[] mn2 = ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/MinecraftServer.getWorldArray()[Lnet/minecraft/server/level/ServerLevel;");
         //boolean debug_add1 = false;
@@ -541,17 +539,14 @@ public class WorldTickMultiThreading  implements ITransformer<ClassNode> {
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         return Set.of(
-                //Target.targetClass("net/minecraft/server/level/ServerChunkCache"));
-                Target.targetClass("net/minecraft/server/MinecraftServer"));
+                //"net/minecraft/server/level/ServerChunkCache");
+                "net/minecraft/server/MinecraftServer");
     }
 }
 

@@ -10,13 +10,15 @@ moonrise_fast_palette功能使用了[moonrise](https://github.com/Tuinity/Moonri
 
 Code is committed to [Gitee](https://gitee.com/n1luik/k_multi_threadingK_multi_threading) directly. [Github](https://github.com/1luik/KAllFix) will update each day automatically (UTC 00:00)
 
-这个项目包含了2个mod     k_all_fix， K_multi_threading
+这个项目包含了2个mod k_all_fix， K_multi_threading
 
 理论上1.17+ java11+都可以用但是需要改源码把没有的部分删除
 
 可以用-DKMT_D=[任意字符]和-DKAllFix_D=[任意字符]禁用独立mod
 
 idea的MinecraftDev插件有bug必须jar一下才可以正常查看源码
+
+除了解决idea的MinecraftDev插件bug可以使用jar之外编译无安装包版本需要使用:_createAllJar
 
 debug的唯一作用就是连接多线程而不是替代专用工具，火花的基础单位是毫秒自带的工具是纳秒不到1毫秒的会强制转成1毫秒，这玩意把他当个装饰就可以，保存的json没有任何东西可以利用因为这个功能浪费我太多时间了
 
@@ -224,3 +226,5 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
   - 不一定数据完全可能会出现数据偏差
 - 文档之前有的忘加-D了
 
+## 智能体使用方法
+- -javaagent:jar位置

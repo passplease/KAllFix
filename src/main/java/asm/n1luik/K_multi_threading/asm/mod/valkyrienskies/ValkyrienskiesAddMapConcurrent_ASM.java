@@ -1,9 +1,7 @@
 package asm.n1luik.K_multi_threading.asm.mod.valkyrienskies;
 
 import asm.n1luik.K_multi_threading.asm.AddMapConcurrent_ASM;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import n1luik.K_multi_threading.core.dataCollectors.data.MapConcurrentData;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +15,7 @@ import java.util.*;
 
 @Slf4j
 @Deprecated
-public class ValkyrienskiesAddMapConcurrent_ASM implements ITransformer<ClassNode> {
+public class ValkyrienskiesAddMapConcurrent_ASM extends ITransformer2 {
     /*public static BiFunction<TransformingClassLoader, String, byte[]> getclass;
 
     static {
@@ -69,7 +67,7 @@ public class ValkyrienskiesAddMapConcurrent_ASM implements ITransformer<ClassNod
 
 
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
         log.info("[{}]", input.name);
         AddMapConcurrent_ASM.AsmTarget orDefault = nameMap.getOrDefault(input.name, Empty);
 
@@ -315,13 +313,10 @@ public class ValkyrienskiesAddMapConcurrent_ASM implements ITransformer<ClassNod
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
 
         File f = new File("config/K_multi_threading-valkyrienskies-AddMapConcurrent-list.txt");
         if (f.exists()) {
@@ -433,7 +428,7 @@ public class ValkyrienskiesAddMapConcurrent_ASM implements ITransformer<ClassNod
             stringStringMap.addAll(Arrays.asList(asmTarget.mappingFields()));
 
         }
-        return Set.of(stringsList.stream().map(AddMapConcurrent_ASM.AsmTarget::className).map(Target::targetClass).toArray(Target[]::new));
+        return Set.of(stringsList.stream().map(AddMapConcurrent_ASM.AsmTarget::className).toArray(String[]::new));
     }
     private static final AddMapConcurrent_ASM.MethodInfo[] EMPTY_METHODS2 =  new AddMapConcurrent_ASM.MethodInfo[]{new AddMapConcurrent_ASM.MethodInfo(null, null, false, false)};
     private static final AddMapConcurrent_ASM.MethodInfo[] EMPTY_METHODS3 =  new AddMapConcurrent_ASM.MethodInfo[]{new AddMapConcurrent_ASM.MethodInfo(null, null, true, false)};

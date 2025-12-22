@@ -1,8 +1,6 @@
 package asm.n1luik.K_multi_threading.asm;
 
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
@@ -11,10 +9,10 @@ import org.objectweb.asm.tree.*;
 import java.util.Set;
 
 @Slf4j
-public class ImplServerLevel1_Asm implements ITransformer<ClassNode> {
+public class ImplServerLevel1_Asm extends ITransformer2 {
     @NotNull
     @Override
-    public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public ClassNode transform(ClassNode input) {
         boolean debug_add1 = false;
         boolean debug_add2 = false;
         boolean debug_add3 = false;
@@ -83,14 +81,11 @@ public class ImplServerLevel1_Asm implements ITransformer<ClassNode> {
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         return Set.of(
-                Target.targetClass("net.minecraft.server.level.ServerLevel"));
+                "net.minecraft.server.level.ServerLevel");
     }
 }

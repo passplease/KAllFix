@@ -1,10 +1,8 @@
 package asm.n1luik.K_multi_threading.asm;
 
 import asm.n1luik.K_multi_threading.asm.mod.valkyrienskies.AddMapConcurrent;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import cpw.mods.modlauncher.TransformingClassLoader;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
 import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -24,7 +22,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 @Slf4j
-public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
+public class AddMapConcurrent_ASM extends ITransformer2 {
     /*public static BiFunction<TransformingClassLoader, String, byte[]> getclass;
 
     static {
@@ -120,6 +118,7 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
             new AsmTarget("mcjty.lostcities.worldgen.lost.cityassets.AssetRegistries", false),
             new AsmTarget("net.minecraft.util.profiling.ActiveProfiler", false),
             new AsmTarget("com.github.alexthe668.domesticationinnovation.server.CommonProxy", false),
+            new AsmTarget("com.chunksending.mixin.ServerPlayerChunkSending", false),
             new AsmTarget("appeng.me.service.CraftingService", false),
             new AsmTarget("appeng.api.stacks.KeyCounter", true)
     ));
@@ -259,7 +258,7 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
 
 
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
         log.info("[{}]", input.name);
         AsmTarget orDefault = nameMap.getOrDefault(input.name, Empty);
 
@@ -553,13 +552,10 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
 
         File f = new File("config/K_multi_threading-AddMapConcurrent-list.txt");
         if (f.exists()) {
@@ -668,7 +664,7 @@ public class AddMapConcurrent_ASM implements ITransformer<ClassNode> {
             stringStringMap.addAll(Arrays.asList(asmTarget.mappingFields));
 
         }
-        return Set.of(stringsList.stream().map(AsmTarget::className).map(Target::targetClass).toArray(Target[]::new));
+        return Set.of(stringsList.stream().map(AsmTarget::className).toArray(String[]::new));
     }
 
     public static record MethodInfo(@Nullable String name, @Nullable String desc, boolean mappingLocal, boolean mappingAll) {

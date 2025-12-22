@@ -1,9 +1,7 @@
 package asm.n1luik.K_multi_threading.asm.mod.canary;
 
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -14,10 +12,10 @@ import org.objectweb.asm.tree.*;
 import java.io.IOException;
 import java.util.Set;
 
-public class CanaryConfigAsm implements ITransformer<ClassNode> {
+public class CanaryConfigAsm extends ITransformer2 {
     @NotNull
     @Override
-    public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public ClassNode transform(ClassNode input) {
         String[] strings = ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/common/config/CanaryConfig.getEffectiveOptionForMixin(Ljava/lang/String;)Lcom/abdelaziz/canary/common/config/Option;");
         boolean debug_add1 = false;
         boolean debug_add2 = false;
@@ -115,14 +113,11 @@ public class CanaryConfigAsm implements ITransformer<ClassNode> {
         methodVisitor.visitJumpInsn(Opcodes.IFEQ, stop);
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         return Set.of(
-                Target.targetClass("com.abdelaziz.canary.common.config.CanaryConfig"));
+                "com.abdelaziz.canary.common.config.CanaryConfig");
     }
 }

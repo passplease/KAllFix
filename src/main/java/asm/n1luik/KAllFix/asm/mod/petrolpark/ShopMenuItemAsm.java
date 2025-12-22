@@ -1,9 +1,7 @@
 package asm.n1luik.KAllFix.asm.mod.petrolpark;
 
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
@@ -14,9 +12,9 @@ import java.util.List;
 import java.util.Set;
 
 @Slf4j
-public class ShopMenuItemAsm implements ITransformer<ClassNode> {
+public class ShopMenuItemAsm extends ITransformer2 {
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
         int debug1 = 0;
         String[] strings = ForgeAsm.minecraft_map.mapMethod("com/petrolpark/shop/ShopMenuItem.m_7373_(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Ljava/util/List;Lnet/minecraft/world/item/TooltipFlag;)V");
         String[] strings2 = ForgeAsm.minecraft_map.mapMethod("com/petrolpark/shop/ShopMenuItem.getTeamSelectionScreenTitle(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/network/chat/Component;");
@@ -39,15 +37,12 @@ public class ShopMenuItemAsm implements ITransformer<ClassNode> {
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         return Set.of(
-                Target.targetClass("com.petrolpark.shop.ShopMenuItem")
+                "com.petrolpark.shop.ShopMenuItem"
         );
     }
 }

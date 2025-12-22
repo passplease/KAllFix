@@ -1,9 +1,7 @@
 package asm.n1luik.K_multi_threading.asm.mod.c2me;
 
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
@@ -12,10 +10,10 @@ import org.objectweb.asm.tree.*;
 import java.util.Set;
 
 @Slf4j
-public class MixinMinecraftServer_Asm implements ITransformer<ClassNode> {
+public class MixinMinecraftServer_Asm extends ITransformer2 {
     //@NotNull
     //@Override
-    //public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    //public ClassNode transform(ClassNode input) {
     //    String[] strings = ForgeAsm.minecraft_map.mapField("net/minecraft/server/level/ServerChunkCache.mainThread");
     //    boolean debug_add1 = false;
 //
@@ -47,7 +45,7 @@ public class MixinMinecraftServer_Asm implements ITransformer<ClassNode> {
     //}
     @NotNull
     @Override
-    public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public ClassNode transform(ClassNode input) {
         String[] strings = ForgeAsm.minecraft_map.mapField("net/minecraft/server/MinecraftServer.serverThread");
         boolean debug_add1 = false;
 
@@ -75,14 +73,11 @@ public class MixinMinecraftServer_Asm implements ITransformer<ClassNode> {
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         return Set.of(
-                Target.targetClass("com/ishland/c2me/opts/scheduling/mixin/mid_tick_chunk_tasks/MixinMinecraftServer"));
+                "com/ishland/c2me/opts/scheduling/mixin/mid_tick_chunk_tasks/MixinMinecraftServer");
     }
 }

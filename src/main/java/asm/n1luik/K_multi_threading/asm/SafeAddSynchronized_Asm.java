@@ -1,8 +1,6 @@
 package asm.n1luik.K_multi_threading.asm;
 
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Label;
@@ -16,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 @Slf4j
-public class SafeAddSynchronized_Asm implements ITransformer<ClassNode> {
+public class SafeAddSynchronized_Asm extends ITransformer2 {
     public static final List<String[]> stringsList = new ArrayList<>(List.<String[]>of(
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerChunkCache$MainThreadExecutor.pollTask()Z")
     ));
@@ -27,7 +25,7 @@ public class SafeAddSynchronized_Asm implements ITransformer<ClassNode> {
 
 
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
 
         for (String[] strings : stringsList) {
             if (input.name.equals(strings[0])){
@@ -147,13 +145,10 @@ public class SafeAddSynchronized_Asm implements ITransformer<ClassNode> {
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
 
         File f = new File("config/K_multi_threading-safe-sync-Method-list.txt");
         if (f.exists()) {
@@ -193,6 +188,6 @@ public class SafeAddSynchronized_Asm implements ITransformer<ClassNode> {
             }
         }
 
-        return Set.of(list.stream().map(Target::targetClass).toArray(Target[]::new));
+        return Set.of(list.stream().toArray(String[]::new));
     }
 }

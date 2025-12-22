@@ -1,8 +1,6 @@
 package asm.n1luik.K_multi_threading.asm;
 
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
@@ -11,10 +9,10 @@ import org.objectweb.asm.tree.*;
 import java.util.Set;
 
 @Slf4j
-public class AddServerLevelSync1_Asm implements ITransformer<ClassNode> {
+public class AddServerLevelSync1_Asm extends ITransformer2 {
     @NotNull
     @Override
-    public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public ClassNode transform(ClassNode input) {
         String[] strings = ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.sendBlockUpdated(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/state/BlockState;I)V");
         String[] strings2 = ForgeAsm.minecraft_map.mapField("net/minecraft/server/level/ServerLevel.serverLevelData");
 
@@ -62,14 +60,11 @@ public class AddServerLevelSync1_Asm implements ITransformer<ClassNode> {
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         return Set.of(
-                Target.targetClass("net.minecraft.server.level.ServerLevel"));
+                "net.minecraft.server.level.ServerLevel");
     }
 }

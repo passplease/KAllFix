@@ -1,9 +1,7 @@
 package asm.n1luik.K_multi_threading.asm.mod.biolith;
 
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
@@ -14,10 +12,10 @@ import java.util.List;
 import java.util.Set;
 
 @Slf4j
-public class FixMixinServerWorld1_Asm implements ITransformer<ClassNode> {
+public class FixMixinServerWorld1_Asm extends ITransformer2 {
     @NotNull
     @Override
-    public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public ClassNode transform(ClassNode input) {
         boolean debug_add1 = false;
         boolean debug_add2 = false;
 
@@ -117,14 +115,11 @@ public class FixMixinServerWorld1_Asm implements ITransformer<ClassNode> {
         return false;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
         return Set.of(
-                Target.targetClass("com.terraformersmc.biolith.impl.mixin.MixinServerWorld"));
+                "com.terraformersmc.biolith.impl.mixin.MixinServerWorld");
     }
 }

@@ -1,21 +1,16 @@
 package asm.n1luik.K_multi_threading.asm;
 
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
-public class AllAddSynchronized_Asm implements ITransformer<ClassNode> {
+public class AllAddSynchronized_Asm extends ITransformer2 {
     public static final List<String> stringsList = new ArrayList<>(List.of(
             //canary
             ForgeAsm.minecraft_map.mapClass("com/abdelaziz/canary/common/world/listeners/WorldBorderListenerOnceMulti"),
@@ -30,7 +25,7 @@ public class AllAddSynchronized_Asm implements ITransformer<ClassNode> {
             /*| Opcodes.ACC_ABSTRACT*/ | Opcodes.ACC_BRIDGE;
 
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
 
         for (String strings : stringsList) {
             if (input.name.equals(strings)){
@@ -131,13 +126,10 @@ public class AllAddSynchronized_Asm implements ITransformer<ClassNode> {
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
 
         File f = new File("config/K_multi_threading-all-sync-ModMethod-list.txt");
         if (f.exists()) {
@@ -169,13 +161,13 @@ public class AllAddSynchronized_Asm implements ITransformer<ClassNode> {
             }
         }
 
-        ArrayList<String> list = new ArrayList<>();
+        Set<String> list = new HashSet<>();
         for (String strings : stringsList) {
             if (!list.contains(strings)) {
                 list.add(strings);
             }
         }
 
-        return Set.of(list.stream().map(Target::targetClass).toArray(Target[]::new));
+        return list;
     }
 }

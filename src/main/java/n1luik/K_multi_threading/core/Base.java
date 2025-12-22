@@ -1,12 +1,9 @@
 package n1luik.K_multi_threading.core;
 
-import asm.n1luik.K_multi_threading.asm.MappingImpl;
-import asm.n1luik.K_multi_threading.asm.MappingTsrgImpl;
 import com.mojang.logging.LogUtils;
 import n1luik.KAllFix.forge.ModInit;
 import n1luik.K_multi_threading.core.base.CalculateTask;
 import n1luik.K_multi_threading.core.sync.GetterDataMap;
-import n1luik.K_multi_threading.core.util.NodeHashMap;
 import n1luik.K_multi_threading.fix.FixGetterRoot;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
@@ -14,12 +11,9 @@ import net.minecraft.Util;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.*;
@@ -33,7 +27,7 @@ public class Base {
     /**整个顶性能有影响不建议开*/
     public static final boolean debugAE2Thread = false;
     public static final long ThreadpoolKeepAliveTime =  Long.getLong("KMT-ThreadpoolKeepAliveTime", TimeUnit.SECONDS.toMillis(7));
-    public static MinecraftServer mcs;
+    public static MinecraftServer   mcs;
     public static int threadTaskMax = 80;
     final static ForkJoinPool_ ex;
     //@Nullable

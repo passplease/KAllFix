@@ -1,9 +1,7 @@
 package asm.n1luik.K_multi_threading.asm.mod;
 
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraftforge.fml.loading.FMLLoader;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 @Slf4j
-public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
+public class NotErrorAddSynchronized_Asm extends ITransformer2 {
     public static final List<String[]> stringsList = new ArrayList<>(List.of(
             //canary
             ForgeAsm.minecraft_map.mapMethod("com/abdelaziz/canary/mixin/chunk/entity_class_groups/ClassInstanceMultiMapMixin.createAllOfGroupType(Lcom/abdelaziz/canary/common/entity/EntityClassGroup;)Ljava/util/Collection;"),
@@ -46,6 +44,8 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
             //enigmaticaddon
             ForgeAsm.minecraft_map.mapMethod("auviotre/enigmatic/addon/contents/items/RevivalLeaf.onUnequip(Ltop/theillusivec4/curios/api/SlotContext;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)V"),
             ForgeAsm.minecraft_map.mapMethod("auviotre/enigmatic/addon/contents/items/RevivalLeaf.handleFlight(Lnet/minecraft/world/entity/player/Player;)V"),
+            //cgs
+            ForgeAsm.minecraft_map.mapMethod("com/nukateam/cgs/common/handlers/GuanoAccumulationHandler.onBatUpdate(Lnet/minecraftforge/event/entity/living/LivingEvent$LivingTickEvent;)V"),
             //lithium
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/common/util/collections/ReferenceMaskedList.addOrSet(Ljava/lang/Object;Z)V"),
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/common/util/collections/ReferenceMaskedList.setVisible(Ljava/lang/Object;Z)V"),
@@ -265,7 +265,7 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
             /*| Opcodes.ACC_ABSTRACT*/ | Opcodes.ACC_BRIDGE;
 
     @Override
-    public @NotNull ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+    public @NotNull ClassNode transform(ClassNode input) {
 
         for (String[] strings : stringsList) {
             if (input.name.equals(strings[0])){
@@ -366,13 +366,10 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
         return input;
     }
 
-    @Override
-    public @NotNull TransformerVoteResult castVote(ITransformerVotingContext context) {
-        return TransformerVoteResult.YES;
-    }
+    
 
     @Override
-    public @NotNull Set<Target> targets() {
+    public @NotNull Set<String> targets() {
 
         File f = new File("config/K_multi_threading-sync-ModMethod-list.txt");
         if (f.exists()) {
@@ -412,6 +409,6 @@ public class NotErrorAddSynchronized_Asm implements ITransformer<ClassNode> {
             }
         }
 
-        return Set.of(list.stream().map(Target::targetClass).toArray(Target[]::new));
+        return Set.of(list.stream().toArray(String[]::new));
     }
 }

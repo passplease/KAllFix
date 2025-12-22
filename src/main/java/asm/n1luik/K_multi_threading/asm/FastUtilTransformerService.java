@@ -1,6 +1,7 @@
 package asm.n1luik.K_multi_threading.asm;
 
 import cpw.mods.modlauncher.ArgumentHandler;
+import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.api.*;
 import org.apache.logging.log4j.LogManager;
@@ -26,7 +27,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class FastUtilTransformerService implements ITransformer<ClassNode>, ITransformationService {
+public class FastUtilTransformerService extends ITransformer2 implements ITransformationService {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Marker M_LOCATOR = MarkerManager.getMarker("LOCATE");
@@ -260,12 +261,7 @@ public class FastUtilTransformerService implements ITransformer<ClassNode>, ITra
 	@SuppressWarnings("rawtypes")
 	@Override
 	public List<ITransformer> transformers() {
-
-		List<ITransformer> out = new ArrayList<>();
-		out.add(this);
-		// TODO add development testing
-		// out.add(new DevModeEnabler());
-		return out;
+		return List.of();
 	}
 
 	int posfilter = Opcodes.ACC_PUBLIC;
@@ -275,7 +271,7 @@ public class FastUtilTransformerService implements ITransformer<ClassNode>, ITra
 	private static final Marker marker = MarkerManager.getMarker("JMTSUPERTRANS");
 
 	@Override
-	public ClassNode transform(ClassNode input, ITransformerVotingContext context) {
+	public ClassNode transform(ClassNode input) {
 		LOGGER.info(marker, "sync_fu " + input.name + " Transformer Called");
 		if (!input.name.contains("$")) {
 			for (MethodNode mn : input.methods) {
@@ -287,7 +283,7 @@ public class FastUtilTransformerService implements ITransformer<ClassNode>, ITra
 			LOGGER.info(marker, "sync_fu " + input.name + " Transformer Complete");
 			for (InnerClassNode cn : input.innerClasses) {
 				String iname = cn.name.replace("/", ".");
-				if (!targets().stream().anyMatch(t->t.getClassName().equals(iname))) {
+				if (!targets().stream().map(n->n.replace(".", "/")).anyMatch(iname::equals)) {
 					LOGGER.warn(marker, "sync_fu: you are missing " +  iname + " this may bite you later");
 				}
 			}
@@ -343,78 +339,73 @@ public class FastUtilTransformerService implements ITransformer<ClassNode>, ITra
 	}
 
 	@Override
-	public TransformerVoteResult castVote(ITransformerVotingContext context) {
-		return TransformerVoteResult.YES;
-	}
-
-	@Override
-	public Set<Target> targets() {
-		Set<Target> out = new HashSet<Target>();
+	public Set<String> targets() {
+		Set<String> out = new HashSet<String>();
 		if (!isActive) {
 			// Is Dead
 			return out;
 		}
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap$ValueIterator"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap$MapIterator"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap$1"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$ValueIterator"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$KeySet"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$KeyIterator"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$MapEntrySet"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$FastEntryIterator"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$EntryIterator"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$MapIterator"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$MapEntry"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.Long2ObjectMap$FastEntrySet"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$ValueIterator"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$KeySet"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$KeyIterator"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$MapEntrySet"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$FastEntryIterator"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$EntryIterator"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$MapIterator"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$MapEntry"));
-		//out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet"));
-		//out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet"));
-		//out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.LongArrayList"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.longs.LongAVLTreeSet"));
-		//out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap$MapIterator"));
-		// out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.shorts.ShortOpenHashSet"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.objects.ObjectOpenHashSet"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.objects.ObjectOpenHashSet$1"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.objects.ObjectOpenHashSet$SetIterator"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.objects.ObjectOpenHashSet$SetSpliterator"));
-		out.add(Target.targetClass("it.unimi.dsi.fastutil.objects.ObjectCollections$SizeDecreasingSupplier"));
-		//out.add(Target.targetClass("it.unimi.dsi.fastutil.objects.ObjectArrayList"));
-		//out.add(Target.targetClass("it.unimi.dsi.fastutil.objects.ObjectArrayList"));
-		//out.add(Target.targetClass("net.minecraft.world.level.lighting.LeveledPriorityQueue"));
-		out.add(Target.targetClass("net.minecraft.util.ClassInstanceMultiMap"));
-		//out.add(Target.targetClass("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap"));
-		out.add(Target.targetClass("net.minecraft.world.ticks.LevelChunkTicks"));
-		//out.add(Target.targetClass("net.minecraft.server.level.ServerLevel$EntityCallbacks"));
-		//out.add(Target.targetClass("net.minecraft.util.thread.BlockableEventLoop"));
-		out.add(Target.targetClass("net.minecraft.world.entity.ai.behavior.ShufflingList"));
-		out.add(Target.targetClass("net.minecraft.server.level.DistanceManager$PlayerTicketTracker"));
-		out.add(Target.targetClass("net.minecraft.server.PlayerAdvancements"));
-		out.add(Target.targetClass("igentuman.nc.handler.sided.SidedContentHandler"));
-		out.add(Target.targetClass("appeng.me.service.TickManagerService"));
-		//out.add(Target.targetClass("net.minecraft.server.level.DistanceManager$FixedPlayerDistanceChunkTracker"));
+		out.add("it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet");
+		out.add("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap");
+		out.add("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap$ValueIterator");
+		out.add("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap$MapIterator");
+		out.add("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap$1");
+		out.add("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap");
+		out.add("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$ValueIterator");
+		out.add("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$KeySet");
+		out.add("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$KeyIterator");
+		out.add("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$MapEntrySet");
+		out.add("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$FastEntryIterator");
+		out.add("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$EntryIterator");
+		out.add("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$MapIterator");
+		out.add("it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap$MapEntry");
+		out.add("it.unimi.dsi.fastutil.longs.Long2ObjectMap$FastEntrySet");
+		out.add("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap");
+		out.add("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$ValueIterator");
+		out.add("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$KeySet");
+		out.add("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$KeyIterator");
+		out.add("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$MapEntrySet");
+		out.add("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$FastEntryIterator");
+		out.add("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$EntryIterator");
+		out.add("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$MapIterator");
+		out.add("it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap$MapEntry");
+		//out.add("it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap");
+		out.add("it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet");
+		//out.add("it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet");
+		//out.add("it.unimi.dsi.fastutil.longs.LongArrayList");
+		out.add("it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap");
+		out.add("it.unimi.dsi.fastutil.longs.LongAVLTreeSet");
+		//out.add("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap$MapIterator");
+		// out.add("it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap");
+		out.add("it.unimi.dsi.fastutil.shorts.ShortOpenHashSet");
+		out.add("it.unimi.dsi.fastutil.objects.ObjectOpenHashSet");
+		out.add("it.unimi.dsi.fastutil.objects.ObjectOpenHashSet$1");
+		out.add("it.unimi.dsi.fastutil.objects.ObjectOpenHashSet$SetIterator");
+		out.add("it.unimi.dsi.fastutil.objects.ObjectOpenHashSet$SetSpliterator");
+		out.add("it.unimi.dsi.fastutil.objects.ObjectCollections$SizeDecreasingSupplier");
+		//out.add("it.unimi.dsi.fastutil.objects.ObjectArrayList");
+		//out.add("it.unimi.dsi.fastutil.objects.ObjectArrayList");
+		//out.add("net.minecraft.world.level.lighting.LeveledPriorityQueue");
+		out.add("net.minecraft.util.ClassInstanceMultiMap");
+		//out.add("it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap");
+		out.add("net.minecraft.world.ticks.LevelChunkTicks");
+		//out.add("net.minecraft.server.level.ServerLevel$EntityCallbacks");
+		//out.add("net.minecraft.util.thread.BlockableEventLoop");
+		out.add("net.minecraft.world.entity.ai.behavior.ShufflingList");
+		out.add("net.minecraft.server.level.DistanceManager$PlayerTicketTracker");
+		out.add("net.minecraft.server.PlayerAdvancements");
+		out.add("igentuman.nc.handler.sided.SidedContentHandler");
+		out.add("appeng.me.service.TickManagerService");
+		//out.add("net.minecraft.server.level.DistanceManager$FixedPlayerDistanceChunkTracker");
 		//通用机械：
-		//out.add(Target.targetClass("it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap"));
-		out.add(Target.targetClass("mekanism.common.lib.transmitter.TransmitterNetworkRegistry"));
+		//out.add("it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap");
+		out.add("mekanism.common.lib.transmitter.TransmitterNetworkRegistry");
 
 		File f = new File("config/jmt_mcmt-sync-fu-list.txt");
 		if (f.exists()) {
 			try (BufferedReader r = new BufferedReader(new FileReader(f))) {
 				r.lines().filter(s -> !(s.startsWith("#") || s.startsWith("//") || s.equals("")))
-						.map(s -> Target.targetClass(s)).forEach(t -> out.add(t));
+						.forEach(out::add);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e1) {
@@ -425,10 +416,7 @@ public class FastUtilTransformerService implements ITransformer<ClassNode>, ITra
 				f.getParentFile().mkdirs();
 				f.createNewFile();
 				FileWriter fw = new FileWriter(f);
-				fw.write("// This file allows you to add targets to sync-fu\n"
-						+ "// Lines starting with // or # are comments\n"
-						+ "// This is done by specifying a class name\n" + "// As an example: \n"
-						+ "//it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap\n");
+				fw.write("// This file allows you to add targets to sync-fu\n" + "// Lines starting with // or # are comments\n" + "// This is done by specifying a class name\n" + "// As an example: \n" + "//it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap\n");
 				fw.flush();
 				fw.close();
 			} catch (IOException e) {
