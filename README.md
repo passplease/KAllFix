@@ -26,6 +26,10 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 
 想在客户端需要使用-DKMT_Client=true jvm参数，需要再1.0.4.0一后才可以
 
+需要使用java21
+
+需要提前生成neoforge_1.21（在neoforge_1.21里./gradlew.bat idePostSync），原因是forge的开发插件会覆盖neoforge的开发插件
+
 ##  使用方法
 
 1: 把gradle.properties里的代理删了 

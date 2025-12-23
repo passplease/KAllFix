@@ -46,7 +46,7 @@ public class TaskRun implements Executor {
                     }
                     isPark.lock();
                     if (!Tasks.isEmpty())continue;
-                    Unsafe.unsafe.park(true, 15000);//15秒
+                    Unsafe.unsafe.park(false, 15000*1000000L);//15秒
                     isPark.unlock();
                     if (stop)break;
                 }

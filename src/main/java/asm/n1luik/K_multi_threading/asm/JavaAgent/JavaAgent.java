@@ -2,9 +2,13 @@ package asm.n1luik.K_multi_threading.asm.JavaAgent;
 
 import asm.n1luik.K_multi_threading.asm.JavaAgent.all.TransformerBootstrapLauncher;
 import asm.n1luik.K_multi_threading.asm.JavaAgent.all.TransformerForge20;
+import asm.n1luik.K_multi_threading.asm.mapping.MappingImpl;
+import asm.n1luik.K_multi_threading.asm.mapping.MappingSrgImplForge;
+import asm.n1luik.K_multi_threading.asm.mapping.MappingTransformerForge;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import asm.n1luik.K_multi_threading.asm.util.Unsafe2;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
@@ -15,12 +19,14 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
 @Slf4j
 public class JavaAgent {
@@ -119,6 +125,12 @@ public class JavaAgent {
         AllTransformer transformer = new AllTransformer();
         transformer.addTransformer(new TransformerForge20());
         transformer.addTransformer(new TransformerBootstrapLauncher());
+        try {
+            ClassLoader.getPlatformClassLoader().loadClass("net.neoforged.fml.javafmlmod.FMLModContainer");//确定是neoforge
+            transformer.addTransformer(AsmUtil.newForge2MCPMap());
+
+        }catch (Exception e){
+        }
         inst.addTransformer(transformer, false);
         log.info("KAllFix 智能体加载成功");
 

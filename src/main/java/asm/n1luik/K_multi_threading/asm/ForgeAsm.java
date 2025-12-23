@@ -1,6 +1,7 @@
 package asm.n1luik.K_multi_threading.asm;
 
 import asm.n1luik.K_multi_threading.asm.JavaAgent.AgentAPI;
+import asm.n1luik.K_multi_threading.asm.JavaAgent.AsmUtil;
 import asm.n1luik.K_multi_threading.asm.mapping.*;
 import asm.n1luik.K_multi_threading.asm.mc1_19.LevelChunk_Asm;
 import asm.n1luik.K_multi_threading.asm.mc1_19.TruePacketThreadTestAsm;
@@ -36,15 +37,25 @@ public class ForgeAsm extends AgentAPI {
     static {
         InputStream resourceAsStream = MappingTsrgImpl.class.getResourceAsStream("/K_multi_threading.mapping/map.tsrg");
         InputStream resourceAsStream2 = MappingSrgImpl.class.getResourceAsStream("/K_multi_threading.mapping/map_srg.srg");
-
+        boolean isNeoForge = isNeoForge();
         try {
+
             if (resourceAsStream == null)throw new IOException("找不到映射表[/K_multi_threading.mapping/map.tsrg]，可以尝试检查是否正确编译");
             if (resourceAsStream2 == null)throw new IOException("找不到映射表[/K_multi_threading.mapping/map_srg.srg]，可以尝试检查是否正确编译");
-            minecraft_map = new MappingTsrgImplForge(new String(resourceAsStream.readAllBytes()));
-            srg$Forge$_map = new MappingSrgImplForge(new String(resourceAsStream2.readAllBytes()));
+            MappingSrgImplForge srg$Forge$_map1 = new MappingSrgImplForge(new String(resourceAsStream2.readAllBytes()));
+            minecraft_map = isNeoForge ? srg$Forge$_map1 : new MappingTsrgImplForge(new String(resourceAsStream.readAllBytes()));
+            srg$Forge$_map = isNeoForge ? new MappingImpl(){} : srg$Forge$_map1;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public static boolean isNeoForge(){
+        try {
+            ClassLoader.getPlatformClassLoader().loadClass("net.neoforged.fml.javafmlmod.FMLModContainer");//确定是neoforge
+            return true;
+        }catch (Exception e){
+        }
+        return false;
     }
 
     public ForgeAsm() {

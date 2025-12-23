@@ -2,6 +2,7 @@ package n1luik.K_multi_threading.core.mixin.minecraftfix;
 
 import lombok.Getter;
 import lombok.Setter;
+import n1luik.K_multi_threading.core.Base;
 import n1luik.K_multi_threading.core.Imixin.IMainThreadExecutor;
 import n1luik.K_multi_threading.core.base.CalculateTask;
 import n1luik.K_multi_threading.core.base.ParaServerChunkProvider;
@@ -142,7 +143,9 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
     public void managedBlock(BooleanSupplier p_18702_) {
         ParaServerChunkProvider paraServerChunkProvider1 = paraServerChunkProvider;
         boolean b = paraServerChunkProvider1 != null;
-        if(b && paraServerChunkProvider1.KMT$managedBlock(p_18702_))return;
+        int i = 0;
+        if(b && (i = paraServerChunkProvider1.KMT$managedBlock(p_18702_)) == 1)return;
+        //System.out.println("KMT$managedBlockTest6 "+i);
         synchronized (lockCall) {
             isCall++;
         }
@@ -174,7 +177,7 @@ public abstract class ServerChunkCache_MainThreadExecutorFix2 extends BlockableE
         }else{
             runAllTasks();
         }
-        if(b)paraServerChunkProvider1.KMT$managedBlockEnd();
+        if(b && i != 2)paraServerChunkProvider1.KMT$managedBlockEnd();
     }
 
     /*

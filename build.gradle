@@ -481,9 +481,9 @@ tasks.register('_createAllJar', Jar) {
     from {
         // 创建临时目录
         def tempDir = file("${buildDir}/tmp/mapping")
-        tempDir.mkdirs()
+        file("${tempDir}/K_multi_threading.mapping/").mkdirs()
         
-        def mapFile = file("${tempDir}/map_class.txt")
+        def mapFile = file("${tempDir}/K_multi_threading.mapping/map_class.txt")
         def classPaths = []
         
         // 遍历子项目19_2的jar文件中的所有.class文件

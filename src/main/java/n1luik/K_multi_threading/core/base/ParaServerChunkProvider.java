@@ -89,6 +89,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     //protected final AtomicInteger access = new AtomicInteger(Integer.MIN_VALUE);
     protected final AtomicInteger lockGenLock = new AtomicInteger();
     protected final AtomicInteger lockGenLock2 = new AtomicInteger();
+    protected volatile int lockGenLock2Size = 0;
     protected final AtomicReference<Thread> lockGenLock3 = new AtomicReference<>();
     //protected final LongOpenHashSet lockGenKey = new LongOpenHashSet();
     protected final ArrayDeque<LockObj//VOB3_OOI_LockC<ChunkAccess, Throwable>
@@ -220,6 +221,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         Unsafe.unsafe.putObject(this, initId.getLong("managedBlockTest"), new ConcurrentLinkedQueue<>());
         //Unsafe.unsafe.putObject(this, initId.getLong("ChunkGeneratorTest"), new AtomicInteger());
         chunkCleaner = MarkerManager.getMarker("ChunkCleaner");
+        lockGenLock2Size = 0;
 
         //try{
         //    //BuiltInRegistries.CHUNK_STATUS
@@ -477,7 +479,8 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
 
     protected ChunkAccess KMT$baseGetChunk(int chunkX, int chunkZ, ChunkStatus requiredStatus, boolean load, Consumer<ChunkAccess> out, Consumer<Throwable> err) {
         Thread thread = Thread.currentThread();
-        while (!lockGenLock3.compareAndSet(null, thread)) ;
+        boolean notManagedBlockThread = managedBlockThread != thread;
+        if (notManagedBlockThread)while (!lockGenLock3.compareAndSet(null, thread)) ;
 
         try {
             ChunkAccess chunk = lookupChunk(ChunkPos.asLong(chunkX, chunkZ), requiredStatus);
@@ -507,7 +510,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
                 }
             }
         } finally {
-            if (lockGenLock3.get() == thread) lockGenLock3.set(null);
+            if (notManagedBlockThread && lockGenLock3.get() == thread) lockGenLock3.set(null);
         }
     }
 
@@ -1043,45 +1046,55 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         return false;
     }
 
-    public void KMT$managedBlockEnd() {
+    public void KMT$managedBlockTest() {
         if (KMT$managedBlockRun()){
-            Base.getEx().execute(()->mainThreadProcessor.managedBlock(new BooleanSupplier() {
-                volatile boolean b = !ParaServerChunkProvider.this.KMT$managedBlockRun();
-                volatile boolean r = false;
-                @Override
-                public boolean getAsBoolean() {
-                    if (b){
-                        if(!ParaServerChunkProvider.this.KMT$managedBlockRun() && !r){
-                            r = true;
-                            KMT$managedBlockEnd();
-                        }
-                    }else {
-                        return b = !ParaServerChunkProvider.this.KMT$managedBlockRun();
-                    }
-                    return true;
-                }
-            }));
+            //System.out.println("KMT$managedBlockTest1");
+            Base.getEx().submit(()-> {
+                //managedBlockThread = null;
+                mainThreadProcessor.managedBlock(new MyBooleanSupplier());
+                KMT$managedBlockTest();
+                //System.out.println("KMT$managedBlockTest2");
+            });
         }
-        managedBlockThread = null;
+
     }
-    public boolean KMT$managedBlock(BooleanSupplier p18702) {
-        Thread thread = Thread.currentThread();
-        if (lockGenLock3.get() == thread) lockGenLock3.set(null);
+    public void KMT$managedBlockEnd() {
         while (!lockGenLock2.compareAndSet(0, 1)) ;
-        if (managedBlockThread == null) {
-            managedBlockThread = thread;
+        lockGenLock2Size = 0;
+        managedBlockThread = null;
+        lockGenLock2.set(0);
+        KMT$managedBlockTest();
+        //else {
+        //}
+        //System.out.println("KMT$managedBlockTest4");
+    }
+    public int KMT$managedBlock(BooleanSupplier p18702) {
+        Thread thread = Thread.currentThread();
+        while (!lockGenLock2.compareAndSet(0, 1)) ;
+        Thread managedBlockThread1 = managedBlockThread;
+        //System.out.println("KMT$managedBlockTest3 "+thread+managedBlockThread1);
+        if (lockGenLock2Size > 0 && managedBlockThread1 == thread) {
             lockGenLock2.set(0);
-            return false;
+            return 2;
+        }
+        if (lockGenLock3.get() == thread) lockGenLock3.set(null);
+        if (managedBlockThread1 == null) {
+            managedBlockThread = thread;
+            lockGenLock2Size++;
+            lockGenLock2.set(0);
+            return 0;
         } else {
-            if (managedBlockThread == thread) {
+            if (p18702.getClass() == MyBooleanSupplier.class){
                 lockGenLock2.set(0);
-                return false;
-            } else {
-                managedBlockTest.add(new OB2F<>(p18702, thread));
-                lockGenLock2.set(0);
-                while (!p18702.getAsBoolean()) Unsafe.unsafe.park(true, 500);
-                return true;
+                return 1;
             }
+            managedBlockTest.add(new OB2F<>(p18702, thread));
+            lockGenLock2.set(0);
+            while (!p18702.getAsBoolean()) {
+                Unsafe.unsafe.park(false, 500*1000000L);
+                //System.out.println("KMT$managedBlockTest5"+managedBlockThread1);
+            }
+            return 1;
         }
     }
 
@@ -1161,5 +1174,18 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     }
 
     public static final class LockObj {
+    }
+
+    private class MyBooleanSupplier implements BooleanSupplier {
+        volatile boolean b = !ParaServerChunkProvider.this.KMT$managedBlockRun();
+
+        @Override
+        public boolean getAsBoolean() {
+            if (b) {
+                return true;
+            } else {
+                return b = !ParaServerChunkProvider.this.KMT$managedBlockRun();
+            }
+        }
     }
 }

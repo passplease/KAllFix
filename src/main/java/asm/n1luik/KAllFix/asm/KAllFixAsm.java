@@ -11,6 +11,7 @@ import asm.n1luik.KAllFix.asm.util.ReadClassAsm;
 import asm.n1luik.KAllFix.asm.mod.jei.JEI_AddMapConcurrent_ASM;
 import asm.n1luik.KAllFix.asm.mod.jei.JEI_NotErrorAddSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.JavaAgent.AgentAPI;
+import asm.n1luik.K_multi_threading.asm.JavaAgent.AsmUtil;
 import asm.n1luik.K_multi_threading.asm.util.AsmApi;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import cpw.mods.modlauncher.TransformingClassLoader;
@@ -70,6 +71,12 @@ public class KAllFixAsm extends AgentAPI {
             transformers.add(new ReadClassAsm("quark", "1.20.1+all", "PotionUtilsMixin", Set.of(
                     "org.violetmoon.quark.mixin.mixins.PotionUtilsMixin"
             )));
+        }
+        try {
+            ClassLoader.getPlatformClassLoader().loadClass("net.neoforged.fml.javafmlmod.FMLModContainer");//确定是neoforge
+            transformers.add(AsmUtil.newForge2MCPMap());
+
+        }catch (Exception e){
         }
         transformers.add(new RemoveMixin_ASM());
         if (Boolean.getBoolean("KAF-FixTFMGDestroy")){
