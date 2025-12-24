@@ -23,6 +23,6 @@ plugins {
 if (new File("./remap/build.gradle").isFile()){
     include ':remap'
 }
-include 'neoforge_1.21'
+//include 'neoforge_1.21'
 include '19_2'
 include 'install'

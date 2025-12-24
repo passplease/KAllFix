@@ -43,6 +43,7 @@ plugins {
 }
 
 apply plugin: 'org.spongepowered.mixin'
+System.setProperty("mode3", "true")
 
 version = mod_version
 group = mod_group_id
@@ -283,8 +284,8 @@ dependencies {
 //    implementation 'com.google.protobuf:protobuf-javalite:3.15.6'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    annotationProcessor 'org.projectlombok:lombok:1.18.26'
-    implementation 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.42'
+    implementation 'org.projectlombok:lombok:1.18.42'
     jarJar('com.github.luben:zstd-jni:1.5.7-2') {
         jarJar.ranged(it, "[1.5.7-2,1.5.7-3)")
     }
@@ -442,7 +443,7 @@ mixin {
 // 创建一个自定义任务，用于生成 all.jar
 tasks.register('_createAllJar', Jar) {
     // 确保任务依赖关系，dependsOn确保在任务执行前依赖任务完成
-    dependsOn "reobfJar", ":19_2:jar"
+    dependsOn  "reobfJar", ":19_2:jar"//, ":neoforge_1.21:jar"
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     // 配置输出

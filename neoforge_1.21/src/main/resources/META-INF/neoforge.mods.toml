@@ -1,0 +1,61 @@
+# This is an example mods.toml file for Neoforge
+# The mod loader type for Neoforge mods should be neoforge
+modLoader="neoforge" #mandatory
+# A version range to match for said mod loader
+loaderVersion="${loader_version_range}" #mandatory
+# The license for you mod
+license="${mod_license}"
+# A URL to refer people to when problems occur with this mod
+#issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #optional
+
+# A list of mods
+[[mods]] #mandatory
+# The modid of the mod
+modId="${mod_id}" #mandatory
+# The version number of the mod
+version="${mod_version}" #mandatory
+# A display name for the mod
+displayName="${mod_name}" #mandatory
+# A URL for the "homepage" for this mod, displayed in the mod UI
+#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
+# A file name (in the root of the mod JAR) containing a logo for display
+#logoFile="examplemod.png" #optional
+# A text field displayed in the mod UI
+#credits="" #optional
+# A text field displayed in the mod UI
+authors="${mod_authors}" #optional
+# Display Test controls the display for your mod in the server connection screen
+#displayTest="MATCH_VERSION" # MATCH_VERSION is the default if nothing is specified (#optional)
+# The description text for the mod (multi line!)
+#description='''
+#A description of your mod
+#''' #optional
+
+[[mods]] #mandatory
+# The modid of the mod
+modId="k_all_fix" #mandatory
+# The version number of the mod
+version="${mod_version}" #mandatory
+# A display name for the mod
+displayName="KAllFix" #mandatory
+authors="${mod_authors}" #optional
+# The description text for the mod (multi line!)
+#description='''All fix'''
+
+# Dependencies
+[[dependencies.${mod_id}]]
+#updateJSONURL = "https://api.modrinth.com/updates/kallfix/forge_updates.json"
+modId="minecraft"
+mandatory=true
+# This version range declares a minimum of the current minecraft version up to but not including the next major version
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.k_all_fix]]
+modId="minecraft"
+mandatory=true
+# This version range declares a minimum of the current minecraft version up to but not including the next major version
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"

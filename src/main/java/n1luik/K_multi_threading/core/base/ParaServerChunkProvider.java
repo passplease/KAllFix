@@ -9,10 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 import javax.annotation.Nullable;
 
@@ -247,8 +244,8 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
 
     }
 
-    public <T> T KMT$LockChunk(long pos, Function<LockObj//VOB3_OOI_LockC<ChunkAccess, Throwable>
-            , T> f) {
+    public <T> T KMT$LockChunk(long pos, BiFunction<LockObj, LockObj//VOB3_OOI_LockC<ChunkAccess, Throwable>
+                , T> f) {
         while (!lockGenLock.compareAndSet(0, 1)) ;
         LockObj//VOB3_OOI_LockC<ChunkAccess, Throwable>
                 lock = lockGen.get(pos);
@@ -262,9 +259,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         }
         lockGenLock.set(0);
         try {
-            synchronized (lock) {
-                return f.apply(lock);
-            }
+            return f.apply(lock, get ? null : lock);
         } finally {
             if (get) {
                 while (!lockGenLock.compareAndSet(0, 1)) ;
@@ -485,7 +480,21 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         try {
             ChunkAccess chunk = lookupChunk(ChunkPos.asLong(chunkX, chunkZ), requiredStatus);
             if (chunk == null) {
-                chunk = KMT$LockChunk(ChunkPos.asLong(chunkX, chunkZ), l ->super.getChunk(chunkX, chunkZ, requiredStatus, load));
+                chunk = KMT$LockChunk(ChunkPos.asLong(chunkX, chunkZ), (l, l2) -> {
+                    if (l2 != null && l.status > requiredStatus.getIndex()){
+                        ChunkAccess c = lookupChunk(ChunkPos.asLong(chunkX, chunkZ), requiredStatus);
+                        if (c != null) {
+                            return c;
+                        }
+                        CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> ct = getChunkFutureMainThread(chunkX, chunkZ, requiredStatus, load);
+                        mainThreadProcessor.managedBlock(ct::isDone);
+                        return ct.join().left().get();
+                    }
+                    synchronized (l) {
+                        l.status = requiredStatus.getIndex();
+                        return super.getChunk(chunkX, chunkZ, requiredStatus, load);
+                    }
+                });
                 if (requiredStatus == ChunkStatus.FULL) {
                     if (chunk instanceof ImposterProtoChunk)
                         log.info("FULL ImposterProtoChunk: {} {}", chunkX, chunkZ, new Throwable());
@@ -1174,6 +1183,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     }
 
     public static final class LockObj {
+        public volatile int status;
     }
 
     private class MyBooleanSupplier implements BooleanSupplier {

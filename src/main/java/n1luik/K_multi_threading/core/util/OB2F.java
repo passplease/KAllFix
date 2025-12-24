@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class OB2F<T1, T2> {
-    @Setter
+    @Getter
     public final T1 t1;
-    @Setter
+    @Getter
     public final T2 t2;
 
     public OB2F() {
