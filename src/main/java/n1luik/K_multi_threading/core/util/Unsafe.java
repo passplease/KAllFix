@@ -71,6 +71,25 @@ public class Unsafe {
             return null;
         }
     }
+    /**
+     * @param cl         注入的类型
+     * @param ctorTypes  注入的数据类型（ImmutableList.of(class1.class,class2.class,...)）
+     * @param i          注入的是第几个元素
+     * @param ctorParams 数据
+     */
+    public static <T> MethodHandle makeEnum(Class<T> cl, Class<?>... ctorTypes) {
+        try {
+            unsafe.ensureClassInitialized(cl);
+            List<Class<?>> ctor = new ArrayList<>(ctorTypes.length + 2);
+            ctor.add(String.class);//名字
+            ctor.add(int.class);//第几个元素
+            ctor.addAll(Arrays.asList(ctorTypes));//注入的数据类型（ImmutableList.of(class1.class,class2.class,...)
+            MethodHandle constructor = lookup.findConstructor(cl, MethodType.methodType(void.class, ctor));//这tm注入是枚举元素
+            return constructor;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static <T> T getStatic(Class<?> cl, String name) {
         try {

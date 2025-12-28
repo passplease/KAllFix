@@ -440,7 +440,7 @@ n1luik.K_multi_threading.core.mixin.minecraftfix.ChunkHolderFix1
 n1luik.K_multi_threading.core.mixin.minecraftfix.ChunkHolderFix1_Debug
 n1luik.K_multi_threading.core.mixin.minecraftfix.ChunkMapFix1
 n1luik.K_multi_threading.core.mixin.minecraftfix.ChunkMapFix2
-n1luik.K_multi_threading.core.mixin.minecraftfix.ChunkMapImpl1
+n1luik.K_multi_threading.core.mixin.impl.ChunkMapImpl1
 n1luik.K_multi_threading.core.mixin.minecraftfix.ClassInstanceMultiMapFix1
 n1luik.K_multi_threading.core.mixin.minecraftfix.CollectingNeighborUpdaterDebug
 n1luik.K_multi_threading.core.mixin.minecraftfix.DimensionDataStorageFix1

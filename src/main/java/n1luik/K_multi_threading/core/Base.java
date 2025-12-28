@@ -27,7 +27,7 @@ public class Base {
     /**整个顶性能有影响不建议开*/
     public static final boolean debugAE2Thread = false;
     public static final long ThreadpoolKeepAliveTime =  Long.getLong("KMT-ThreadpoolKeepAliveTime", TimeUnit.SECONDS.toMillis(7));
-    public static MinecraftServer   mcs;
+    public static MinecraftServer mcs;
     public static int threadTaskMax = 80;
     final static ForkJoinPool_ ex;
     //@Nullable

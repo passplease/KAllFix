@@ -79,9 +79,39 @@ public class MappingTransformerForge extends MappingTransformer {
         input = super.transform(input);
         return input;
     }
-    public boolean fixMixinMethod(AnnotationNode annotationNode, String[] names) {
+    public boolean fixMixinMethod(AnnotationNode annotationNode, String[] names, MethodNode methodNode) {
         List<Object> values = annotationNode.values;
         switch (annotationNode.desc) {
+            case "Lorg/spongepowered/asm/mixin/gen/Accessor;":{
+                for (int i = 0; i < values.size(); i += 2) {
+                    String name = (String) values.get(i);
+                    switch (name) {
+                        case "value": {
+                            Object o = values.get(i + 1);
+                            if (o instanceof String s) {
+                                String[] strings = mappingImpl.mapField(names[0]+"."+s);
+                                values.set(i + 1, strings[1]);
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
+            case "Lorg/spongepowered/asm/mixin/gen/Invoker;":{
+                for (int i = 0; i < values.size(); i += 2) {
+                    String name = (String) values.get(i);
+                    switch (name) {
+                        case "value": {
+                            Object o = values.get(i + 1);
+                            if (o instanceof String s) {
+                                String[] strings = mappingImpl.mapMethod(names[0]+"."+s+methodNode.desc);
+                                values.set(i + 1, strings[1]);
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
             case "Lorg/spongepowered/asm/mixin/injection/Redirect;":
             case "Lorg.spongepowered.asm.mixin.injection.Inject;": {
                 boolean remap = true;
@@ -211,10 +241,10 @@ public class MappingTransformerForge extends MappingTransformer {
     }
     public void fixMixinMethod(MethodNode classNode, String[] names) {
         for (AnnotationNode visibleAnnotation : classNode.visibleTypeAnnotations) {
-             fixMixinMethod(visibleAnnotation, names);
+             fixMixinMethod(visibleAnnotation, names, classNode);
         }
         for (AnnotationNode visibleAnnotation : classNode.visibleAnnotations) {
-            fixMixinMethod(visibleAnnotation, names);
+            fixMixinMethod(visibleAnnotation, names, classNode);
         }
     }
     public boolean fixShadow(FieldNode classNode) {

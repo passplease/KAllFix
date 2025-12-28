@@ -81,7 +81,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     //protected Thread cacheThread;
     //因为lootr 会返回null所以不能进行安全检查
     //protected final Map<ChunkCacheAddress, ChunkAccess> chunkCache = new FixNullConcurrentHashMap<>();
-    private final LockLong2ObjectAVLTreeMap<ChunkAccess>[] chunkCacheShards;//Long2ObjectOpenHashMap<ChunkAccess>[][] chunkCacheShards;
+    public final LockLong2ObjectAVLTreeMap<ChunkAccess>[] chunkCacheShards;//Long2ObjectOpenHashMap<ChunkAccess>[][] chunkCacheShards;
     //  protected Map<ChunkCacheAddress, GeneratorNode> chunkTask = new ConcurrentHashMap<>();
     //protected final AtomicInteger access = new AtomicInteger(Integer.MIN_VALUE);
     protected final AtomicInteger lockGenLock = new AtomicInteger();

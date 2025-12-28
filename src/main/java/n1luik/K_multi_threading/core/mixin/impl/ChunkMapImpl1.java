@@ -1,4 +1,4 @@
-package n1luik.K_multi_threading.core.mixin.minecraftfix;
+package n1luik.K_multi_threading.core.mixin.impl;
 
 import n1luik.K_multi_threading.core.Imixin.IChunkMap;
 import net.minecraft.server.level.ChunkMap;
