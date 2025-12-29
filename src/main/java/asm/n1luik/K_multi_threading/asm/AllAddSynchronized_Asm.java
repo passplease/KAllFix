@@ -16,6 +16,8 @@ public class AllAddSynchronized_Asm extends ITransformer2 {
             ForgeAsm.minecraft_map.mapClass("com/abdelaziz/canary/common/world/listeners/WorldBorderListenerOnceMulti"),
             //Ponder
             ForgeAsm.minecraft_map.mapClass("net/createmod/catnip/data/WorldAttached"),
+            //百年战争
+            ForgeAsm.minecraft_map.mapClass("ydmsama/hundred_years_war/main/entity/utils/PathingTaskManager"),
             //lithium
             ForgeAsm.minecraft_map.mapClass("me/jellysquid/mods/lithium/common/world/listeners/WorldBorderListenerOnceMulti")
     ));

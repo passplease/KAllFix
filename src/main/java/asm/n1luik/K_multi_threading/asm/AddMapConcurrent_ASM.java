@@ -119,6 +119,7 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
             new AsmTarget("net.minecraft.util.profiling.ActiveProfiler", false),
             new AsmTarget("com.github.alexthe668.domesticationinnovation.server.CommonProxy", false),
             new AsmTarget("com.chunksending.mixin.ServerPlayerChunkSending", false),
+            new AsmTarget("ydmsama.hundred_years_war.main.entity.utils.PathingTaskManagerRegistry", false),
             new AsmTarget("appeng.me.service.CraftingService", false),
             new AsmTarget("appeng.api.stacks.KeyCounter", true)
     ));
