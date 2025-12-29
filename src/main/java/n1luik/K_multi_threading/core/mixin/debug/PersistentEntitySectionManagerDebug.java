@@ -20,4 +20,8 @@ public class PersistentEntitySectionManagerDebug {
     public <T extends EntityAccess> void debug1(T p_157539_, boolean p_157540_, CallbackInfoReturnable<Boolean> cir){
         LOGGER.info("addEntityWithoutEvent", new Throwable());
     }
+    @Inject(method = "addEntityUuid", at = @At(value = "INVOKE", target = "Lorg/slf4j/Logger;warn(Ljava/lang/String;Ljava/lang/Object;)V"))
+    public <T extends EntityAccess> void debug2(T p_157558_, CallbackInfoReturnable<Boolean> cir){
+        LOGGER.info("addEntityUuid UUID of added entity already exists", new Throwable());
+    }
 }
