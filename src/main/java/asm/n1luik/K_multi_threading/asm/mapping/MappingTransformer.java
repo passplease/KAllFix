@@ -20,6 +20,9 @@ public class MappingTransformer extends ITransformer2 {
 
     @Override
     public ClassNode transform(ClassNode input) {
+        return transform(input, mappingImpl);
+    }
+    public ClassNode transform(ClassNode input, MappingImpl mappingImpl) {
         // 映射类名
         String mappedClassName = mappingImpl.mapClass(input.name);
         if (!mappedClassName.equals(input.name)) {

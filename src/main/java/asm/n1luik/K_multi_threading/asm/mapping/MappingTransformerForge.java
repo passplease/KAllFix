@@ -11,9 +11,7 @@ import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -59,24 +57,38 @@ public class MappingTransformerForge extends MappingTransformer {
     @Override
     public ClassNode transform(ClassNode input) {
         String[] names = fixMixin(input);
+        Map<String, String> mixinNames = new HashMap<>();
         if (names == null || names.length == 0) {
             return input;
         }
         for (FieldNode field : input.fields) {
             if (fixShadow(field)) {
+                var name = input.name+"."+field.name;
                 field.name = mappingImpl.mapField(names[0]+"."+field.name)[1];
+                mixinNames.put(name, input.name+"."+field.name);
             }
         }
         for (MethodNode method : input.methods) {
             if (fixShadow(method)) {
+                var name = input.name+"."+method.name+method.desc;
                 String[] strings = mappingImpl.mapMethod(names[0] + "." + method.name + method.desc);
                 method.name = strings[1];
                 method.desc = strings[2];
+                mixinNames.put(name, input.name+"."+method.name+method.desc);
                 continue;
             }
 
         }
-        input = super.transform(input);
+        input = super.transform(input, new MappingImpl() {
+            @Override
+            public String map_(String name) {
+                var map = mixinNames.get(name);
+                if (map != null) {
+                    return map;
+                }
+                return super.map_(name);
+            }
+        });
         return input;
     }
     public boolean fixMixinMethod(AnnotationNode annotationNode, String[] names, MethodNode methodNode) {
@@ -272,6 +284,7 @@ public class MappingTransformerForge extends MappingTransformer {
     public int fixShadow(AnnotationNode annotationNode) {
         List<Object> values = annotationNode.values;
         switch (annotationNode.desc) {
+            case "Lorg/spongepowered/asm/mixin/Overwrite;":
             case "Lorg/spongepowered/asm/mixin/Shadow;": {
                 boolean remap = true;
                 for (int i = 0; i < values.size(); i += 2) {

@@ -22,11 +22,11 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.ProtectionDomain;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 @Slf4j
 public class JavaAgent {
@@ -132,6 +132,29 @@ public class JavaAgent {
         }catch (Exception e){
         }
         inst.addTransformer(transformer, false);
+        //File zipFile = new File("classes.zip");
+        //try {
+        //    ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile.toPath()));
+        //    inst.addTransformer(new ClassFileTransformer() {
+        //        int size = 0;
+        //        @Override
+        //        public synchronized byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+//
+        //            try {
+        //                zos.putNextEntry(new ZipEntry(className + ".class"));
+        //                zos.write(classfileBuffer);
+        //                if (size++ % 1000 == 0) {
+        //                    zos.closeEntry();
+        //                }
+        //            } catch (IOException e) {
+        //                throw new RuntimeException(e);
+        //            }
+        //            return null;
+        //        }
+        //    }, false);
+        //} catch (IOException e) {
+        //    throw new RuntimeException(e);
+        //}
         log.info("KAllFix 智能体加载成功");
 
 
