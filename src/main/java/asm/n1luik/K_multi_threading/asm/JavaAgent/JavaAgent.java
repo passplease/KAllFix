@@ -90,7 +90,7 @@ public class JavaAgent {
 
     // JVM 启动时加载（-javaagent）
     public static void premain(String agentArgs, Instrumentation inst) {
-        init(inst);
+        init(agentArgs, inst);
     }
 
 
@@ -108,8 +108,12 @@ public class JavaAgent {
 
     }
 
-    private static void init(Instrumentation inst) {
+    private static void init(String agentArgs, Instrumentation inst) {
         log.info("KAllFix 智能体开始加载");
+        log.info("agentArgs: {}", agentArgs);
+        if (!(agentArgs == null || agentArgs.isEmpty())) {
+            System.setProperty("K_multi_threading.agent.args", agentArgs);
+        }
         //String property = System.getProperty("legacyClassPath");
         //try {
         //    if (property != null) {

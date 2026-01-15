@@ -18,6 +18,9 @@ import java.util.Set;
 
 import java.util.Set;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ShipObjectServerWorld_Asm  extends ITransformer2{
 
     public static AbstractInsnNode findFieldWrite(AbstractInsnNode currentInsn, String owner, String name) {
@@ -98,7 +101,7 @@ public class ShipObjectServerWorld_Asm  extends ITransformer2{
         //                                    "concurrentMap",
         //                                    "(Ljava/util/Map;)Ljava/util/concurrent/ConcurrentHashMap;"))
         if (!(debug_add1 && debug_add2)){
-            throw new RuntimeException("Not mapping error: org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld: %s %s ".formatted(debug_add1, debug_add2));
+            log.error("Not mapping error: org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld: %s %s ".formatted(debug_add1, debug_add2));
         }
 
 

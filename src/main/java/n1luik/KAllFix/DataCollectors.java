@@ -75,7 +75,7 @@ public class DataCollectors {
                                     请删除文件{}
                                     或者手动删除文件{}
                                     或者联系作者
-                                    """, collectTools.name, file.getAbsolutePath(), versionPath.getAbsolutePath());
+                                    """, collectTools.name, file.getAbsolutePath(), versionPath.getAbsolutePath(), e);
                             continue;
                         }
                     }

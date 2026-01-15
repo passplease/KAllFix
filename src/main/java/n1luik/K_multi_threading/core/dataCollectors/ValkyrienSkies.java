@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import cpw.mods.modlauncher.TransformingClassLoader;
 import n1luik.KAllFix.DataCollectors;
 import n1luik.KAllFix.util.UtilKAF;
+import n1luik.K_multi_threading.core.Base;
 import n1luik.K_multi_threading.core.dataCollectors.data.MapConcurrentData;
 import n1luik.K_multi_threading.core.util.Util;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -30,13 +31,14 @@ public class ValkyrienSkies extends DataCollectors.CollectTools<ValkyrienSkies.D
 
     @Override
     public boolean test(Data data) {
-        if (data == null)return false;
         try {
             ValkyrienSkies.class.getClassLoader().loadClass("org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld");
-        } catch (ClassNotFoundException e) {
+        } catch (Throwable e) {
+            Base.LOGGER.error("ValkyrienSkies test error", e);
             return true;
         }
-        return data.fileHash1 == Integer.getInteger("K_multi_threading_ShipObjectServerWorld_Asm_Id", 0);//Arrays.hashCode(UtilKAF.toMixinClassHashCheckDataByte(getclass.apply((TransformingClassLoader) ValkyrienSkies.class.getClassLoader(), "org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld")));
+        if (data == null)return false;
+        return data.fileHash1 == Integer.getInteger("K_multi_threading_ShipObjectServerWorld_Asm_Id", data.fileHash1);//Arrays.hashCode(UtilKAF.toMixinClassHashCheckDataByte(getclass.apply((TransformingClassLoader) ValkyrienSkies.class.getClassLoader(), "org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld")));
     }
 
     @Override

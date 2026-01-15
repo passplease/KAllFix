@@ -376,8 +376,24 @@ public class Unsafe {
                 type);
     }
 
-
     public static MethodHandles.Lookup privateLookupIn(Class<?> loader) throws IllegalAccessException {
         return MethodHandles.privateLookupIn(loader, Unsafe.lookup);
+    }
+
+    public static long getTypeFieldAddress(Class<?> c, Class<?> type) {
+        for (Field declaredField : c.getDeclaredFields()) {
+            if (declaredField.getType().isAssignableFrom(type)) {
+                return addressOf(declaredField);
+            }
+        }
+        throw new RuntimeException("没有找到字段 " + c + " " + type);
+    }
+    public static Field getTypeField(Class<?> c, Class<?> type) {
+        for (Field declaredField : c.getDeclaredFields()) {
+            if (declaredField.getType().isAssignableFrom(type)) {
+                return declaredField;
+            }
+        }
+        throw new RuntimeException("没有找到字段 " + c + " " + type);
     }
 }

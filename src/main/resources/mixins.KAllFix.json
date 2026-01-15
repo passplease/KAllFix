@@ -85,6 +85,7 @@
     "unsafe.path.SaveFileCompression.RegionFileStorageMixin"
   ],
   "client": [
+    "MinecraftMixin",
     "ex.FixAllPacket.mekanismexplosives.client.MinecraftMixin",
     "unsafe.debug.MinecraftDebug1",
     "unsafe.path.FixSetScreenAsync.MinecraftMixin",

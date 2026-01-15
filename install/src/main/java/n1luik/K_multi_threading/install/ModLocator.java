@@ -6,13 +6,11 @@ import net.minecraftforge.forgespi.locating.IModLocator;
 import org.slf4j.Logger;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -27,6 +25,16 @@ public class ModLocator extends AbstractJarFileModLocator {
         // Register shutdown hook to delete file when JVM exits
         libs = new ArrayList<>();
         libs.add(file);
+        var maps = loadArgs2();
+        for (String s : maps.computeIfAbsent("jar", k -> new ArrayList<>())) {
+            File e = new File(s);
+            if (!e.isFile()) {
+                logger.error("文件不存在: {}", e.getAbsolutePath());
+                continue;
+            }
+            libs.add(e);
+        }
+
         logger.debug("Added mod file to library list: {}", file.getAbsolutePath());
         //if (Boolean.getBoolean("KAF-SaveFileCompression")) {
         //    File file1 = new File("rocksdbjni-6.12.7.jar");
@@ -134,5 +142,41 @@ public class ModLocator extends AbstractJarFileModLocator {
         Stream<Path> pathStream = libs.stream().map(File::toPath);
         libs.forEach(file -> logger.debug("Found mod candidate: {}", file.getAbsolutePath()));
         return pathStream;
+    }
+
+    public static Map<String, List<String>> loadArgs2(){
+        return loadArgs2(System.getProperty("K_multi_threading.agent.args"));
+    }
+    public static Map<String, List<String>> loadArgs2(String agentArgs){
+        if (agentArgs == null) return new HashMap<>();
+        Map<String, List<String>> map = new HashMap<>();
+
+        if (!agentArgs.isEmpty()) {
+            String[] args = agentArgs.split(";");
+            for (String arg : args) {
+                File file = new File(arg);
+                if (!file.isFile()) {
+                    logger.error("文件不存在: {}", arg);
+                    continue;
+                }
+                try {
+                    String bytes = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+                    String[] a = bytes.split("\n|\r\n");
+
+                    for (String s : a) {
+                        if (!s.contains(":")) {
+                            logger.error("格式错误: {}", s);
+                            continue;
+                        }
+                        String[] b = s.split(":", 2);
+                        map.computeIfAbsent(b[0], k -> new ArrayList<>()).add(b[1]);
+                    }
+
+                } catch (Exception e) {
+                    logger.error("读取文件失败: {}", arg, e);
+                }
+            }
+        }
+        return map;
     }
 }

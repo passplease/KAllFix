@@ -20,6 +20,10 @@ public abstract class SynchedEntityDataDebug {
 
     @Shadow protected abstract <T> void createDataItem(EntityDataAccessor<T> p_135386_, T p_135387_);
 
+    /**
+     * @author
+     * @reason
+     */
     @Overwrite
     public <T> void define(EntityDataAccessor<T> p_135373_, T p_135374_) {
         int i = p_135373_.getId();

@@ -26,6 +26,7 @@ public class TransformerBootstrapLauncher extends ITransformer2 {
 
             ClassLoader platformClassLoader = Thread.currentThread().getContextClassLoader();
             log.info("TransformerBootstrapLauncher.transform: platformClassLoader = {}", platformClassLoader);
+            JavaAgent.loadClass(platformClassLoader, "asm.n1luik.K_multi_threading.asm.JavaAgent.ArgsUtil");
             JavaAgent.loadClass(platformClassLoader, "asm.n1luik.K_multi_threading.asm.JavaAgent.all.replace.BootstrapLauncherAsm");
 
             AsmUtil.replaceMethodName(input, BootstrapLauncherAsm.class.getMethod("of", SecureJar[].class)

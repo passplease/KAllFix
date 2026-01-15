@@ -24,5 +24,7 @@ if (new File("./remap/build.gradle").isFile()){
     include ':remap'
 }
 //include 'neoforge_1.21'
+include 'ex_bukkit'
+include 'ex_bukkit:impl'
 include '19_2'
 include 'install'
