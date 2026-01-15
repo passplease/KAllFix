@@ -62,7 +62,14 @@ public class AddMapConcurrent {
             FileInputStream fileInputStream = new FileInputStream(allPath);
             byte[] bytes = fileInputStream.readAllBytes();
             fileInputStream.close();
-            AddMapConcurrent_ASM.AsmTarget e = gson.fromJson(new String(bytes), Data.class).mapConcurrentData1.getAsmTarget();
+            Data data = gson.fromJson(new String(bytes), Data.class);
+            if (data == null) {
+                return;
+            }
+            if (data.mapConcurrentData1 == null) {
+                return;
+            }
+            AddMapConcurrent_ASM.AsmTarget e = data.mapConcurrentData1.getAsmTarget();
             addMapConcurrentAsm.stringsList.add(e);
         }
 
