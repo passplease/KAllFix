@@ -34,6 +34,24 @@ public class MappingTransformerForge extends MappingTransformer {
             }
 
             @Override
+            public String[] mapMethodNull(String name){
+                String orDefault = mapNull_(name);
+                if (orDefault == null) {
+                    String[] split = orDefault.split("\\.");
+                    String[] split1 = split[1].split("\\(");
+
+                    if (METHOD_PATTERN.matcher(split1[0]).matches()) {
+                        split1[0] = mappingImpl.map_(split1[0]);
+                        return new String[]{split[0],split1[0],"("+split1[1]};
+                    }
+                    return null;
+                }
+                String[] split = orDefault.split("\\.");
+                String[] split1 = split[1].split("\\(");
+                return new String[]{split[0],split1[0],"("+split1[1]};
+            }
+
+            @Override
             public String[] mapField(String name) {
                 String orDefault = mappingImpl.map_(name);
                 String[] split = orDefault.split("\\.");
@@ -41,6 +59,11 @@ public class MappingTransformerForge extends MappingTransformer {
                     split[1] = mappingImpl.map_(split[1]);
                 }
                 return new String[]{split[0], split[1]};
+            }
+
+            @Override
+            public String mapNull_(String name) {
+                return mappingImpl.mapNull_(name);
             }
 
             @Override

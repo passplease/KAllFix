@@ -1,13 +1,82 @@
 package asm.n1luik.K_multi_threading.asm.mapping;
 
+import asm.n1luik.K_multi_threading.asm.Util;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public abstract class MappingImpl {
     protected final Map<String,String> map = new HashMap<>();
 
+    public static String mapMethodDesc(String name, Function<String,String> mapper){
+
+        StringBuilder buffer = new StringBuilder("(");
+
+        String[] strings = Util.toDescList(name);
+        for (int i = 0; i < strings.length; i++) {
+            String string = strings[i];
+            if (string.startsWith("[")) {
+
+                String replace = string.replace("[", "");
+                if (!Util.isDefaultClass(replace)) {
+                    String substring = replace.substring(1, replace.length() - 1);
+                    strings[i] = "[".repeat(Util.countStr(string, "[")) + "L" + mapper.apply(substring) + ";";
+                }
+            }else if (!Util.isDefaultClass(string)) {
+                strings[i] = mapper.apply(string);
+            }
+        }
+
+        for (int i = 0; i < strings.length; i++) {
+            if (i == strings.length-1){
+                buffer.append(")");
+                buffer.append(strings[i]);
+                continue;
+            }
+            buffer.append(strings[i]);
+        }
+        return buffer.toString();
+    }
+    public String mapMethodDesc(String name){
+
+        StringBuilder buffer = new StringBuilder("(");
+
+        String[] strings = Util.toDescList(name);
+        for (int i = 0; i < strings.length; i++) {
+            String string = strings[i];
+            if (string.startsWith("[")) {
+
+                String replace = string.replace("[", "");
+                if (!Util.isDefaultClass(replace)) {
+                    String substring = replace.substring(1, replace.length() - 1);
+                    strings[i] = "[".repeat(Util.countStr(string, "[")) + "L" + mapClass(substring) + ";";
+                }
+            }else if (!Util.isDefaultClass(string)) {
+                strings[i] = mapClass(string);
+            }
+        }
+
+        for (int i = 0; i < strings.length; i++) {
+            if (i == strings.length-1){
+                buffer.append(")");
+                buffer.append(strings[i]);
+                continue;
+            }
+            buffer.append(strings[i]);
+        }
+        return buffer.toString();
+    }
     public String[] mapMethod(String name){
         String orDefault = map_(name);
+        String[] split = orDefault.split("\\.");
+        String[] split1 = split[1].split("\\(");
+        return new String[]{split[0],split1[0],"("+split1[1]};
+    }
+    // 有的没实现这个
+    public String[] mapMethodNull(String name){
+        String orDefault = mapNull_(name);
+        if (orDefault == null) return null;
         String[] split = orDefault.split("\\.");
         String[] split1 = split[1].split("\\(");
         return new String[]{split[0],split1[0],"("+split1[1]};
@@ -20,6 +89,10 @@ public abstract class MappingImpl {
     }
     public String map_(String name) {
         return map.getOrDefault(name, name);
+    }
+    // 有的没实现这个
+    public String mapNull_(String name) {
+        return map.get(name);
     }
 
     public String mapClass(String name){

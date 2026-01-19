@@ -83,7 +83,7 @@ public class KAllFixAsm extends AgentAPI {
             transformers.add(new DestroyFix_Asm());
         }
 
-        if (AsmApi.isClient && !Boolean.getBoolean("DisablePetrolpark")) {//用不了，直接不加载了
+        if (!AsmApi.isClient && !Boolean.getBoolean("KAF-DisablePetrolpark")) {//用不了，直接不加载了
             //transformers.add(new PetrolparkAsm());
             transformers.add(new ShopMenuItemAsm());
             transformers.add(new ITeamBoundItemAsm());

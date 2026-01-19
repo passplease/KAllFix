@@ -53,15 +53,15 @@ public class MappingTransformer extends ITransformer2 {
             if (mappedField != null && mappedField.length > 1 && !mappedField[1].equals(field.name)) {
                 field.name = mappedField[1];
             }
+            field.desc = mapFieldDescriptor(field.desc);
         }
         
         // 映射方法名和描述符
         for (MethodNode method : input.methods) {
-            // 跳过构造方法
-            if (method.name.equals("<init>") || method.name.equals("<clinit>")) {
-                continue;
-            }
-            
+            //// 跳过构造方法
+            //if (method.name.equals("<init>") || method.name.equals("<clinit>")) {
+            //    continue;
+            //}
             String fullMethodName = input.name + "." + method.name + method.desc;
             String[] mappedMethod1 = mappingImpl.mapMethod(fullMethodName);
             if (mappedMethod1 != null && mappedMethod1.length > 2) {
@@ -75,46 +75,48 @@ public class MappingTransformer extends ITransformer2 {
                     method.desc = mappedMethod1[2];
                 }
             }
+            if (method.localVariables != null) {
+                for (LocalVariableNode localVariable : method.localVariables) {
+                    localVariable.desc = mapFieldDescriptor(localVariable.desc);
+                }
+            }
             
             // 映射方法体中的汇编指令
             if (method.instructions != null) {
-                for (AbstractInsnNode insnNode = method.instructions.getFirst(); insnNode != null; insnNode = insnNode.getNext()) {
+                for (AbstractInsnNode insnNode : method.instructions) {
                     // 处理方法调用指令
                     if (insnNode instanceof MethodInsnNode methodInsnNode) {
-                        // 映射类名
-                        String mappedOwner = mappingImpl.mapClass(methodInsnNode.owner);
-                        if (!mappedOwner.equals(methodInsnNode.owner)) {
-                            methodInsnNode.owner = mappedOwner;
-                        }
+                        //// 映射类名
+                        //String mappedOwner = mappingImpl.mapClass(methodInsnNode.owner);
+                        //if (!mappedOwner.equals(methodInsnNode.owner)) {
+                        //    methodInsnNode.owner = mappedOwner;
+                        //}
                         
                         // 映射方法名和描述符
                         String fullMethodRefName = methodInsnNode.owner + "." + methodInsnNode.name + methodInsnNode.desc;
                         String[] mappedMethodRef = mappingImpl.mapMethod(fullMethodRefName);
                         if (mappedMethodRef != null && mappedMethodRef.length > 2) {
-                            if (!mappedMethodRef[1].equals(methodInsnNode.name)) {
-                                methodInsnNode.name = mappedMethodRef[1];
-                            }
-                            if (!mappedMethodRef[2].equals(methodInsnNode.desc)) {
-                                methodInsnNode.desc = mappedMethodRef[2];
-                            }
+                            methodInsnNode.owner = mappedMethodRef[0];
+                            methodInsnNode.name = mappedMethodRef[1];
+                            methodInsnNode.desc = mappedMethodRef[2];
                         }
                     }
                     
                     // 处理字段访问指令
                     else if (insnNode instanceof FieldInsnNode fieldInsnNode) {
-                        // 映射类名
-                        String mappedOwner = mappingImpl.mapClass(fieldInsnNode.owner);
-                        if (!mappedOwner.equals(fieldInsnNode.owner)) {
-                            fieldInsnNode.owner = mappedOwner;
-                        }
+                        //// 映射类名
+                        //String mappedOwner = mappingImpl.mapClass(fieldInsnNode.owner);
+                        //if (!mappedOwner.equals(fieldInsnNode.owner)) {
+                        //    fieldInsnNode.owner = mappedOwner;
+                        //}
                         
                         // 映射字段名
                         String fullFieldRefName = fieldInsnNode.owner + "." + fieldInsnNode.name;
                         String[] mappedFieldRef = mappingImpl.mapField(fullFieldRefName);
                         if (mappedFieldRef != null && mappedFieldRef.length > 1) {
-                            if (!mappedFieldRef[1].equals(fieldInsnNode.name)) {
-                                fieldInsnNode.name = mappedFieldRef[1];
-                            }
+                            fieldInsnNode.owner = mappedFieldRef[0];
+                            fieldInsnNode.name = mappedFieldRef[1];
+                            fieldInsnNode.desc = mapFieldDescriptor(fieldInsnNode.desc);
                         }
                     }
                     
@@ -181,16 +183,17 @@ public class MappingTransformer extends ITransformer2 {
                                             String[] map = mappingImpl.mapMethod(returnType+'.'+invokeDynamicInsnNode.name+typeCst.getDescriptor());
                                             invokeDynamicInsnNode.name = map[1];
                                             invokeDynamicInsnNode.bsmArgs[0] = Type.getMethodType(map[2]);
-                                            invokeDynamicInsnNode.desc = invokeDynamicInsnNode.desc.substring(endIndex + 1) + ("[") .repeat(numDimensions) + "L" + map[0]+ ";";
+                                            //invokeDynamicInsnNode.desc = invokeDynamicInsnNode.desc.substring(endIndex + 1) + ("[") .repeat(numDimensions) + "L" + map[0]+ ";";
                                         }
                                     }
                                 }
                             }
                         }
-                        
+                        invokeDynamicInsnNode.desc = mapMethodDescriptor(invokeDynamicInsnNode.desc);
+
                         // 处理引导方法参数
                         if (invokeDynamicInsnNode.bsmArgs != null) {
-                            boolean needUpdate = false;
+                            //boolean needUpdate = false;
                             Object[] newBsmArgs = invokeDynamicInsnNode.bsmArgs;
                             
                             for (int i = 0; i < invokeDynamicInsnNode.bsmArgs.length; i++) {
@@ -198,17 +201,17 @@ public class MappingTransformer extends ITransformer2 {
                                 Object processedArg = processConstantArg(arg);
                                 
                                 if (!processedArg.equals(arg)) {
-                                    if (!needUpdate) {
-                                        newBsmArgs = invokeDynamicInsnNode.bsmArgs.clone();
-                                        needUpdate = true;
-                                    }
+                                    //if (!needUpdate) {
+                                    //    newBsmArgs = invokeDynamicInsnNode.bsmArgs.clone();
+                                    //    needUpdate = true;
+                                    //}
                                     newBsmArgs[i] = processedArg;
                                 }
                             }
                             
-                            if (needUpdate) {
-                                invokeDynamicInsnNode.bsmArgs = newBsmArgs;
-                            }
+                            //if (needUpdate) {
+                            //    invokeDynamicInsnNode.bsmArgs = newBsmArgs;
+                            //}
                         }
                         //
                     }
@@ -443,7 +446,7 @@ public class MappingTransformer extends ITransformer2 {
         }
         
         // 处理描述符
-        String mappedDesc = mapTypeDescriptor(mappedDescriptor);
+        String mappedDesc = mapMethodDescriptor(mappedDescriptor);
         if (!mappedDesc.equals(mappedDescriptor)) {
             mappedDescriptor = mappedDesc;
             needUpdate = true;
@@ -650,5 +653,33 @@ public class MappingTransformer extends ITransformer2 {
             }
         }
         return typeDesc;
+    }
+    protected String mapFieldDescriptor(String fieldDesc) {
+        // 映射类型
+        int array = 0;
+        int max = fieldDesc.length();
+        int pos = 0;
+        while (pos < max) {
+            if (fieldDesc.charAt(pos) == '[') {
+                array++;
+            } else {
+                pos++;
+                break;
+            }
+            pos++;
+        }
+        if (pos < max){
+            if (fieldDesc.charAt(pos) == 'L') {
+                var sp = pos += 1;
+                while (pos < max) {
+                    if (fieldDesc.charAt(pos) == ';') {
+                        break;
+                    }
+                    pos++;
+                }
+                return "[".repeat(array) + "L" + mappingImpl.mapClass(fieldDesc.substring(sp, pos - 1)) + ";";
+            }
+        }
+        return fieldDesc;
     }
 }

@@ -1,8 +1,6 @@
 package asm.n1luik.K_multi_threading.asm;
 
-import asm.n1luik.K_multi_threading.asm.mod.valkyrienskies.ShipObjectServerWorld_Asm;
 import com.google.gson.Gson;
-import n1luik.KAllFix.DataCollectors;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Handle;
