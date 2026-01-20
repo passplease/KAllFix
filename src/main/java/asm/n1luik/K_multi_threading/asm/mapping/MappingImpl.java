@@ -9,11 +9,11 @@ import java.util.function.Function;
 public abstract class MappingImpl {
     protected final Map<String,String> map = new HashMap<>();
 
-    public static String mapMethodDesc(String name, Function<String,String> mapper){
+    public static String mapMethodDesc(String desc, Function<String,String> mapper){
 
         StringBuilder buffer = new StringBuilder("(");
 
-        String[] strings = Util.toDescList(name);
+        String[] strings = Util.toDescList(desc);
         for (int i = 0; i < strings.length; i++) {
             String string = strings[i];
             if (string.startsWith("[")) {
@@ -24,7 +24,7 @@ public abstract class MappingImpl {
                     strings[i] = "[".repeat(Util.countStr(string, "[")) + "L" + mapper.apply(substring) + ";";
                 }
             }else if (!Util.isDefaultClass(string)) {
-                strings[i] = mapper.apply(string);
+                strings[i] = "L"+mapper.apply(string.substring(1, string.length() - 1))+";";
             }
         }
 
@@ -38,11 +38,11 @@ public abstract class MappingImpl {
         }
         return buffer.toString();
     }
-    public String mapMethodDesc(String name){
+    public String mapMethodDesc(String desc){
 
         StringBuilder buffer = new StringBuilder("(");
 
-        String[] strings = Util.toDescList(name);
+        String[] strings = Util.toDescList(desc);
         for (int i = 0; i < strings.length; i++) {
             String string = strings[i];
             if (string.startsWith("[")) {
@@ -53,7 +53,7 @@ public abstract class MappingImpl {
                     strings[i] = "[".repeat(Util.countStr(string, "[")) + "L" + mapClass(substring) + ";";
                 }
             }else if (!Util.isDefaultClass(string)) {
-                strings[i] = mapClass(string);
+                strings[i] = "L"+mapClass(string.substring(1, string.length() - 1))+";";
             }
         }
 

@@ -39,33 +39,8 @@ public class MappingTsrgImpl extends MappingImpl {
 
                 String[] split1 = stringStringEntry.getKey().split("\\.");
                 String[] split = split1[1].split("\\(");
-                StringBuilder buffer = new StringBuilder("(");
 
-                String[] strings = Util.toDescList(split[1]);
-                for (int i = 0; i < strings.length; i++) {
-                    String string = strings[i];
-                    if (string.contains("[")) {
-
-                        String replace = string.replace("[", "");
-                        if (!Util.isDefaultClass(replace)) {
-                            String substring = replace.substring(1, replace.length() - 1);
-                            strings[i] = "[".repeat(Util.countStr(string, "[")) + "L" + map2.getOrDefault(substring, substring) + ";";
-                        }
-                    }else if (!Util.isDefaultClass(string)) {
-                        strings[i] = map2.getOrDefault(string, string);
-                    }
-                }
-
-                for (int i = 0; i < strings.length; i++) {
-                    if (i == strings.length-1){
-                        buffer.append(")");
-                        buffer.append(strings[i]);
-                        continue;
-                    }
-                    buffer.append(strings[i]);
-                }
-
-                map.put(stringStringEntry.getKey(), stringStringEntry.getValue() + buffer);
+                map.put(stringStringEntry.getKey(), stringStringEntry.getValue() + mapMethodDesc(split[1]));
             }else {
                 map.put(stringStringEntry.getKey(), stringStringEntry.getValue());
             }
