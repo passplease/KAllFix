@@ -63,17 +63,12 @@ public class MappingTransformer extends ITransformer2 {
             //    continue;
             //}
             String fullMethodName = input.name + "." + method.name + method.desc;
-            String[] mappedMethod1 = mappingImpl.mapMethod(fullMethodName);
+            String[] mappedMethod1 = mappingImpl.mapMethodNull(fullMethodName);
             if (mappedMethod1 != null && mappedMethod1.length > 2) {
-                // 映射方法名
-                if (!mappedMethod1[1].equals(method.name)) {
-                    method.name = mappedMethod1[1];
-                }
-                
-                // 映射方法描述符
-                if (!mappedMethod1[2].equals(method.desc)) {
-                    method.desc = mappedMethod1[2];
-                }
+                method.name = mappedMethod1[1];
+                method.desc = mappedMethod1[2];
+            }else {
+                method.desc = mapMethodDescriptor(method.desc);
             }
             if (method.localVariables != null) {
                 for (LocalVariableNode localVariable : method.localVariables) {
@@ -94,11 +89,14 @@ public class MappingTransformer extends ITransformer2 {
                         
                         // 映射方法名和描述符
                         String fullMethodRefName = methodInsnNode.owner + "." + methodInsnNode.name + methodInsnNode.desc;
-                        String[] mappedMethodRef = mappingImpl.mapMethod(fullMethodRefName);
+                        String[] mappedMethodRef = mappingImpl.mapMethodNull(fullMethodRefName);
                         if (mappedMethodRef != null && mappedMethodRef.length > 2) {
                             methodInsnNode.owner = mappedMethodRef[0];
                             methodInsnNode.name = mappedMethodRef[1];
                             methodInsnNode.desc = mappedMethodRef[2];
+                        }else {
+                            methodInsnNode.owner = mappingImpl.mapClass(methodInsnNode.owner);
+                            methodInsnNode.desc = mapMethodDescriptor(methodInsnNode.desc);
                         }
                     }
                     

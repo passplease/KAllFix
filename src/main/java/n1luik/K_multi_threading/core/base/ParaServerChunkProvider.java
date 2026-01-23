@@ -10,6 +10,9 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.*;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -1106,6 +1109,49 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
             return 1;
         }
     }
+
+    public boolean isChunkLoaded(int x, int z) {//可能对不上
+        SortedArraySet<Ticket<?>> tickets = distanceManager.tickets.get(ChunkPos.asLong(x, z));
+        return tickets != null && !tickets.isEmpty();
+    }
+    public ChunkAccess getBufMax(int x, int z, ChunkStatus status) {//可能无法获取
+        return getBufMax(ChunkPos.asLong(x, z), status);
+    }
+    public ChunkAccess getBufMax(long pos, ChunkStatus status) {//可能无法获取
+        ChunkAccess ret = null;
+        while (status != null) {
+            ret = lookupChunk(pos, status);
+            status = status.getParent();
+        }
+        return ret;
+    }
+    public Stream<ChunkPos> getLoadedChunks() {//可能对不上
+        return distanceManager.tickets.keySet().longStream().mapToObj(ChunkPos::new);
+    }
+    public LongStream getLoadedChunkPos() {//可能对不上
+        return distanceManager.tickets.keySet().longStream();
+    }
+    public ChunkAccess getChunkOnDisk(int x, int z) {
+        return getChunk(x, z, ChunkStatus.EMPTY,true);
+    }
+    public ChunkAccess getChunkMinOnDisk(int x, int z) {
+        ChunkAccess chunk = getBufMax(x, z, ChunkStatus.FULL);
+        if (chunk != null) return chunk;
+        return getChunkOnDisk(x, z);
+    }
+    public ChunkStatus getStatus(int x, int z) {// TODO 内存开销问题
+        return getChunkMinOnDisk(x, z).getStatus();
+    }
+    public ChunkAccess getBufMax(int x, int z) {
+        return getBufMax(ChunkPos.asLong(x, z), ChunkStatus.FULL);
+    }
+    public void KMT$managedBlockRun(BooleanSupplier p_18702_){
+        mainThreadProcessor.managedBlock(p_18702_);
+    }
+    public void KMT$pollTaskRun(){
+        mainThreadProcessor.pollTask();
+    }
+
 
     //@Override
     //public boolean runDistanceManagerUpdates() {
