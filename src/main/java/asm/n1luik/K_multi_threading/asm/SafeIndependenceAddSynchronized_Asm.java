@@ -29,6 +29,8 @@ public class SafeIndependenceAddSynchronized_Asm extends ITransformer2 {
                 new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.addEntity(Lnet/minecraft/world/entity/Entity;)V"), "kmt-ChunkMap.Entity"),
                 new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.move(Lnet/minecraft/server/level/ServerPlayer;)V"), null),
                 new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.tickBlockEntities()V"), null),
+                //new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/DistanceManager.addPlayer(Lnet/minecraft/core/SectionPos;Lnet/minecraft/server/level/ServerPlayer;)V"), "kmt-fixPlayer"),
+                //new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/DistanceManager.removePlayer(Lnet/minecraft/core/SectionPos;Lnet/minecraft/server/level/ServerPlayer;)V"), "kmt-fixPlayer"),
                 new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.setBlockState(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/level/block/state/BlockState;"), null)
         ));
 

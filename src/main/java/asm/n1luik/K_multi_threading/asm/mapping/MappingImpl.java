@@ -6,8 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public abstract class MappingImpl {
-    protected final Map<String,String> map = new HashMap<>();
+public class MappingImpl {
+    public final Map<String,String> map;
+    public MappingImpl(int size) {
+        map = new HashMap<>(size);
+    }
+    public MappingImpl() {
+        map = new HashMap<>();
+    }
 
     public static String mapMethodDesc(String desc, Function<String,String> mapper){
 
