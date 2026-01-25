@@ -122,6 +122,8 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
             new AsmTarget("ydmsama.hundred_years_war.main.entity.utils.PathingTaskManagerRegistry", false),
             new AsmTarget("harmonised.pmmo.registry.PerkRegistry", false),
             new AsmTarget("com.cozary.nameless_trinkets.utils.MaxHealthFix", false),
+            new AsmTarget("top.ribs.scguns.entity.raid.RaidManager", false),
+            new AsmTarget("forge.net.mca.server.world.data.FamilyTree", false),
             new AsmTarget("appeng.me.service.CraftingService", false),
             new AsmTarget("appeng.api.stacks.KeyCounter", true)
     ));
