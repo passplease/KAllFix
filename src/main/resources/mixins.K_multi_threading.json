@@ -63,7 +63,6 @@
     "minecraftfix.LevelChunkFix1",
     "minecraftfix.LevelChunkTicksFix1",
     "minecraftfix.LevelFix1",
-    "minecraftfix.MinecraftServerFix1",
     "minecraftfix.PersistentEntitySectionManagerFix1",
     "minecraftfix.ServerChunkCache_MainThreadExecutorFix2",
     "minecraftfix.ServerChunkCacheFix1",
@@ -78,6 +77,9 @@
     "minecraftfix.loginMultiThreading.PacketUtilsFix1",
     "minecraftfix.loginMultiThreading.ServerGamePacketListenerImplFix2",
     "minecraftfix.loginMultiThreading.ServerLoginPacketListenerImplImpl1"
+  ],
+  "server": [
+    "minecraftfix.MinecraftServerFix1"
   ],
   "error": [
     "minecraftfix.ChunkGeneratorFix3",

@@ -34,6 +34,7 @@ public abstract class MinecraftServerFix1 extends BlockableEventLoop<TickTask> {
 
         if (ParaServerChunkProvider.generatorAllThread.getState() != Thread.State.TERMINATED){
             LOGGER.warn("ParaServerChunkProvider.generatorAllThread is not terminated: \n{}", Util.notMaxThreadInfoToString(ManagementFactory.getThreadMXBean().getThreadInfo(ParaServerChunkProvider.generatorAllThread.getId(), Integer.MAX_VALUE), Integer.MAX_VALUE));
+            ParaServerChunkProvider.generatorAllRunStop();
             try{
                 ParaServerChunkProvider.generatorAllThread.stop();
             }catch (Throwable throwable){

@@ -71,4 +71,9 @@ public class TaskRun implements Executor {
     public void start() {
         TaskRun.start();
     }
+
+    public void stop() {
+        stop = true;
+        Unsafe.unsafe.unpark(TaskRun);
+    }
 }

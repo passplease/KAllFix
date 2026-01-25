@@ -64,6 +64,9 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     protected static final TaskRun generatorAllRun = new TaskRun("generatorAllThread", () -> {
         Base.regThread("generatorAllThread", Thread.currentThread());
     });
+    public static void generatorAllRunStop(){
+        generatorAllRun.stop();
+    }
 
 
     static {
