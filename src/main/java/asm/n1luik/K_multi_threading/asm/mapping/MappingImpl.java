@@ -100,7 +100,11 @@ public class MappingImpl {
     public String mapNull_(String name) {
         return map.get(name);
     }
-
+    /**
+     * 映射类名
+     * @param name 类名，格式为全限定名，例如：java/lang/Object
+     * @return 映射后的类名
+     */
     public String mapClass(String name){
         return map_(name);
     }

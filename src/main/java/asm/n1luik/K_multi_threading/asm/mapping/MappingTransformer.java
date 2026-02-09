@@ -1,5 +1,6 @@
 package asm.n1luik.K_multi_threading.asm.mapping;
 
+import asm.n1luik.K_multi_threading.asm.Util;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.ConstantDynamic;
@@ -9,6 +10,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class MappingTransformer extends ITransformer2 {
@@ -70,9 +72,18 @@ public class MappingTransformer extends ITransformer2 {
             }else {
                 method.desc = mapMethodDescriptor(method.desc);
             }
+            if (method.tryCatchBlocks != null) {
+                for (var tc : method.tryCatchBlocks) {
+                    if (tc.type != null) tc.type = mappingImpl.mapClass(tc.type);
+                }
+            }
             if (method.localVariables != null) {
                 for (LocalVariableNode localVariable : method.localVariables) {
                     localVariable.desc = mapFieldDescriptor(localVariable.desc);
+                    String signature = localVariable.signature;
+                    if (signature != null && !signature.contains("<") && signature.startsWith("L") && signature.endsWith(";")) {
+                        localVariable.signature = mapFieldDescriptor(signature);
+                    }
                 }
             }
             
@@ -100,6 +111,27 @@ public class MappingTransformer extends ITransformer2 {
                         }
                     }
                     
+                    // 处理帧
+                    else if (insnNode instanceof FrameNode frameNode) {
+                        List<Object> stack = frameNode.stack;
+                        if (stack != null) {
+                            for (int i = 0; i < stack.size(); i++) {
+                                Object o = stack.get(i);
+                                if (o instanceof String str) {
+                                    stack.set(i, mapCommonDescriptor(str));
+                                }
+                            }
+                        }
+                        List<Object> local = frameNode.local;
+                        if (local != null) {
+                            for (int i = 0; i < local.size(); i++) {
+                                Object o = local.get(i);
+                                if (o instanceof String str) {
+                                    local.set(i, mapCommonDescriptor(str));
+                                }
+                            }
+                        }
+                    }
                     // 处理字段访问指令
                     else if (insnNode instanceof FieldInsnNode fieldInsnNode) {
                         //// 映射类名
@@ -114,8 +146,8 @@ public class MappingTransformer extends ITransformer2 {
                         if (mappedFieldRef != null && mappedFieldRef.length > 1) {
                             fieldInsnNode.owner = mappedFieldRef[0];
                             fieldInsnNode.name = mappedFieldRef[1];
-                            fieldInsnNode.desc = mapFieldDescriptor(fieldInsnNode.desc);
                         }
+                        fieldInsnNode.desc = mapFieldDescriptor(fieldInsnNode.desc);
                     }
                     
                     // 处理类型指令
@@ -288,10 +320,11 @@ public class MappingTransformer extends ITransformer2 {
         }
         // 处理OBJECT类型
         else if (typeCst.getSort() == Type.OBJECT) {
-            String className = typeCst.getClassName();
-            String mappedClassName = mappingImpl.mapClass(className);
-            if (!mappedClassName.equals(className)) {
-                newType = Type.getObjectType(mappedClassName);
+            // getInternalName() 直接返回斜杠分隔的内部名
+            String internalName = typeCst.getInternalName();
+            String mappedInternalName = mappingImpl.mapClass(internalName);
+            if (!mappedInternalName.equals(internalName)) {
+                newType = Type.getObjectType(mappedInternalName);
                 needUpdate = true;
             }
         }
@@ -466,28 +499,21 @@ public class MappingTransformer extends ITransformer2 {
      */
     protected Type processType(Type type) {
         if (type.getSort() == Type.ARRAY) {
-            // 获取元素类型
+            // 获取元素类型并递归处理
             Type elementType = type.getElementType();
-            // 处理元素类型
-            Type newElementType = elementType;
-            if (elementType.getSort() == Type.OBJECT) {
-                String elementClassName = elementType.getClassName();
-                String mappedElementClassName = mappingImpl.mapClass(elementClassName);
-                if (!mappedElementClassName.equals(elementClassName)) {
-                    newElementType = Type.getObjectType(mappedElementClassName);
-                }
-            }
-            
+            Type newElementType = processType(elementType);
+
             // 根据原数组维度创建新的数组Type
             int dimensions = type.getDimensions();
-            String arrayDesc = "[" .repeat(dimensions) + newElementType.getDescriptor();
+            String arrayDesc = "[".repeat(dimensions) + newElementType.getDescriptor();
             return Type.getType(arrayDesc);
         }
         else if (type.getSort() == Type.OBJECT) {
-            String className = type.getClassName();
-            String mappedClassName = mappingImpl.mapClass(className);
-            if (!mappedClassName.equals(className)) {
-                return Type.getObjectType(mappedClassName);
+            // getInternalName() 直接返回斜杠分隔的内部名
+            String internalName = type.getInternalName();
+            String mappedInternalName = mappingImpl.mapClass(internalName);
+            if (!mappedInternalName.equals(internalName)) {
+                return Type.getObjectType(mappedInternalName);
             }
         }
         else if (type.getSort() == Type.METHOD) {
@@ -581,35 +607,36 @@ public class MappingTransformer extends ITransformer2 {
      * 映射方法描述符，替换其中的类名
      */
     protected String mapMethodDescriptor(String methodDesc) {
-        // 解析方法描述符，提取参数类型和返回类型
-        // 简单实现，假设描述符格式正确
-        int paramStart = methodDesc.indexOf('(');
-        int paramEnd = methodDesc.indexOf(')');
-        
-        if (paramStart == -1 || paramEnd == -1) {
-            return methodDesc;
-        }
-        
-        String paramDesc = methodDesc.substring(paramStart + 1, paramEnd);
-        String returnDesc = methodDesc.substring(paramEnd + 1);
-        
-        // 映射参数类型
-        StringBuilder mappedParamDesc = new StringBuilder();
-        int i = 0;
-        while (i < paramDesc.length()) {
-            int endIndex = findTypeEnd(paramDesc, i);
-            if (endIndex == -1) {
-                break;
-            }
-            String typeDesc = paramDesc.substring(i, endIndex);
-            mappedParamDesc.append(mapTypeDescriptor(typeDesc));
-            i = endIndex;
-        }
-        
-        // 映射返回类型
-        String mappedReturnDesc = mapTypeDescriptor(returnDesc);
-        
-        return "(" + mappedParamDesc + ")" + mappedReturnDesc;
+        return mappingImpl.mapMethodDesc(methodDesc);
+//        // 解析方法描述符，提取参数类型和返回类型
+//        // 简单实现，假设描述符格式正确
+//        int paramStart = methodDesc.indexOf('(');
+//        int paramEnd = methodDesc.indexOf(')');
+//
+//        if (paramStart == -1 || paramEnd == -1) {
+//            return methodDesc;
+//        }
+//
+//        String paramDesc = methodDesc.substring(paramStart + 1, paramEnd);
+//        String returnDesc = methodDesc.substring(paramEnd + 1);
+//
+//        // 映射参数类型
+//        StringBuilder mappedParamDesc = new StringBuilder();
+//        int i = 0;
+//        while (i < paramDesc.length()) {
+//            int endIndex = findTypeEnd(paramDesc, i);
+//            if (endIndex == -1) {
+//                break;
+//            }
+//            String typeDesc = paramDesc.substring(i, endIndex);
+//            mappedParamDesc.append(mapTypeDescriptor(typeDesc));
+//            i = endIndex;
+//        }
+//
+//        // 映射返回类型
+//        String mappedReturnDesc = mapTypeDescriptor(returnDesc);
+//
+//        return "(" + mappedParamDesc + ")" + mappedReturnDesc;
     }
     
     /**
@@ -652,6 +679,46 @@ public class MappingTransformer extends ITransformer2 {
         }
         return typeDesc;
     }
+    //帧的
+    protected String mapCommonDescriptor(String desc) {
+        //快速粗略处理
+        switch (desc){
+            case "B":
+            case "J":
+            case "C":
+            case "Z":
+            case "F":
+            case "I":
+            case "S":
+            case "D":
+            case "V":
+            case "[B":
+            case "[J":
+            case "[C":
+            case "[Z":
+            case "[F":
+            case "[I":
+            case "[S":
+            case "[D":
+            case "[V":
+                return desc;
+        }
+        if (desc.startsWith("java")) {
+            return desc;
+        }
+        if (desc.startsWith("[")) {
+            return mapFieldDescriptor(desc);
+        }
+        if (desc.contains("/")){
+            if (desc.endsWith(";"))
+                return mapFieldDescriptor(desc);
+            return mappingImpl.mapClass(desc);
+        }else if (desc.length() > 1){
+            return mappingImpl.mapClass(desc);
+        }else if (!Util.isDefaultClass(desc)){
+            return mappingImpl.mapClass(desc);
+        }else return desc;
+    }
     protected String mapFieldDescriptor(String fieldDesc) {
         // 映射类型
         int array = 0;
@@ -660,11 +727,10 @@ public class MappingTransformer extends ITransformer2 {
         while (pos < max) {
             if (fieldDesc.charAt(pos) == '[') {
                 array++;
-            } else {
                 pos++;
+            } else {
                 break;
             }
-            pos++;
         }
         if (pos < max){
             if (fieldDesc.charAt(pos) == 'L') {
@@ -675,7 +741,7 @@ public class MappingTransformer extends ITransformer2 {
                     }
                     pos++;
                 }
-                return "[".repeat(array) + "L" + mappingImpl.mapClass(fieldDesc.substring(sp, pos - 1)) + ";";
+                return "[".repeat(array) + "L" + mappingImpl.mapClass(fieldDesc.substring(sp, pos)) + ";";
             }
         }
         return fieldDesc;

@@ -1,9 +1,9 @@
 buildscript{
     repositories {
 
-        maven { url =  'https://maven.aliyun.com/repository/gradle-plugin' }
         maven { url = 'https://maven.minecraftforge.net/' }
         maven { url = "https://maven.fabricmc.net/" }
+        maven { url =  'https://maven.aliyun.com/repository/gradle-plugin' }
         maven { url = "https://papermc.io/repo/repository/maven-public/" }
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url = "https://google.bintray.com/tensorflow" }
