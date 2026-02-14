@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public class MappingImpl {
+public class MappingImpl implements Function<String,String>{
     public final Map<String,String> map;
     public MappingImpl(int size) {
         map = new HashMap<>(size);
@@ -44,6 +44,113 @@ public class MappingImpl {
         }
         return buffer.toString();
     }
+
+    public static int mapLocalSignatureEnd(String signature, int pos, int max){
+        int i = pos;
+        while (i++<max) {
+            var c = signature.charAt(i);
+            switch (c) {
+                case '<':
+                case ';':
+                case '+':
+                case '-':
+                case '*':
+                case '(':
+                case ')':
+                case ',':
+                    return i;
+            }
+        }
+        throw new IllegalArgumentException("signature not end with ';' or '<' or '+' or '-' or '*'");
+    }
+    public static int mapLocalSignatureName(String signature, int pos, int max){
+
+        int i = pos;
+        while ((i+=1)<max) {
+            var c = signature.charAt(i);
+            switch (c) {
+                case '<':
+                case '+':
+                case '-':
+                case '*':
+                case '(':
+                case ')':
+                case '/':
+                case ';':
+                    return -1;
+                case ',':
+                case ':':
+                    return i;
+            }
+        }
+        return -1;
+    }
+    public static String mapLocalSignature(String signature, Function<String,String> mapper){
+        boolean contains = signature.contains("<");
+        if (signature.endsWith(";") || contains){
+            if (contains){
+                StringBuilder buffer = new StringBuilder();
+                int max = signature.length();
+                int i = 0;
+                while (i<max){
+                    var c = signature.charAt(i);
+                    switch (c){
+                        case '(':
+                        case ')':
+                        case '+':
+                        case '-':
+                        case '*':
+                            buffer.append(c);
+                            i++;
+                            continue;
+                        case '<':
+                        case ',':
+                        case ';': {
+                            buffer.append(c);
+                            i++;
+                            int e = mapLocalSignatureName(signature, i, max);
+                            if (e > 0){
+                                i = e+1;
+                                buffer.append(signature, e, (i+1));
+                            }
+
+                            continue;
+                        }
+                        case 'L': {
+                            buffer.append(c);
+                            int e = mapLocalSignatureEnd(signature, i+=1, max);
+                            buffer.append(mapper.apply(signature.substring(i, e)));
+                            i = e;
+                            continue;
+                        }
+                        default:
+                            buffer.append(c);
+                            i++;
+                    }
+                }
+                return buffer.toString();
+            }else {
+                if (signature.startsWith("L")){
+
+                    var s = signature.substring(1, signature.length() - 1);
+                    if (s.length() > 1){
+                        if (Util.isDefaultClass(s)){
+                            return signature;
+                        }
+                    }
+                    return "L"+mapper.apply(s)+";";
+                }else {
+                    return signature;
+                }
+            }
+        }else {
+            return signature;
+        }
+    }
+    public String mapLocalSignature(String signature){
+        return mapLocalSignature(signature, this);
+    }
+
     public String mapMethodDesc(String desc){
 
         StringBuilder buffer = new StringBuilder("(");
@@ -107,5 +214,10 @@ public class MappingImpl {
      */
     public String mapClass(String name){
         return map_(name);
+    }
+
+    @Override
+    public String apply(String s) {
+        return mapClass(s);
     }
 }

@@ -27,6 +27,9 @@ public class MappingTransformer extends ITransformer2 {
     public ClassNode transform(ClassNode input, MappingImpl mappingImpl) {
         // 映射类名
         String mappedClassName = mappingImpl.mapClass(input.name);
+        if (input.signature != null) {
+            input.signature = mappingImpl.mapLocalSignature(input.signature);
+        }
         if (!mappedClassName.equals(input.name)) {
             input.name = mappedClassName;
         }
@@ -55,11 +58,18 @@ public class MappingTransformer extends ITransformer2 {
             if (mappedField != null && mappedField.length > 1 && !mappedField[1].equals(field.name)) {
                 field.name = mappedField[1];
             }
+            if (field.signature != null) {
+                String signature = mappingImpl.mapLocalSignature(field.signature);
+                field.signature = signature;
+            }
             field.desc = mapFieldDescriptor(field.desc);
         }
         
         // 映射方法名和描述符
         for (MethodNode method : input.methods) {
+            if (method.signature != null) {
+                method.signature = mappingImpl.mapLocalSignature(method.signature);
+            }
             //// 跳过构造方法
             //if (method.name.equals("<init>") || method.name.equals("<clinit>")) {
             //    continue;
@@ -81,8 +91,8 @@ public class MappingTransformer extends ITransformer2 {
                 for (LocalVariableNode localVariable : method.localVariables) {
                     localVariable.desc = mapFieldDescriptor(localVariable.desc);
                     String signature = localVariable.signature;
-                    if (signature != null && !signature.contains("<") && signature.startsWith("L") && signature.endsWith(";")) {
-                        localVariable.signature = mapFieldDescriptor(signature);
+                    if (signature != null) {
+                        localVariable.signature = mappingImpl.mapLocalSignature(signature);
                     }
                 }
             }
@@ -534,14 +544,7 @@ public class MappingTransformer extends ITransformer2 {
         String mappedOwner = handle.getOwner();
         String mappedName = handle.getName();
         String mappedDesc = handle.getDesc();
-        
-        // 映射Handle中的类名
-        String tempMappedOwner = mappingImpl.mapClass(handle.getOwner());
-        if (!tempMappedOwner.equals(handle.getOwner())) {
-            mappedOwner = tempMappedOwner;
-            needUpdate = true;
-        }
-        
+
         // 根据Handle类型处理
         switch (handle.getTag()) {
             // 静态方法
@@ -571,6 +574,7 @@ public class MappingTransformer extends ITransformer2 {
                     // 方法调用
                     String fullMethodName = handle.getOwner() + "." + handle.getName() + handle.getDesc();
                     String[] mappedMethod = mappingImpl.mapMethod(fullMethodName);
+
                     if (mappedMethod != null && mappedMethod.length > 2) {
                         if (!mappedMethod[1].equals(handle.getName())) {
                             mappedName = mappedMethod[1];
@@ -578,6 +582,18 @@ public class MappingTransformer extends ITransformer2 {
                         }
                         if (!mappedMethod[2].equals(handle.getDesc())) {
                             mappedDesc = mappedMethod[2];
+                            needUpdate = true;
+                        }else {
+                            var mappedDesc2 = mapMethodDescriptor(mappedMethod[2]);
+                            if (!mappedDesc2.equals(mappedMethod[2])) {
+                                mappedDesc = mappedDesc2;
+                                needUpdate = true;
+                            }
+                        }
+                    }else {
+                        var mappedDesc2 = mapMethodDescriptor(mappedMethod[2]);
+                        if (!mappedDesc2.equals(mappedMethod[2])) {
+                            mappedDesc = mappedDesc2;
                             needUpdate = true;
                         }
                     }
@@ -588,7 +604,14 @@ public class MappingTransformer extends ITransformer2 {
                 // 不处理
                 break;
         }
-        
+
+        // 映射Handle中的类名
+        String tempMappedOwner = mappingImpl.mapClass(handle.getOwner());
+        if (!tempMappedOwner.equals(handle.getOwner())) {
+            mappedOwner = tempMappedOwner;
+            needUpdate = true;
+        }
+
         if (needUpdate) {
             return new Handle(
                     handle.getTag(),
