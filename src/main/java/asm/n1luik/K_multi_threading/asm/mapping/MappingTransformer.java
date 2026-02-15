@@ -28,7 +28,8 @@ public class MappingTransformer extends ITransformer2 {
         // 映射类名
         String mappedClassName = mappingImpl.mapClass(input.name);
         if (input.signature != null) {
-            input.signature = mappingImpl.mapLocalSignature(input.signature);
+            String signature = mappingImpl.mapLocalSignature(input.signature);
+            input.signature = signature;
         }
         if (!mappedClassName.equals(input.name)) {
             input.name = mappedClassName;

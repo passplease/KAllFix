@@ -110,8 +110,9 @@ public class MappingImpl implements Function<String,String>{
                             i++;
                             int e = mapLocalSignatureName(signature, i, max);
                             if (e > 0){
-                                i = e+1;
-                                buffer.append(signature, e, (i+1));
+                                buffer.append(signature, i, e);
+                                i = e;
+
                             }
 
                             continue;
