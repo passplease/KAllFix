@@ -79,7 +79,7 @@ public class MappingTransformer extends ITransformer2 {
             String[] mappedMethod1 = mappingImpl.mapMethodNull(fullMethodName);
             if (mappedMethod1 != null && mappedMethod1.length > 2) {
                 method.name = mappedMethod1[1];
-                method.desc = mappedMethod1[2];
+                method.desc = mappedMethod1[2].equals(method.desc) ? mapMethodDescriptor(method.desc) : mappedMethod1[2];
             }else {
                 method.desc = mapMethodDescriptor(method.desc);
             }
