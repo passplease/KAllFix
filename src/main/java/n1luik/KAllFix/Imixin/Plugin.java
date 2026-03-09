@@ -2,10 +2,11 @@ package n1luik.KAllFix.Imixin;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
+import asm.n1luik.K_multi_threading.asm.ForgeAsm;
+import asm.n1luik.K_multi_threading.asm.mapping.MappingImpl;
+import asm.n1luik.K_multi_threading.asm.mapping.MappingTransformer;
 import cpw.mods.modlauncher.TransformingClassLoader;
 import lombok.extern.slf4j.Slf4j;
 import n1luik.K_multi_threading.debug.GetterClassFileCommand;
@@ -13,7 +14,8 @@ import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
 import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.forgespi.locating.IModFile;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.*;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
@@ -173,6 +175,60 @@ public class Plugin implements IMixinConfigPlugin {
 
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+
+        for (MethodNode methodNode : targetClass.methods) {
+            if (findAnnotation(methodNode, "Ln1luik/KAllFix/api/SetPublic;")) {
+                methodNode.access &= ~(Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED | Opcodes.ACC_PUBLIC);
+                methodNode.access |= Opcodes.ACC_PUBLIC;
+            }
+        }
+        for (FieldNode field : targetClass.fields) {
+            if (findAnnotation(field, "Ln1luik/KAllFix/api/AddFinal;")) {
+                field.access |= Opcodes.ACC_FINAL;
+            }
+        }
+        // 检查是否有 CatInit 注解
+        boolean isCatInit = false;
+        List<MethodNode> allRedirectMethods = new ArrayList<>((int) (targetClass.methods.size() * 0.1) + 1);
+        List<MethodNode> catInitMethods = new ArrayList<>(allRedirectMethods.size());
+        for (MethodNode method : targetClass.methods) {
+            if (findAnnotation(method, "Ln1luik/KAllFix/api/CatInit;")) {
+                isCatInit = true;
+                catInitMethods.add(method);
+                break;
+            }
+        }
+        if (isCatInit) {
+            List<MethodNode> initMethods = targetClass.methods.stream().filter(method -> method.name.equals("<init>")).toList();
+
+            int b = catInitMethods.stream().mapToInt(method -> method.maxStack).max().orElse(0);
+            for (MethodNode initMethod : initMethods) {
+                initMethod.maxStack = Math.max(initMethod.maxStack, b);
+                // 在所有return之前添加
+                // 找到所有return指令
+                List<Integer> returnOffsets = Arrays.stream(initMethod.instructions.toArray())
+                        .filter(instr -> instr.getOpcode() == Opcodes.RETURN)
+                        .map(instr -> initMethod.instructions.indexOf(instr))
+                        .toList();
+                // 在每个return指令之前插入
+                for (int offset : returnOffsets) {
+                    AbstractInsnNode abstractInsnNode = initMethod.instructions.get(offset);
+                    for (MethodNode catInitMethod : catInitMethods) {
+                        initMethod.instructions.insertBefore(abstractInsnNode, catInitMethod.instructions);
+                    }
+                }
+            }
+        }
+        if (!isCatInit) return;
+        //移除所有CatInit方法
+        targetClass.methods.removeIf(methodNode ->
+                {
+                    AnnotationNode annotationData = findAnnotationData(methodNode, "Ln1luik/KAllFix/api/AllRedirect;");
+                    String redirectClass = (String) findAnnotationArg(annotationData, "value");
+                    return findAnnotation(methodNode, "Ln1luik/KAllFix/api/CatInit;") ||
+                            (redirectClass != null && !redirectClass.isEmpty());
+                }
+        );
     }
 
     private static boolean isModLoaded(String modId) {
@@ -195,5 +251,67 @@ public class Plugin implements IMixinConfigPlugin {
         }
         ModFileInfo modInfo = list.get(0);
         return modInfo.getFile().getSecureJar().moduleDataProvider().open(file);
+    }
+
+    public static boolean findAnnotation(FieldNode field, String annotation) {
+        if (field.visibleAnnotations != null && field.visibleAnnotations.stream().anyMatch(a -> a.desc.equals(annotation)))
+            return true;
+        return field.invisibleAnnotations != null && field.invisibleAnnotations.stream().anyMatch(a -> a.desc.equals(annotation));
+    }
+    public static boolean findAnnotation(MethodNode met, String annotation) {
+        if (met.visibleAnnotations != null && met.visibleAnnotations.stream().anyMatch(a -> a.desc.equals(annotation)))
+            return true;
+        return met.invisibleAnnotations != null && met.invisibleAnnotations.stream().anyMatch(a -> a.desc.equals(annotation));
+    }
+    public static Object findAnnotationArg(AnnotationNode annotationNode, String name) {
+        if (annotationNode != null) {
+            for (int i = 0; i < annotationNode.values.size(); i += 2) {
+                if (annotationNode.values.get(i).equals(name)) {
+                    return annotationNode.values.get(i + 1);
+                }
+            }
+        }
+        return null;
+    }
+    public static LocalVariableNode findLocal(MethodNode met, int annotation) {
+        if (met.localVariables != null) {
+            for (LocalVariableNode localVariableNode : met.localVariables) {
+                if (localVariableNode.index == annotation) {
+                    return localVariableNode;
+                }
+            }
+        }
+        return null;
+    }
+    public static AnnotationNode findAnnotationData(MethodNode met, String annotation) {
+        if (met.visibleAnnotations != null) {
+            AnnotationNode annotationNode = met.visibleAnnotations.stream().filter(a -> a.desc.equals(annotation)).findFirst().orElse(null);
+            if (annotationNode != null) return annotationNode;
+        }
+        return met.invisibleAnnotations != null ? met.invisibleAnnotations.stream().filter(a -> a.desc.equals(annotation)).findFirst().orElse(null) : null;
+    }
+    public static AnnotationNode findAnnotationDataAndRemove(MethodNode met, String annotation) {
+        if (met.visibleAnnotations != null) {
+            Iterator<AnnotationNode> iterator = met.visibleAnnotations.iterator();
+            while (iterator.hasNext()) {
+                AnnotationNode annotationNode = iterator.next();
+                if (annotationNode.desc.equals(annotation)) {
+                    iterator.remove();
+                    return annotationNode;
+                }
+            }
+        }
+        List<AnnotationNode> invisibleAnnotations = met.invisibleAnnotations;
+        if (invisibleAnnotations != null) {
+            var iterator = invisibleAnnotations.iterator();
+            while (iterator.hasNext()) {
+                AnnotationNode annotationNode = iterator.next();
+                if (annotationNode.desc.equals(annotation)) {
+                    iterator.remove();
+                    return annotationNode;
+                }
+            }
+        }
+        return null;
     }
 }

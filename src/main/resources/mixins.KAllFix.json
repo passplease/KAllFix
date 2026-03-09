@@ -82,12 +82,14 @@
     "unsafe.path.PlainTextSearchTreeMultiThreading.FullTextSearchTreeMixin",
     "unsafe.path.RemoveFlyingTest.ServerGamePacketListenerImplMixin",
     "unsafe.path.SaveFileCompression.RegionFileMixin",
-    "unsafe.path.SaveFileCompression.RegionFileStorageMixin"
+    "unsafe.path.SaveFileCompression.RegionFileStorageMixin",
+    "unsafe.path.TagKeyFast.TagKeyMixin"
   ],
   "client": [
     "MinecraftMixin",
     "ex.FixAllPacket.mekanismexplosives.client.MinecraftMixin",
     "unsafe.debug.MinecraftDebug1",
+    "unsafe.debug.StarterDebug1",
     "unsafe.path.FixSetScreenAsync.MinecraftMixin",
     "unsafe.path.MultiThreadingEMI.PluginCallerMixin",
     "unsafe.path.MultiThreadingJEI.PluginCallerMixin",

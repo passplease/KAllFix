@@ -16,6 +16,7 @@ import asm.n1luik.K_multi_threading.asm.mod.create.CreateTrackBlockSynchronized_
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateTrackGraphSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.createenchantmentindustry.FluidTankBlockIsNullFix1_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.gtceu.ImplMetaMachine1_Asm;
+import asm.n1luik.K_multi_threading.asm.mod.lithium.ChunkMap_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.lithium.LithiumGetChunkSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.mek.MekanismNetworkAcceptorCacheSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.noisium.NoiseChunkGeneratorMixinFix1_Asm;
@@ -164,6 +165,9 @@ public class ForgeAsm extends AgentAPI {
         if (s.startsWith("1.19.")){
             iTransformers.add(new TruePacketThreadTestAsm());
             iTransformers.add(new LevelChunk_Asm());
+        }
+        if (AsmApi.isModLoaded("canary") || AsmApi.isModLoaded("radium") || AsmApi.isModLoaded("lithium")){
+            iTransformers.add(new ChunkMap_Asm());
         }
         if (AsmApi.isModLoaded("vmp")){
             iTransformers.add(new MixinTACSCancelSendingFixAsm());

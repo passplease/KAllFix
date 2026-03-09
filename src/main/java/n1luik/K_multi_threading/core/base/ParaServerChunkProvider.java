@@ -1124,7 +1124,11 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         ChunkAccess ret = null;
         while (status != null) {
             ret = lookupChunk(pos, status);
-            status = status.getParent();
+            if (ret != null) break;
+            ChunkStatus parent = status.getParent();
+            if (parent == status) break;
+            status = parent;
+
         }
         return ret;
     }

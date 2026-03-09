@@ -380,6 +380,10 @@ public class Unsafe {
         return MethodHandles.privateLookupIn(loader, Unsafe.lookup);
     }
 
+    public static long getFieldAddress(Field field) {
+        return unsafe.objectFieldOffset(field);
+    }
+
     public static long getTypeFieldAddress(Class<?> c, Class<?> type) {
         for (Field declaredField : c.getDeclaredFields()) {
             if (declaredField.getType().isAssignableFrom(type)) {
