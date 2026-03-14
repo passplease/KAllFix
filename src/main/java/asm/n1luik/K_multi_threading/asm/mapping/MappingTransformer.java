@@ -155,8 +155,12 @@ public class MappingTransformer extends ITransformer2 {
                         String fullFieldRefName = fieldInsnNode.owner + "." + fieldInsnNode.name;
                         String[] mappedFieldRef = mappingImpl.mapField(fullFieldRefName);
                         if (mappedFieldRef != null && mappedFieldRef.length > 1) {
-                            fieldInsnNode.owner = mappedFieldRef[0];
-                            fieldInsnNode.name = mappedFieldRef[1];
+                            if (fieldInsnNode.owner.equals(mappedFieldRef[0]) && fieldInsnNode.name.equals(mappedFieldRef[1])){
+                                fieldInsnNode.owner = mappingImpl.mapClass(fieldInsnNode.owner);
+                            }else {
+                                fieldInsnNode.owner = mappedFieldRef[0];
+                                fieldInsnNode.name = mappedFieldRef[1];
+                            }
                         }
                         fieldInsnNode.desc = mapFieldDescriptor(fieldInsnNode.desc);
                     }
