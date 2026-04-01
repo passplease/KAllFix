@@ -45,7 +45,7 @@ public class RapidFluidChannel {
         int p=0;
         var nbt = new CompoundTag();
         for (var fluidStack : IdList) {
-            IdHashList[p++] = fluidStack.builtInRegistryHolder().key().location().hashCode();//.getValues().hashCode();
+            IdHashList[p] = fluidStack.builtInRegistryHolder().key().location().hashCode();//.getValues().hashCode();
             IdLGet.put(fluidStack, p++);
         }
         IdLGet.defaultReturnValue(-1);
