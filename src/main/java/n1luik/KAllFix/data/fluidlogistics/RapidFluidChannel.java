@@ -67,6 +67,16 @@ public class RapidFluidChannel {
         }
 
     }
+    public static void fixFluidStack(ItemStack stack,FluidStack fluid){
+        CompoundTag tag = stack.getTag();
+
+        int id = IdLGet.getInt(fluid.getFluid());
+        if (id >= 0) {
+            tag.putInt("FluidHash", IdHashList[id]);
+            tag.putInt("FluidId", id);
+            tag.putInt("FluidSize", fluid.getAmount());
+        }
+    }
     public static FluidStack getFluidStack(ItemStack stack){
 
         CompoundTag tag = stack.getTag();
@@ -75,12 +85,7 @@ public class RapidFluidChannel {
             if(!DynamicUp || tag.contains("Tag"))return FluidStack.loadFluidStackFromNBT(tag.getCompound("Fluid"));
             var fluid = FluidStack.loadFluidStackFromNBT(tag.getCompound("Fluid"));
 
-            int id = IdLGet.getInt(fluid.getFluid());
-            if (id >= 0) {
-                tag.putInt("FluidHash", IdHashList[id]);
-                tag.putInt("FluidId", id);
-                tag.putInt("FluidSize", fluid.getAmount());
-            }
+            fixFluidStack(stack, fluid);
             return fluid;
         }
         int fluidId = tag.getInt("FluidId");
@@ -89,6 +94,8 @@ public class RapidFluidChannel {
                 return new FluidStack(IdList[fluidId], tag.getInt("FluidSize"));
             }
         }
-        return FluidStack.loadFluidStackFromNBT(tag.getCompound("Fluid"));
+        FluidStack fluid = FluidStack.loadFluidStackFromNBT(tag.getCompound("Fluid"));
+        fixFluidStack(stack, fluid);
+        return fluid;
     }
 }
