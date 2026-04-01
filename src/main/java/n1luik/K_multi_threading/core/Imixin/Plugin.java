@@ -37,6 +37,8 @@ public class Plugin implements IMixinConfigPlugin {
             case "n1luik.K_multi_threading.core.mixin.minecraftfix.ServerChunkCacheFix2" -> (!(isModLoaded("canary") || isModLoaded("radium") || isModLoaded("lithium"))) || Boolean.getBoolean("KMT-OpenVanillaServerChunkCache");
             case "n1luik.K_multi_threading.core.mixin.minecraftfix.LegacyRandomSourceFix2" -> !isModLoaded("structureessentials");
             case "n1luik.K_multi_threading.core.mixin.minecraftfix.ServerWatchdogFix1" -> !isModLoaded("fullstackwatchdog");
+            case "n1luik.K_multi_threading.core.mixin.impl.LevelImpl2" -> isModLoaded("observable");
+            case "n1luik.K_multi_threading.core.mixin.impl.LevelImpl1" -> !isModLoaded("observable");
             default -> true;
         };
     }

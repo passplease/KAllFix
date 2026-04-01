@@ -125,6 +125,8 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
             new AsmTarget("top.ribs.scguns.entity.raid.RaidManager", false),
             new AsmTarget("forge.net.mca.server.world.data.FamilyTree", false),
             new AsmTarget("com.wintercogs.beyonddimensions.api.storage.handler.impl.StackHandler", false),
+            new AsmTarget("net.minecraft.client.sounds.SoundBufferLibrary", false),
+            new AsmTarget("com.simibubi.create.foundation.sound.SoundScapes", false),
             new AsmTarget("appeng.me.service.CraftingService", false),
             new AsmTarget("appeng.api.stacks.KeyCounter", true)
     ));
