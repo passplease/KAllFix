@@ -1,6 +1,5 @@
 package asm.n1luik.K_multi_threading.asm;
 
-import appeng.shaded.flatbuffers.ReadBuf;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;

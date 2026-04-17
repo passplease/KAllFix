@@ -62,8 +62,11 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 - 在启用调试模式的时候需要[火花]spark 任意版本（没有测试过低版本但是最好不要低于1.10.53要不然可能不能生成保存成火花的格式）放入mods
   
 ##  功能
+- 修复ae2 KeyCounter用错map类型导致遍历计算量是数据的平方
+- 修复ae2 某些操作搭配是开根计算量
+- 修复ItemStack.isSameItemSameTags的性能问题
 - 优化eventwrapper 核心代码的性能问题
-- fluidlogistics 核心代码的性能问题
+- 优化fluidlogistics 核心代码的性能问题
   - 可以使用-DKAF-fluidlogistics.DisabledDynamicUp=true禁用更新旧id，如果开启可能会在特定情况导致性能下降
 - 优化[奇异饰品]artifacts Snowshoes物品的性能问题
 - 优化[悠然一派]Atmospheric的检测愚人节每一次都要计算Calendar的性能问题
