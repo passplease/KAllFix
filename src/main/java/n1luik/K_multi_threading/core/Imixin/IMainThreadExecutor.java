@@ -2,7 +2,9 @@ package n1luik.K_multi_threading.core.Imixin;
 
 import n1luik.K_multi_threading.core.base.ParaServerChunkProvider;
 
-public interface IMainThreadExecutor {
+import java.util.concurrent.Executor;
+
+public interface IMainThreadExecutor extends Executor {
     void k_multi_threading$pushThread();
     boolean k_multi_threading$notCallPollTask();
     boolean isCall();

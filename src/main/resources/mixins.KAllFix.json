@@ -24,6 +24,7 @@
     "mixinfix.LivingEntityMixin1",
     "mixinfix.MinecraftServerMixin",
     "mixinfix.MinecraftServerMixin2",
+    "mixinfix.NaturalSpawnerMixin",
     "mixinfix.ae.KeyCounterMixin",
     "mixinfix.ae.NetworkStorageMixin",
     "mixinfix.ae.QueuedOperationMixin",

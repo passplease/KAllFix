@@ -1152,6 +1152,9 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     public ChunkAccess getBufMax(int x, int z) {
         return getBufMax(ChunkPos.asLong(x, z), ChunkStatus.FULL);
     }
+    public ChunkAccess getBufMax(long pos) {
+        return getBufMax(pos, ChunkStatus.FULL);
+    }
     public void KMT$managedBlockRun(BooleanSupplier p_18702_){
         mainThreadProcessor.managedBlock(p_18702_);
     }
@@ -1250,5 +1253,10 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
                 return b = !ParaServerChunkProvider.this.KMT$managedBlockRun();
             }
         }
+    }
+
+    @Override
+    public IMainThreadExecutor KMTIMainThreadExecutor() {
+        return (IMainThreadExecutor)mainThreadProcessor;
     }
 }

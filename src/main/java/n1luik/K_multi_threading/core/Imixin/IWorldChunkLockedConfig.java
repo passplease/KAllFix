@@ -23,4 +23,5 @@ public interface IWorldChunkLockedConfig {
     void KMT$genTestTickRun(Runnable task);
     void KMT$addRun(Runnable task);
     boolean isGeneratorWait();
+    IMainThreadExecutor KMTIMainThreadExecutor();
 }
