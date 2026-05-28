@@ -154,6 +154,7 @@ public class Plugin implements IMixinConfigPlugin {
             case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSource2" -> biolithFixVersion == 2;
             case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSource2Forge" -> biolithFixVersion == 1;
             case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin2" -> biolithFixVersion != 0;
+            case "n1luik.KAllFix.mixin.mixinfix.lithium.LithiumEntityCollisionsMixin" -> Boolean.getBoolean("KAF-ChunkAwareBlockCollisionSweeperFast");
             case "n1luik.KAllFix.mixin.mixinfix.biolith.terrablender.InitializationHandlerMixin" ->
                     biolithFixVersion != 0 && isModLoaded("terrablender");
             default -> true;

@@ -62,6 +62,14 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 - 在启用调试模式的时候需要[火花]spark 任意版本（没有测试过低版本但是最好不要低于1.10.53要不然可能不能生成保存成火花的格式）放入mods
   
 ##  功能
+- 优化pmmo2的性能问题
+- 优化pmmo2的性能问题
+- 增加形状缓存
+- 生物ai预内存申请
+- EnchantmentHelper缓存
+- 删除create_connected的无效代码
+- 删除apotheosis的无效代码
+- 删除apotheosis的无效代码
 - 修复ae2 KeyCounter用错map类型导致遍历计算量是数据的平方
 - 修复ae2 某些操作搭配是开根计算量
 - 修复ItemStack.isSameItemSameTags的性能问题
@@ -128,6 +136,7 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
 - -DIndependencePlayer=true 开启玩家异步，这玩意大概率是负优化
 - -DKAF-TagKeyFast=true 优化TagKey
 - -DKAF-ServerGamePacketListenerImplMixin2=true 移除服务器移动距离的安全检查，这个可能跟一个模组不兼容会让玩家进不去服务器
+- -DKAF-ChunkAwareBlockCollisionSweeperFast=true 使用近似算法给锂的ChunkAwareBlockCollisionSweeper
 - -DKAF-gtceu.MedicalConditionTrackerMixin=true 禁止添加gtm的辐射
 - -DKAF-RemoveClientboundKeepAlivePacket=true 禁用ClientboundKeepAlivePacket功能
 - -DKAF-Fix_fabric-object-builder-api.jar=true 修复信雅互联的fabric-object-builder-api不兼容47.3.27的问题，我因为这个问题让这个mod晚发了半个月他们还没有解决
