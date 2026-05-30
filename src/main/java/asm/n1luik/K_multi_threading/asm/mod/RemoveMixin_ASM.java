@@ -25,6 +25,7 @@ public class RemoveMixin_ASM extends ITransformer2 {
             //new String[]{"com/ishland/vmp/mixins/general/collections/MixinTypeFilterableList","m_13533_"},
             new String[]{"com/gregtechceu/gtceu/core/mixins/LevelMixin","getTileEntity"},
             new String[]{"com/cupboard/mixin/ServerAddEntityMixin","OnaddEntity"},
+            new String[]{"observable/mixin/LevelMixin","observable$redirectTick"},
             new String[]{"com/github/alexthe666/iceandfire/mixin/gen/NoLakesInStructuresMixin","iaf_noLakesInMausoleum"}
 
     ));
