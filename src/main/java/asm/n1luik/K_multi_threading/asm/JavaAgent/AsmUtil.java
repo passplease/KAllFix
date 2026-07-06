@@ -1,12 +1,13 @@
 package asm.n1luik.K_multi_threading.asm.JavaAgent;
 
 import asm.n1luik.K_multi_threading.asm.OB2_ASM;
-import asm.n1luik.K_multi_threading.asm.mapping.MappingImpl;
-import asm.n1luik.K_multi_threading.asm.mapping.MappingSrgImplForge;
-import asm.n1luik.K_multi_threading.asm.mapping.MappingTransformerForge;
+import asm.n1luik.K_multi_threading.asm.mapping.*;
+import asm.n1luik.K_multi_threading.asm.util.AsmApi2;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
+import asm.n1luik.K_multi_threading.asm.util.Neo21MapppingMap;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
@@ -25,7 +26,7 @@ public class AsmUtil {
             if (is == null) {
                 throw new RuntimeException("无法找到类文件: " + path);
             }
-            return mapper.apply(path);
+            return mapper.apply(new String(is.readAllBytes(), StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -42,7 +43,7 @@ public class AsmUtil {
     }
     public static ITransformer2 newForge2MCPMap() {
         Set<String> strings = Set.of(loadMapFile("K_multi_threading.mapping/map_class.txt"));
-        return new MappingTransformerForge(loadMap("K_multi_threading.mapping/map_srg.srg", MappingSrgImplForge::new)){
+        return new MappingTransformerForge(loadMap("K_multi_threading.mapping/map_srg.srg", AsmApi2.bootType == AsmApi2.BootType.NEO_FORGE ? m -> new MappingMCP(new MapMappingSrgImplForge(m, new Neo21MapppingMap())) : MappingSrgImplForge::new)){
             @Override
             public @NotNull Set<String> targets() {
                 return strings;
@@ -169,5 +170,53 @@ public class AsmUtil {
                 sb.append(';');
             }
         }
+    }
+
+    public static ClassNode readClass(Class<?> c) {
+        return readClass(c.getClassLoader(), c.getName().replace('.', '/') + ".class");
+    }
+    public static ClassNode readClass(ClassLoader loader, String name) {
+        try (var is = loader.getResourceAsStream(name)) {
+            if (is == null) {
+                throw new RuntimeException("无法找到类文件: " + name);
+            }
+            ClassNode classNode = new ClassNode();
+            new ClassReader(is).accept(classNode, 0);
+            return classNode;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static MethodNode findMethod(ClassNode node, String name) {
+        return findMethod(node, name, null);
+    }
+    public static MethodNode findMethod(ClassNode node, String name, String desc) {
+        for (MethodNode methodNode : node.methods) {
+            if (methodNode.name.equals(name) && (desc == null || methodNode.desc.equals(desc))) {
+                return methodNode;
+            }
+        }
+        return null;
+    }
+    public static void replaceMethodImpl(ClassNode node, MethodNode method, String name) {
+        replaceMethodImpl(node, method, name, null);
+    }
+
+    public static void replaceMethodImpl(ClassNode node, MethodNode method, String name, String desc) {
+        if (desc != null && desc.isEmpty())desc = method.desc;
+        Iterator<MethodNode> iterator = node.methods.iterator();
+        boolean found = false;
+        while (iterator.hasNext()) {
+            MethodNode methodNode = iterator.next();
+            if (methodNode.name.equals(name) && (desc == null || methodNode.desc.equals(desc))) {
+                found = true;
+                iterator.remove();
+            }
+        }
+        if (!found){
+            log.error("[]无法找到方法: {} {}", method.name, method.desc);
+            return;
+        }
+        node.methods.add(method);
     }
 }

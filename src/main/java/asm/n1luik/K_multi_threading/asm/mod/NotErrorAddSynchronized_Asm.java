@@ -69,6 +69,14 @@ public class NotErrorAddSynchronized_Asm extends ITransformer2 {
             //血魔法
             ForgeAsm.minecraft_map.mapMethod("wayoftime/bloodmagic/util/handler/event/WillHandler.onServerWorldTick(Lnet/minecraftforge/event/TickEvent$LevelTickEvent;)V"),
             //机械动力
+            ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/TorquePropagator.getOrCreateNetworkFor(Lcom/simibubi/create/content/kinetics/base/KineticBlockEntity;)Lcom/simibubi/create/content/kinetics/KineticNetwork;"),
+            ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/belt/transport/BeltInventory.addItem(Lcom/simibubi/create/content/kinetics/belt/transport/TransportedItemStack;)V"),
+            ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/belt/transport/BeltInventory.insert(Lcom/simibubi/create/content/kinetics/belt/transport/TransportedItemStack;)V"),
+            ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/belt/transport/BeltInventory.tick()V"),
+            ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/belt/transport/BeltInventory.ejectAll()V"),
+            ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/belt/transport/BeltInventory.applyToEachWithin(FFLjava/util/function/Function;)V"),
+            ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/logistics/tunnel/BrassTunnelBlockEntity.lambda$tick$3(Ljava/util/List;)V"),
+            ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/logistics/tunnel/BrassTunnelBlockEntity.distribute(Ljava/util/List;)V"),
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/KineticNetwork.addSilently(Lcom/simibubi/create/content/kinetics/base/KineticBlockEntity;FF)V"),
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/KineticNetwork.updateCapacityFor(Lcom/simibubi/create/content/kinetics/base/KineticBlockEntity;F)V"),
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/KineticNetwork.updateStressFor(Lcom/simibubi/create/content/kinetics/base/KineticBlockEntity;F)V"),

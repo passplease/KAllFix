@@ -1,6 +1,7 @@
-package n1luik.KAllFix.mixin.mixinfix.fancyenchantments;
+package n1luik.KAllFix.mixin.mixinfix.path.fancyenchantments;
 
 import com.foolsix.fancyenchantments.events.EnchantmentEvents;
+import n1luik.KAllFix.Imixin.IfancyenchantmentsLivingEntity;
 import n1luik.KAllFix.data.fancyenchantments.UtilData;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -14,10 +15,11 @@ public class EnchantmentEventsMixin {
     public boolean fix1(LivingEvent.LivingTickEvent instance) {
         LivingEntity entity = instance.getEntity();
         if (!instance.isCanceled() && entity != null){
-            int i = entity.getEntityData().get(UtilData.fancyenchantments_up_tag);
+            int i = ((IfancyenchantmentsLivingEntity)entity).KAllFix$fancyenchantments_up_tag();//entity.getEntityData().get(UtilData.fancyenchantments_up_tag);
             if (i > 0) {
+                ((IfancyenchantmentsLivingEntity)entity).KAllFix$fancyenchantments_up_tag(i-1);
 
-                entity.getEntityData().set(UtilData.fancyenchantments_up_tag, i-1);
+                //entity.getEntityData().set(UtilData.fancyenchantments_up_tag, i-1);
                 return true;
             }
 

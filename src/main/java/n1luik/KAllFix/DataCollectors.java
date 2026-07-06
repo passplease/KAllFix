@@ -1,5 +1,6 @@
 package n1luik.KAllFix;
 
+import asm.n1luik.K_multi_threading.asm.util.AsmApi;
 import com.google.gson.Gson;
 import com.mojang.logging.LogUtils;
 import lombok.AllArgsConstructor;
@@ -26,10 +27,11 @@ public class DataCollectors {
     }
 
     public static boolean isModLoaded(String modId) {
-        if (ModList.get() == null) {
-            return LoadingModList.get().getMods().stream().map(ModInfo::getModId).anyMatch(modId::equals);
-        }
-        return ModList.get().isLoaded(modId);
+        return AsmApi.isModLoaded(modId);
+        //if (ModList.get() == null) {
+        //    return LoadingModList.get().getMods().stream().map(ModInfo::getModId).anyMatch(modId::equals);
+        //}
+        //return ModList.get().isLoaded(modId);
     }
 
     public void run() throws IOException {

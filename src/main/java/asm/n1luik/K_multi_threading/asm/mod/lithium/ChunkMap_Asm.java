@@ -145,6 +145,6 @@ public class ChunkMap_Asm extends ITransformer2 {
 
     @Override
     public @NotNull Set<String> targets() {
-        return Set.of("net/minecraft/server/level/ChunkMap\n");
+        return Set.of("net/minecraft/server/level/ChunkMap");
     }
 }

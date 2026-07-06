@@ -1,5 +1,6 @@
 {
   "compatibilityLevel": "JAVA_17",
+  "required": false,
   "minVersion": "0.8",
   "package": "n1luik.K_multi_threading.core.mixinAll",
   "refmap": "mixins.K_multi_threading.refmap.json",

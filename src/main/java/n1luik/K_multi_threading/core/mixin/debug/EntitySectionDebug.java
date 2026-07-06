@@ -19,6 +19,6 @@ public class EntitySectionDebug {
 
     @Inject(method = "add", at = @At("HEAD"))
     public <T extends EntityAccess> void debug1(T p_188347_, CallbackInfo ci){
-        LOGGER.debug("addEntityWithoutEvent", new Throwable());
+        LOGGER.info("addEntityWithoutEvent", new Throwable());
     }
 }

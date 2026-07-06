@@ -12,7 +12,9 @@ import asm.n1luik.KAllFix.asm.mod.jei.JEI_AddMapConcurrent_ASM;
 import asm.n1luik.KAllFix.asm.mod.jei.JEI_NotErrorAddSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.JavaAgent.AgentAPI;
 import asm.n1luik.K_multi_threading.asm.JavaAgent.AsmUtil;
+import asm.n1luik.K_multi_threading.asm.mod.canary.CanaryConfigAsm;
 import asm.n1luik.K_multi_threading.asm.util.AsmApi;
+import asm.n1luik.K_multi_threading.asm.util.AsmApi2;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import cpw.mods.modlauncher.TransformingClassLoader;
 import cpw.mods.modlauncher.api.ITransformer;
@@ -72,12 +74,6 @@ public class KAllFixAsm extends AgentAPI {
                     "org.violetmoon.quark.mixin.mixins.PotionUtilsMixin"
             )));
         }
-        try {
-            ClassLoader.getPlatformClassLoader().loadClass("net.neoforged.fml.javafmlmod.FMLModContainer");//确定是neoforge
-            transformers.add(AsmUtil.newForge2MCPMap());
-
-        }catch (Exception e){
-        }
         transformers.add(new RemoveMixin_ASM());
         if (Boolean.getBoolean("KAF-FixTFMGDestroy")){
             transformers.add(new DestroyFix_Asm());
@@ -90,6 +86,9 @@ public class KAllFixAsm extends AgentAPI {
         }
         if (CanaryConfig.ENABLED) {
             transformers.add(new GcyrCanaryMapping_Asm());
+        }
+        if (AsmApi2.bootType== AsmApi2.BootType.NEO_FORGE) {
+            transformers.add(AsmUtil.newForge2MCPMap());
         }
         return transformers;
     }

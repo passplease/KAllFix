@@ -8,6 +8,7 @@ import org.objectweb.asm.tree.*;
 
 import java.util.Set;
 
+@Deprecated
 @Slf4j
 public class AddServerLevelSync1_Asm extends ITransformer2 {
     @NotNull

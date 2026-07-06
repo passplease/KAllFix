@@ -128,7 +128,11 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
             new AsmTarget("net.minecraft.client.sounds.SoundBufferLibrary", false),
             new AsmTarget("com.simibubi.create.foundation.sound.SoundScapes", false),
             new AsmTarget("com.simibubi.create.content.kinetics.TorquePropagator", false),
+            new AsmTarget("com.simibubi.create.foundation.advancement.CriterionTriggerBase", true),
             new AsmTarget("blusunrize.immersiveengineering.common.util.WorldMap", false, new String[0], AsmTarget.EMPTY_METHODS4),
+            new AsmTarget("com.hlysine.create_connected.datagen.advancements.CriterionTriggerBase", false),
+            new AsmTarget("plus.dragons.createenchantmentindustry.dragonLibLegacy.advancement.critereon.AbstractTrigger", false),
+            new AsmTarget("com.teamabnormals.blueprint.common.advancement.EmptyTrigger", false),
             new AsmTarget("appeng.me.service.CraftingService", false),
             new AsmTarget("appeng.api.stacks.KeyCounter", true)
     ));

@@ -1,8 +1,8 @@
 {
   "compatibilityLevel": "JAVA_17",
+  "required": false,
   "minVersion": "0.8",
   "package": "n1luik.KAllFix.forge.RenderOptimizer.mixin",
-  "refmap": "mixins.K_multi_threading.refmap.json",
   "plugin": "n1luik.KAllFix.Imixin.Plugin",
   "server": [
   ],

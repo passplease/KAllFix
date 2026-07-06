@@ -33,7 +33,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'idea'
-    //id 'net.neoforged.gradle.userdev'
+//    id 'net.neoforged.gradle.userdev'
 }
 
 apply plugin: 'net.neoforged.gradle.userdev'
@@ -75,6 +75,7 @@ runs {
         modSource project.sourceSets.main
     }
 }
+minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
 
 // Sets up a dependency configuration called 'localRuntime'.
 // This configuration should be used instead of 'runtimeOnly' to declare
@@ -85,6 +86,9 @@ configurations {
 }
 
 dependencies {
+    annotationProcessor 'org.projectlombok:lombok:1.18.42'
+    implementation 'org.projectlombok:lombok:1.18.42'
+
     // Specify the version of Minecraft to use.
     // Depending on the plugin applied there are several options. We will assume you applied the userdev plugin as shown above.
     // The group for userdev is net.neoforged, the module name is neoforge, and the version is the same as the neoforge version.
@@ -93,7 +97,12 @@ dependencies {
     // For all intends and purposes: You can treat this dependency as if it is a normal library you would use.
     implementation "net.neoforged:neoforge:${neo_version}"
     if (System.getProperty("mode3") == "true") {
-        implementation project(":")
+        implementation (project(":")){
+            // 排除所有传递依赖
+            transitive = false
+            // 或者按 group/module 排除特定的库
+            // exclude group: 'org.example', module: 'unwanted-lib'
+        }
     }
 
     // Other dependencies

@@ -7,7 +7,6 @@ import java.util.Map;
 public class MappingSrgImplForge extends MappingImpl {
 
     public MappingSrgImplForge(String m) {
-        Map<String,String> map2 = new HashMap<>();
 
         for (String s : m.split("(\n|\r\n)+")) {
             String[] split = s.split(": ");

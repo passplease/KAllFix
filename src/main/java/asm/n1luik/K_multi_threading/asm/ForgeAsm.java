@@ -1,7 +1,6 @@
 package asm.n1luik.K_multi_threading.asm;
 
 import asm.n1luik.K_multi_threading.asm.JavaAgent.AgentAPI;
-import asm.n1luik.K_multi_threading.asm.JavaAgent.AsmUtil;
 import asm.n1luik.K_multi_threading.asm.mapping.*;
 import asm.n1luik.K_multi_threading.asm.mc1_19.LevelChunk_Asm;
 import asm.n1luik.K_multi_threading.asm.mc1_19.TruePacketThreadTestAsm;
@@ -11,6 +10,7 @@ import asm.n1luik.K_multi_threading.asm.mod.ae2.PathingCalculation_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.biolith.FixMixinServerWorld1_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.c2me.*;
 import asm.n1luik.K_multi_threading.asm.mod.canary.ServerChunkCacheMixin_Asm;
+import asm.n1luik.K_multi_threading.asm.mod.create.BeltInventory_ASM;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateGeneratingKineticBlockEntity_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateTrackBlockSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateTrackGraphSynchronized_Asm;
@@ -18,13 +18,17 @@ import asm.n1luik.K_multi_threading.asm.mod.createenchantmentindustry.FluidTankB
 import asm.n1luik.K_multi_threading.asm.mod.gtceu.ImplMetaMachine1_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.lithium.ChunkMap_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.lithium.LithiumGetChunkSynchronized_Asm;
+import asm.n1luik.K_multi_threading.asm.mod.lithium.ThreadedAnvilChunkStorageMixin_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.mek.MekanismNetworkAcceptorCacheSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.noisium.NoiseChunkGeneratorMixinFix1_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.valkyrienskies.ShipObjectServerWorld_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.vmp.MixinTACSCancelSendingFixAsm;
 import asm.n1luik.K_multi_threading.asm.mod.vmp.MixinTypeFilterableListAsm;
 import asm.n1luik.K_multi_threading.asm.util.AsmApi;
+import asm.n1luik.K_multi_threading.asm.util.AsmApi2;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
+import asm.n1luik.K_multi_threading.asm.util.Neo21MapppingMap;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -32,31 +36,28 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class ForgeAsm extends AgentAPI {
     public static final MappingImpl minecraft_map;
     public static final MappingImpl srg$Forge$_map;
     static {
         InputStream resourceAsStream = MappingTsrgImpl.class.getResourceAsStream("/K_multi_threading.mapping/map.tsrg");
         InputStream resourceAsStream2 = MappingSrgImpl.class.getResourceAsStream("/K_multi_threading.mapping/map_srg.srg");
-        boolean isNeoForge = isNeoForge();
+        boolean isNeoForge = AsmApi2.bootType == AsmApi2.BootType.NEO_FORGE;
         try {
 
             if (resourceAsStream == null)throw new IOException("找不到映射表[/K_multi_threading.mapping/map.tsrg]，可以尝试检查是否正确编译");
             if (resourceAsStream2 == null)throw new IOException("找不到映射表[/K_multi_threading.mapping/map_srg.srg]，可以尝试检查是否正确编译");
-            MappingSrgImplForge srg$Forge$_map1 = new MappingSrgImplForge(new String(resourceAsStream2.readAllBytes()));
-            minecraft_map = isNeoForge ? srg$Forge$_map1 : new MappingTsrgImplForge(new String(resourceAsStream.readAllBytes()));
-            srg$Forge$_map = isNeoForge ? new MappingImpl(){} : srg$Forge$_map1;
+            minecraft_map = isNeoForge ? new MappingMCP(new MapMappingSrgImplForge(new String(resourceAsStream2.readAllBytes()), new Neo21MapppingMap())) : new MappingTsrgImplForge(new String(resourceAsStream.readAllBytes()));
+            srg$Forge$_map = isNeoForge ? new MappingImpl(){} : new MappingSrgImplForge(new String(resourceAsStream2.readAllBytes()));
+            //minecraft_map.map.forEach((k,v)->{
+            //    log.info("{} -> {}",k,v);
+            //});
+
+            log.info("加载映射表成功 {}", AsmApi2.bootType);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-    public static boolean isNeoForge(){
-        try {
-            ClassLoader.getPlatformClassLoader().loadClass("net.neoforged.fml.javafmlmod.FMLModContainer");//确定是neoforge
-            return true;
-        }catch (Exception e){
-        }
-        return false;
     }
 
     public ForgeAsm() {
@@ -147,6 +148,7 @@ public class ForgeAsm extends AgentAPI {
                 //new AddServerLevelSync1_Asm(),
                 new ModernfixGetChunkSynchronized_Asm(),
                 new LithiumGetChunkSynchronized_Asm(),
+                new ThreadedAnvilChunkStorageMixin_Asm(),
                 //new Lithium$TypeFilterableListMixin_Asm(),
                 new CreateGeneratingKineticBlockEntity_Asm(),
                 new ServerChunkCacheMixin_Asm(),
@@ -162,11 +164,11 @@ public class ForgeAsm extends AgentAPI {
 
         }
         String s = AsmApi.mcVersion;
-        if (s.startsWith("1.19.")){
+        if (s.startsWith("1.19")){
             iTransformers.add(new TruePacketThreadTestAsm());
             iTransformers.add(new LevelChunk_Asm());
         }
-        if (AsmApi.isModLoaded("canary") || AsmApi.isModLoaded("radium") || AsmApi.isModLoaded("lithium")){
+        if (AsmApi.isModLoaded("canary") || AsmApi.isModLoaded("radium") || AsmApi.isModLoaded("lithium") || AsmApi.isModLoaded("harium")){
             iTransformers.add(new ChunkMap_Asm());
         }
         if (AsmApi.isModLoaded("vmp")){
@@ -175,10 +177,15 @@ public class ForgeAsm extends AgentAPI {
         iTransformers.add(new SafeIndependenceAddSynchronized_Asm());
         iTransformers.add(new AddSynchronized_Asm());
         iTransformers.add(new SafeAddSynchronized_Asm());
+        iTransformers.add(new PreMixin_ASM());
         iTransformers.add(new IndependenceAddSynchronized_Asm());
         iTransformers.add(new NotErrorAddSynchronized_Asm());
         iTransformers.add(new AddArgSynchronized_Asm());
         iTransformers.add(new AllAddSynchronized_Asm());
+        iTransformers.add(new AddMapConcurrentV2_ASM());
+        iTransformers.add(new BeltInventory_ASM());
+        iTransformers.add(new AddListRemoveIterator_Asm());
+        iTransformers.add(new NotErrorSafeIndependenceAddSynchronized_Asm());
         return iTransformers;
     }
 }

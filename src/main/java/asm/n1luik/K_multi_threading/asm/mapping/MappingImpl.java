@@ -1,11 +1,13 @@
 package asm.n1luik.K_multi_threading.asm.mapping;
 
 import asm.n1luik.K_multi_threading.asm.Util;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+@Slf4j
 public class MappingImpl implements Function<String,String>{
     public final Map<String,String> map;
     public MappingImpl(int size) {
@@ -153,8 +155,16 @@ public class MappingImpl implements Function<String,String>{
     }
 
     public String mapMethodDesc(String desc){
-
         StringBuilder buffer = new StringBuilder("(");
+        _mapMethodDesc(desc, buffer);
+        return buffer.toString();
+    }
+    public String _mapMethodDesc(String desc){
+        StringBuilder buffer = new StringBuilder(desc.charAt(0) == '(' ? "(" : "");
+        _mapMethodDesc(desc, buffer);
+        return buffer.toString();
+    }
+    public void _mapMethodDesc(String desc, StringBuilder buffer){
 
         String[] strings = Util.toDescList(desc);
         for (int i = 0; i < strings.length; i++) {
@@ -179,7 +189,7 @@ public class MappingImpl implements Function<String,String>{
             }
             buffer.append(strings[i]);
         }
-        return buffer.toString();
+        //log.info(buffer.toString());
     }
     public String[] mapMethod(String name){
         String orDefault = map_(name);

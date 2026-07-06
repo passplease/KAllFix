@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(EntitySectionStorage.class)
+@Mixin(value = EntitySectionStorage.class,priority = 999)
 public class EntitySectionStorageFix1 {
     @Redirect(method = "getOrCreateSection", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;computeIfAbsent(JLit/unimi/dsi/fastutil/longs/Long2ObjectFunction;)Ljava/lang/Object;", remap = false))
     private <T> T fix1(Long2ObjectMap<T> instance, long key, Long2ObjectFunction<? extends T> mappingFunction) {

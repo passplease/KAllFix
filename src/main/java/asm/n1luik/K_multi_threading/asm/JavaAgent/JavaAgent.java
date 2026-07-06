@@ -1,10 +1,11 @@
 package asm.n1luik.K_multi_threading.asm.JavaAgent;
 
-import asm.n1luik.K_multi_threading.asm.JavaAgent.all.TransformerBootstrapLauncher;
-import asm.n1luik.K_multi_threading.asm.JavaAgent.all.TransformerForge20;
+import asm.n1luik.K_multi_threading.asm.JavaAgent.all.*;
+import asm.n1luik.K_multi_threading.asm.JavaAgent.all.replace.ClassTransformerAsm;
 import asm.n1luik.K_multi_threading.asm.mapping.MappingImpl;
 import asm.n1luik.K_multi_threading.asm.mapping.MappingSrgImplForge;
 import asm.n1luik.K_multi_threading.asm.mapping.MappingTransformerForge;
+import asm.n1luik.K_multi_threading.asm.util.AsmApi2;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import asm.n1luik.K_multi_threading.asm.util.Unsafe2;
 import lombok.extern.slf4j.Slf4j;
@@ -127,38 +128,53 @@ public class JavaAgent {
 
 
         AllTransformer transformer = new AllTransformer();
-        transformer.addTransformer(new TransformerForge20());
         transformer.addTransformer(new TransformerBootstrapLauncher());
+        boolean isNeo = false;
         try {
-            ClassLoader.getPlatformClassLoader().loadClass("net.neoforged.fml.javafmlmod.FMLModContainer");//确定是neoforge
-            transformer.addTransformer(AsmUtil.newForge2MCPMap());
-
-        }catch (Exception e){
+            if(AsmApi2.bootType == AsmApi2.BootType.NEO_FORGE) {
+                Thread.currentThread().getContextClassLoader().loadClass("cpw.mods.jarhandling.JarContentsBuilder");//确定是neoforge
+                transformer.addTransformer(new AsmApiReplace(JavaAgent.class.getClassLoader().loadClass("asm.n1luik.K_multi_threading.asm.JavaAgent.all.replace.AsmApiNeoForge")));
+                transformer.addTransformer(AsmUtil.newForge2MCPMap());
+                transformer.addTransformer(new ClassTransformerAdd());
+                isNeo = true;
+            //}catch (Exception e){
+            }
+            if (isNeo){
+                transformer.addTransformer((ITransformer2) JavaAgent.class.getClassLoader().loadClass("asm.n1luik.K_multi_threading.asm.JavaAgent.all.TransformerNeoForge21").newInstance());
+            }else {
+                transformer.addTransformer((ITransformer2) JavaAgent.class.getClassLoader().loadClass("asm.n1luik.K_multi_threading.asm.JavaAgent.all.TransformerForge20").newInstance());
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
         inst.addTransformer(transformer, false);
-        //File zipFile = new File("classes.zip");
-        //try {
-        //    ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile.toPath()));
-        //    inst.addTransformer(new ClassFileTransformer() {
-        //        int size = 0;
-        //        @Override
-        //        public synchronized byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-//
-        //            try {
-        //                zos.putNextEntry(new ZipEntry(className + ".class"));
-        //                zos.write(classfileBuffer);
-        //                if (size++ % 1000 == 0) {
-        //                    zos.closeEntry();
-        //                }
-        //            } catch (IOException e) {
-        //                throw new RuntimeException(e);
-        //            }
-        //            return null;
-        //        }
-        //    }, false);
-        //} catch (IOException e) {
-        //    throw new RuntimeException(e);
-        //}
+        File zipFile = new File("classes.zip");
+        try {
+            ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile.toPath()));
+            inst.addTransformer(new ClassFileTransformer() {
+                int size = 0;
+                @Override
+                public synchronized byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+
+                    try {
+                        zos.putNextEntry(new ZipEntry(className + ".class"));
+                        zos.write(classfileBuffer);
+                        if (size++ % 1000 == 0) {
+                            zos.closeEntry();
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return null;
+                }
+            }, false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         log.info("KAllFix 智能体加载成功");
 
 

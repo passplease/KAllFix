@@ -270,7 +270,13 @@ public class IndependenceAddSynchronized_Asm extends ITransformer2 {
     
 
     public record ReadBuf(String[] data, @Nullable String group) {
-
+        @Override
+        public String toString() {
+            return "ReadBuf{" +
+                    "data=" + Arrays.toString(data) +
+                    ", group='" + group + '\'' +
+                    '}';
+        }
     }
 
     public record MethodNameInfo(String name, String desc) {

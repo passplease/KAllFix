@@ -194,7 +194,7 @@ n1luik.KAllFix.mixin.ex.debug.AttachmentsTagManagerMixin
 n1luik.KAllFix.mixin.ex.debug.FatalDebug1
 n1luik.KAllFix.mixin.ex.debug.JsonDataManagerMixin
 n1luik.KAllFix.mixin.impl.ChunkMixin
-n1luik.KAllFix.mixin.mixinfix.LivingEntityMixin1
+n1luik.KAllFix.mixin.mixinfix.path.fancyenchantments.LivingEntityMixin1
 n1luik.KAllFix.mixin.mixinfix.MinecraftServerMixin
 n1luik.KAllFix.mixin.mixinfix.MinecraftServerMixin2
 n1luik.KAllFix.mixin.mixinfix.alexscaves.MagnetUtilMixin

@@ -1,0 +1,72 @@
+
+buildscript{
+    repositories {
+
+        maven { url = 'https://maven.minecraftforge.net/' }
+        maven { url = "https://maven.fabricmc.net/" }
+        maven { url =  'https://maven.aliyun.com/repository/gradle-plugin' }
+        //maven { url = "https://papermc.io/repo/repository/maven-public/" }
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url = "https://google.bintray.com/tensorflow" }
+        maven { url = "https://repo1.maven.org/maven2" }
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
+
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+repositories {
+    mavenCentral()
+}
+
+group = 'n1luik.KAllFix.SplitFile'
+version = '1'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    //implementation 'org.projectlombok:lombok:1.18.42'
+    //annotationProcessor 'org.projectlombok:lombok:1.18.42'
+
+    //implementation 'com.alibaba:fastjson:1.2.28'
+    implementation 'org.ow2.asm:asm-analysis:9.5'
+    implementation 'org.ow2.asm:asm-commons:9.5'
+    implementation 'org.ow2.asm:asm-tree:9.5'
+    implementation 'org.ow2.asm:asm-util:9.5'
+    implementation 'org.ow2.asm:asm:9.5'
+    //slf4j-api
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'org.apache.logging.log4j:log4j-core:2.22.1'
+    implementation 'org.apache.logging.log4j:log4j-api:2.22.1'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.22.1'
+    implementation 'org.apache.logging.log4j:log4j-api:2.22.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.22.1'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.22.1'
+    implementation 'com.google.code.gson:gson:2.10'
+}
+shadowJar {
+    manifest {
+        attributes([
+                "Main-Class"     : "n1luik.KAllFix.SplitFile.SplitFile",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+    mergeServiceFiles()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}

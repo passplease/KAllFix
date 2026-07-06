@@ -26,7 +26,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import static n1luik.K_multi_threading.forge.ModInit.getclass;
 
 @Slf4j
 @Mod(Base.MOD_ID2)
@@ -38,45 +37,10 @@ public class ModInit {
     {
         Minecraft.getInstance().options.keyMappings = ArrayUtils.add(Minecraft.getInstance().options.keyMappings, key);
     }
-    public static void run1(){
 
-        File file = new File("./_kmt_outc.txt");
-        if (file.isFile()){
-            try {
-                FileInputStream fileInputStream = new FileInputStream(file);
-                int i = 0;
-                for (String v : new String(fileInputStream.readAllBytes()).split("(\\r\\n|\\n)+")) {
-                    if (v.isEmpty())continue;
-
-                    String name = v.replace("/", ".");
-                    //try {
-                    TransformingClassLoader classLoader = (TransformingClassLoader) GetterClassFileCommand.class.getClassLoader();
-                    //classLoader.loadClass(name);
-                    byte[] bytes = getclass.apply(classLoader, name);
-                    try {
-                        File file2 = new File("debug_save_"+(i++)+".class");
-                        file2.createNewFile();
-                        FileOutputStream fileOutputStream = new FileOutputStream(file2);
-                        fileOutputStream.write(bytes);
-                        fileOutputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    //} catch (ClassNotFoundException e) {
-                    //    e.printStackTrace();
-                    //}
-                }
-                fileInputStream.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    private static boolean INIT_DATA_COLLECTORS_EVENT = false;
     public ModInit(){
         try {
-            if (Boolean.getBoolean("KAF-LoginProtectionMod")) {
+            if (Boolean.getBoolean("KAF-LoginProtectionMod")) {// TODO neoforge
                 MinecraftForge.EVENT_BUS.register(Class.forName("n1luik.KAllFix.forge.LoginProtectionMod.LoginProtectionModEvent", true, ModInit.class.getClassLoader()));
             }
             if (Boolean.getBoolean("KAF-packetOptimize")) {
@@ -87,24 +51,6 @@ public class ModInit {
         }
         MinecraftForge.EVENT_BUS.register(new EventRun());
 
-    }
-
-    public synchronized static void initDataCollectors(){
-        if (INIT_DATA_COLLECTORS_EVENT) return;
-        INIT_DATA_COLLECTORS_EVENT = true;
-        InitDataCollectorsEvent event = new InitDataCollectorsEvent();
-        MinecraftForge.EVENT_BUS.post(event);
-        if (FMLEnvironment.dist == Dist.DEDICATED_SERVER || Boolean.getBoolean("KMT_Client")) {
-            event.dataCollectors.addTools(new ValkyrienSkies());
-            event.dataCollectors.addTools(new CanaryConfigAuto());
-            event.dataCollectors.addTools(new LithiumConfigAuto());
-        }
-
-        try {
-            event.dataCollectors.run();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static class EventRun{

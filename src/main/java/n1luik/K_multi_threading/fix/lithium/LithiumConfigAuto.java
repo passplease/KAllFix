@@ -32,7 +32,7 @@ public class LithiumConfigAuto extends DataCollectors.CollectTools<LithiumConfig
 
     @Override
     public boolean job() {
-        return Boolean.getBoolean("KAF-FixConfigAuto") && (DataCollectors.isModLoaded("lithium") || DataCollectors.isModLoaded("radium"));
+        return Boolean.getBoolean("KAF-FixConfigAuto") && (DataCollectors.isModLoaded("lithium") || DataCollectors.isModLoaded("radium") || DataCollectors.isModLoaded("harium"));
     }
 
     @Override

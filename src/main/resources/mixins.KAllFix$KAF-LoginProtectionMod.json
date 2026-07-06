@@ -1,8 +1,8 @@
 {
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
+  "required": false,
   "package": "n1luik.KAllFix.forge.LoginProtectionMod.mixin",
-  "refmap": "mixins.K_multi_threading.refmap.json",
   "plugin": "n1luik.KAllFix.Imixin.Plugin",
   "server": [
   ],

@@ -1,9 +1,11 @@
 package n1luik.K_multi_threading.core;
 
 import com.mojang.logging.LogUtils;
+import cpw.mods.modlauncher.TransformingClassLoader;
 import n1luik.KAllFix.forge.ModInit;
 import n1luik.K_multi_threading.core.base.CalculateTask;
 import n1luik.K_multi_threading.core.sync.GetterDataMap;
+import n1luik.K_multi_threading.debug.GetterClassFileCommand;
 import n1luik.K_multi_threading.fix.FixGetterRoot;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
@@ -14,11 +16,16 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static n1luik.K_multi_threading.forge.ForgeUtil.getclass;
 
 public class Base {
     public static final Logger LOGGER = LogUtils.getLogger();
@@ -220,7 +227,6 @@ public class Base {
         public volatile int size;
     }
 
-    public static final Field busID;
     public static final int threadMax;
     public static final String thisRunTaskName = "Base.thisRunTaskName";
 
@@ -228,8 +234,42 @@ public class Base {
         return async;
     }
 
+    public static void run1(){
+
+        File file = new File("./_kmt_outc.txt");
+        if (file.isFile()){
+            try {
+                FileInputStream fileInputStream = new FileInputStream(file);
+                int i = 0;
+                for (String v : new String(fileInputStream.readAllBytes()).split("(\\r\\n|\\n)+")) {
+                    if (v.isEmpty())continue;
+
+                    String name = v.replace("/", ".");
+                    //try {
+                    TransformingClassLoader classLoader = (TransformingClassLoader) GetterClassFileCommand.class.getClassLoader();
+                    //classLoader.loadClass(name);
+                    byte[] bytes = getclass.apply(classLoader, name);
+                    try {
+                        File file2 = new File("debug_save_"+(i++)+".class");
+                        file2.createNewFile();
+                        FileOutputStream fileOutputStream = new FileOutputStream(file2);
+                        fileOutputStream.write(bytes);
+                        fileOutputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    //} catch (ClassNotFoundException e) {
+                    //    e.printStackTrace();
+                    //}
+                }
+                fileInputStream.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
     static {
-        ModInit.run1();
+        run1();
         int max = threadMax = Integer.getInteger("KMT-threadMax", Math.max(2, (int)(Runtime.getRuntime().availableProcessors() * 0.9)));
         CalculateTask.callMax = Integer.getInteger("KMT-callMax", Math.max(1, (int)(Runtime.getRuntime().availableProcessors() * 0.9)));
         ex = Base.setupThreadpool(threadMax, threadMax, Boolean.getBoolean("KMT-threadpool-async"));
@@ -237,12 +277,6 @@ public class Base {
             async = createThreadpool2(threadMax, threadMax, true, ex.getDataMap());
         //}
         Base.LOGGER.info("threadMax {}",threadMax);
-        try {
-            busID = EventBus.class.getDeclaredField("busID");
-            busID.setAccessible(true);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
         FixGetterRoot.cinit();
     }
 }

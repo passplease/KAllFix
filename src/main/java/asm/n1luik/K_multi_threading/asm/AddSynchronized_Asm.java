@@ -1,5 +1,6 @@
 package asm.n1luik.K_multi_threading.asm;
 
+import asm.n1luik.K_multi_threading.asm.util.AsmApi;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -20,7 +21,6 @@ public class AddSynchronized_Asm extends ITransformer2 {
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.getEntities(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.getEntities(Lnet/minecraft/world/level/entity/EntityTypeTest;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;Ljava/util/List;I)V"),
             ////////
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/effect/MobEffect.addAttributeModifiers(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/ai/attributes/AttributeMap;I)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/entity/PersistentEntitySectionManager.updateChunkStatus(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/world/level/entity/Visibility;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/entity/PersistentEntitySectionManager.processUnloads()V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/behavior/LongJumpToRandomPos.getJumpCandidate(Lnet/minecraft/server/level/ServerLevel;)Ljava/util/Optional;"),
@@ -32,7 +32,6 @@ public class AddSynchronized_Asm extends ITransformer2 {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/attributes/AttributeMap.getSyncableAttributes()Ljava/util/Collection;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/attributes/AttributeMap.onAttributeModified(Lnet/minecraft/world/entity/ai/attributes/AttributeInstance;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/attributes/AttributeMap.save()Lnet/minecraft/nbt/ListTag;"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/attributes/AttributeMap.getInstance(Lnet/minecraft/world/entity/ai/attributes/Attribute;)Lnet/minecraft/world/entity/ai/attributes/AttributeInstance;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.tickBlockEntities()V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.neighborShapeChanged(Lnet/minecraft/core/Direction;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/BlockPos;II)V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.markAndNotifyBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/chunk/LevelChunk;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/state/BlockState;II)V"),
@@ -61,20 +60,16 @@ public class AddSynchronized_Asm extends ITransformer2 {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunkSection.read(Lnet/minecraft/network/FriendlyByteBuf;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunkSection.write(Lnet/minecraft/network/FriendlyByteBuf;)V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/util/thread/BlockableEventLoop.managedBlock(Ljava/util/function/BooleanSupplier;)V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.m_202998_(Lnet/minecraft/server/level/ChunkHolder;Ljava/util/concurrent/CompletableFuture;JLnet/minecraft/world/level/chunk/ChunkAccess;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.processUnloads(Ljava/util/function/BooleanSupplier;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.saveAllChunks(Z)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.updateChunkScheduling(JILnet/minecraft/server/level/ChunkHolder;I)Lnet/minecraft/server/level/ChunkHolder;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.playerLoadedChunk(Lnet/minecraft/server/level/ServerPlayer;Lorg/apache/commons/lang3/mutable/MutableObject;Lnet/minecraft/world/level/chunk/LevelChunk;)V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.addEntity(Lnet/minecraft/world/entity/Entity;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.markPositionReplaceable(Lnet/minecraft/world/level/ChunkPos;)V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.markPosition(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/world/level/chunk/ChunkStatus$ChunkType;)B"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.tick()V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.promoteChunkMap()Z"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.isExistingChunkFull(Lnet/minecraft/world/level/ChunkPos;)Z"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.removeEntity(Lnet/minecraft/world/entity/Entity;)V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.lambda$protoChunkToFullChunk$34(Lnet/minecraft/server/level/ChunkHolder;Lnet/minecraft/world/level/chunk/ChunkAccess;)Lnet/minecraft/world/level/chunk/ChunkAccess;"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.lambda$getChunkRangeFuture$4(IIILjava/util/List;)Lcom/mojang/datafixers/util/Either;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.schedule(Lnet/minecraft/server/level/ChunkHolder;Lnet/minecraft/world/level/chunk/ChunkStatus;)Ljava/util/concurrent/CompletableFuture;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/RandomSequences.get(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/util/RandomSource;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/util/ThreadingDetector.checkAndLock()V"),
@@ -96,9 +91,7 @@ public class AddSynchronized_Asm extends ITransformer2 {
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/util/thread/BlockableEventLoop.pollTask()Z"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/util/thread/BlockableEventLoop.dropAllTasks()V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerChunkCache$MainThreadExecutor.pollTask()Z"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.fillFromNoise(Ljava/util/concurrent/Executor;Lnet/minecraft/world/level/levelgen/blending/Blender;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/StructureManager;Lnet/minecraft/world/level/chunk/ChunkAccess;)Ljava/util/concurrent/CompletableFuture;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/storage/DimensionDataStorage.computeIfAbsent(Ljava/util/function/Function;Ljava/util/function/Supplier;Ljava/lang/String;)Lnet/minecraft/world/level/saveddata/SavedData;"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/storage/DimensionDataStorage.get(Ljava/util/function/Function;Ljava/lang/String;)Lnet/minecraft/world/level/saveddata/SavedData;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/storage/DimensionDataStorage.save()V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/storage/DimensionDataStorage.set(Ljava/lang/String;Lnet/minecraft/world/level/saveddata/SavedData;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/navigation/PathNavigation.recomputePath()V"),
@@ -153,10 +146,7 @@ public class AddSynchronized_Asm extends ITransformer2 {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/entity/EntityTickList.add(Lnet/minecraft/world/entity/Entity;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/entity/EntityTickList.remove(Lnet/minecraft/world/entity/Entity;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/entity/EntityTickList.ensureActiveIsNotIterated()V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/pathfinder/WalkNodeEvaluator.getCachedBlockType(Lnet/minecraft/world/entity/Mob;III)Lnet/minecraft/world/level/pathfinder/BlockPathTypes;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/pathfinder/WalkNodeEvaluator.done()V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/pathfinder/FlyNodeEvaluator.done()V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/pathfinder/FlyNodeEvaluator.getCachedBlockPathType(III)Lnet/minecraft/world/level/pathfinder/BlockPathTypes;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/pathfinder/FlyNodeEvaluator.prepare(Lnet/minecraft/world/level/PathNavigationRegion;Lnet/minecraft/world/entity/Mob;)V"),
             //ForgeAsm.min_map.mapMethod("net/minecraft/world/level/pathfinder/WalkNodeEvaluator.prepare(Lnet/minecraft/world/level/PathNavigationRegion;Lnet/minecraft/world/entity/Mob;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/pathfinder/PathFinder.findPath(Lnet/minecraft/world/level/PathNavigationRegion;Lnet/minecraft/world/entity/Mob;Ljava/util/Set;FIF)Lnet/minecraft/world/level/pathfinder/Path;"),
@@ -164,7 +154,6 @@ public class AddSynchronized_Asm extends ITransformer2 {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/storage/SectionStorage.getOrLoad(J)Ljava/util/Optional;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/storage/SectionStorage.get(J)Ljava/util/Optional;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/storage/SectionStorage.getOrCreate(J)Ljava/lang/Object;"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/storage/SectionStorage.readColumn(Lnet/minecraft/world/level/ChunkPos;Lcom/mojang/serialization/DynamicOps;Ljava/lang/Object;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/navigation/PathNavigation.recomputePath()V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/navigation/PathNavigation.createPath(Ljava/util/Set;IZIF)Lnet/minecraft/world/level/pathfinder/Path;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/navigation/PathNavigation.moveTo(Lnet/minecraft/world/level/pathfinder/Path;D)Z"),
@@ -181,8 +170,6 @@ public class AddSynchronized_Asm extends ITransformer2 {
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.removeBlockEntity(Lnet/minecraft/core/BlockPos;)V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.setBlockEntity(Lnet/minecraft/world/level/block/entity/BlockEntity;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/network/Connection.send(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/network/Connection.sendPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/network/ServerGamePacketListenerImpl.send(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerPlayer.openMenu(Lnet/minecraft/world/MenuProvider;)Ljava/util/OptionalInt;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerPlayer.sendMerchantOffers(ILnet/minecraft/world/item/trading/MerchantOffers;IIZZ)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerPlayer.openHorseInventory(Lnet/minecraft/world/entity/animal/horse/AbstractHorse;Lnet/minecraft/world/Container;)V"),
@@ -203,14 +190,12 @@ public class AddSynchronized_Asm extends ITransformer2 {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/goal/AvoidEntityGoal.stop()V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/goal/AvoidEntityGoal.start()V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/goal/AvoidEntityGoal.tick()V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/LivingEntity.dropAllDeathLoot(Lnet/minecraft/world/damagesource/DamageSource;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.updateInWaterStateAndDoFluidPushing()Z"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.shouldBeSaved()Z"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.saveAsPassenger(Lnet/minecraft/nbt/CompoundTag;)Z"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.unsetRemoved()V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.baseTick()V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.setPosRaw(DDD)V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.getFeetBlockState()Lnet/minecraft/world/level/block/state/BlockState;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.distanceToSqr(DDD)D"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.setRemoved(Lnet/minecraft/world/entity/Entity$RemovalReason;)V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/ChunkGenerator.getMobsAt(Lnet/minecraft/core/Holder;Lnet/minecraft/world/level/StructureManager;Lnet/minecraft/world/entity/MobCategory;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/util/random/WeightedRandomList;"),
@@ -246,14 +231,13 @@ public class AddSynchronized_Asm extends ITransformer2 {
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.sendBlockUpdated(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/state/BlockState;I)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/redstone/CollectingNeighborUpdater.addAndRun(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/redstone/CollectingNeighborUpdater$NeighborUpdates;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/redstone/CollectingNeighborUpdater.runUpdates()V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/storage/SectionStorage.readColumn(Lnet/minecraft/world/level/ChunkPos;Lcom/mojang/serialization/DynamicOps;Ljava/lang/Object;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/storage/SectionStorage.writeColumn(Lnet/minecraft/world/level/ChunkPos;Lcom/mojang/serialization/DynamicOps;)Lcom/mojang/serialization/Dynamic;"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/storage/SectionStorage.setDirty(J)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/LegacyRandomSource.setSeed(J)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/LegacyRandomSource.nextGaussian()D"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/gameevent/EuclideanGameEventListenerRegistry.visitInRangeListeners(Lnet/minecraft/world/level/gameevent/GameEvent;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/level/gameevent/GameEvent$Context;Lnet/minecraft/world/level/gameevent/GameEventListenerRegistry$ListenerVisitor;)Z"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/gameevent/EuclideanGameEventListenerRegistry.register(Lnet/minecraft/world/level/gameevent/GameEventListener;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/gameevent/EuclideanGameEventListenerRegistry.unregister(Lnet/minecraft/world/level/gameevent/GameEventListener;)V"),
+            ForgeAsm.minecraft_map.mapMethod("net/minecraft/network/syncher/SynchedEntityData.defineId(Ljava/lang/Class;Lnet/minecraft/network/syncher/EntityDataSerializer;)Lnet/minecraft/network/syncher/EntityDataAccessor;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/LegacyRandomSource.next(I)I"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/BitRandomSource.nextDouble()D"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/BitRandomSource.nextFloat()F"),
@@ -261,15 +245,46 @@ public class AddSynchronized_Asm extends ITransformer2 {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/BitRandomSource.nextLong()J"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/BitRandomSource.nextInt()I"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/BitRandomSource.nextInt(I)I"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/ThreadSafeLegacyRandomSource.next(I)I"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkHolder.getOrScheduleFuture(Lnet/minecraft/world/level/chunk/ChunkStatus;Lnet/minecraft/server/level/ChunkMap;)Ljava/util/concurrent/CompletableFuture;")//,
+            ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/ThreadSafeLegacyRandomSource.next(I)I")
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkHolder.getAllFutures()Ljava/util/List;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel$EntityCallbacks.onTrackingStart(Lnet/minecraft/world/entity/Entity;)V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel$EntityCallbacks.onTrackingEnd(Lnet/minecraft/world/entity/Entity;)V")//,
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ServerLevel.onTrackingEnd(Lnet/minecraft/world/entity/Entity;)V")
     ));
     {
-        String s = FMLLoader.versionInfo().mcVersion();
+        String s = AsmApi.mcVersion;
+        if (s.startsWith("1.20") || s.startsWith("1.19")){
+            stringsList.addAll(List.of(
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/storage/SectionStorage.readColumn(Lnet/minecraft/world/level/ChunkPos;Lcom/mojang/serialization/DynamicOps;Ljava/lang/Object;)V"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/attributes/AttributeMap.getInstance(Lnet/minecraft/world/entity/ai/attributes/Attribute;)Lnet/minecraft/world/entity/ai/attributes/AttributeInstance;"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/network/ServerGamePacketListenerImpl.send(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/pathfinder/WalkNodeEvaluator.getCachedBlockType(Lnet/minecraft/world/entity/Mob;III)Lnet/minecraft/world/level/pathfinder/BlockPathTypes;"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/advancements/CriterionProgress.fromJson(Ljava/lang/String;)Lnet/minecraft/advancements/CriterionProgress;"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/gameevent/EuclideanGameEventListenerRegistry.visitInRangeListeners(Lnet/minecraft/world/level/gameevent/GameEvent;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/level/gameevent/GameEvent$Context;Lnet/minecraft/world/level/gameevent/GameEventListenerRegistry$ListenerVisitor;)Z"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/pathfinder/FlyNodeEvaluator.done()V"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/pathfinder/FlyNodeEvaluator.getCachedBlockPathType(III)Lnet/minecraft/world/level/pathfinder/BlockPathTypes;"),
+
+
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/storage/DimensionDataStorage.get(Ljava/util/function/Function;Ljava/lang/String;)Lnet/minecraft/world/level/saveddata/SavedData;"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.lambda$getChunkRangeFuture$4(IIILjava/util/List;)Lcom/mojang/datafixers/util/Either;"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.lambda$protoChunkToFullChunk$34(Lnet/minecraft/server/level/ChunkHolder;Lnet/minecraft/world/level/chunk/ChunkAccess;)Lnet/minecraft/world/level/chunk/ChunkAccess;"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.markPosition(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/world/level/chunk/ChunkStatus$ChunkType;)B"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.lambda$scheduleUnload$14(Lnet/minecraft/server/level/ChunkHolder;Ljava/util/concurrent/CompletableFuture;JLnet/minecraft/world/level/chunk/ChunkAccess;)V"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/effect/MobEffect.addAttributeModifiers(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/ai/attributes/AttributeMap;I)V"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.getFeetBlockState()Lnet/minecraft/world/level/block/state/BlockState;"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/LivingEntity.dropAllDeathLoot(Lnet/minecraft/world/damagesource/DamageSource;)V"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkHolder.getOrScheduleFuture(Lnet/minecraft/world/level/chunk/ChunkStatus;Lnet/minecraft/server/level/ChunkMap;)Ljava/util/concurrent/CompletableFuture;"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.fillFromNoise(Ljava/util/concurrent/Executor;Lnet/minecraft/world/level/levelgen/blending/Blender;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/StructureManager;Lnet/minecraft/world/level/chunk/ChunkAccess;)Ljava/util/concurrent/CompletableFuture;"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/network/Connection.sendPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V")
+            ));
+        }else if (s.startsWith("1.21.")){
+            stringsList.addAll(List.of(
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/storage/DimensionDataStorage.get(Lnet/minecraft/world/level/saveddata/SavedData$Factory;Ljava/lang/String;)Lnet/minecraft/world/level/saveddata/SavedData;"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.markPosition(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/world/level/chunk/status/ChunkType;)B"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/effect/MobEffect.addAttributeModifiers(Lnet/minecraft/world/entity/ai/attributes/AttributeMap;I)V"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/network/Connection.sendPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;Z)V")
+            ));
+        }
         if (s.startsWith("1.20.")){
             stringsList.add(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.getListenerRegistry(I)Lnet/minecraft/world/level/gameevent/GameEventListenerRegistry;"));
             stringsList.add(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.removeGameEventListenerRegistry(I)V"));

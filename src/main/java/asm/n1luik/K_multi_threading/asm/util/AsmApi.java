@@ -11,6 +11,7 @@ public class AsmApi {
     public static final boolean isClient = isClient_();
     public static final boolean isServer = !isClient;
     public static final String mcVersion = mcVersion_();
+
     public static boolean isModLoaded(String modId) {
         //if (ModList.get() == null) {
         return LoadingModList.get().getMods().stream().map(ModInfo::getModId).anyMatch(modId::equals);
@@ -23,4 +24,5 @@ public class AsmApi {
     public static String mcVersion_() {
         return FMLLoader.versionInfo().mcVersion();
     }
+
 }

@@ -16,6 +16,8 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import asm.n1luik.K_multi_threading.asm.ForgeAsm;
+import asm.n1luik.K_multi_threading.asm.util.AsmApi;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.longs.Long2ObjectAVLTreeMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -24,6 +26,7 @@ import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import lombok.Getter;
 import n1luik.KAllFix.util.AsyncWait;
+import n1luik.KAllFix.util.ChunkStatusSwap;
 import n1luik.KAllFix.util.TaskRun;
 import n1luik.K_multi_threading.core.Base;
 import n1luik.K_multi_threading.core.Imixin.IMainThreadExecutor;
@@ -71,9 +74,13 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
 
     static {
         try {
-            currentlyLoading = ChunkHolder.class.getDeclaredField("currentlyLoading");
+
+            Class<?> chunkHolderClass = AsmApi.mcVersion.startsWith("1.21") ? Class.forName("net.minecraft.server.level.GenerationChunkHolder") : ChunkHolder.class;
+            currentlyLoading = chunkHolderClass.getDeclaredField("currentlyLoading");
             currentlyLoading.setAccessible(true);
         } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
         generatorAllThread = generatorAllRun.TaskRun;
@@ -293,12 +300,16 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         try {
             //BuiltInRegistries.CHUNK_STATUS
             Class<?> aClass = Class.forName("net.minecraft.core.registries.BuiltInRegistries", true, ParaServerChunkProvider.class.getClassLoader());
-            return ((IdMap<?>) aClass.getField("f_256940_").get(aClass)).size();
+            return ((IdMap<?>) aClass.getField(ForgeAsm.minecraft_map.mapField(
+                    "net.minecraft.core.registries.BuiltInRegistries".replace(".", "/")+".CHUNK_STATUS"
+            )[1]).get(aClass)).size();
         } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
             try {
                 //net.minecraft.core.Registry#CHUNK_STATUS
                 Class<?> aClass = Class.forName("net.minecraft.core.Registry", true, ParaServerChunkProvider.class.getClassLoader());
-                return ((IdMap<?>) aClass.getField("f_122833_").get(aClass)).size();
+                return ((IdMap<?>) aClass.getField(ForgeAsm.minecraft_map.mapField(
+                        "net/minecraft/core/Registry.CHUNK_STATUS"
+                )[1]).get(aClass)).size();
             } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e2) {
                 throw new RuntimeException("Failed to get CHUNK_STATUS size", e2);
             }
@@ -334,6 +345,12 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     public ChunkAccess lookupChunk(long chunkPos, ChunkStatus status) {
         //int shard = getShardIndex(chunkPos);
         return chunkCacheShards[status.getIndex()]//[shard]
+                .get(chunkPos);
+    }
+    // 修改查询方法
+    public ChunkAccess lookupChunkFull(long chunkPos) {
+        //int shard = getShardIndex(chunkPos);
+        return chunkCacheShards[ChunkStatusSwap.FULL.getIndex()]//[shard]
                 .get(chunkPos);
     }
 
@@ -1161,6 +1178,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     public void KMT$pollTaskRun(){
         mainThreadProcessor.pollTask();
     }
+
 
 
     //@Override

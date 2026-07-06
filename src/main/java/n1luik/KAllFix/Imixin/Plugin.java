@@ -7,6 +7,8 @@ import java.util.*;
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
 import asm.n1luik.K_multi_threading.asm.mapping.MappingImpl;
 import asm.n1luik.K_multi_threading.asm.mapping.MappingTransformer;
+import asm.n1luik.K_multi_threading.asm.util.AsmApi;
+import asm.n1luik.K_multi_threading.asm.util.AsmApi2;
 import cpw.mods.modlauncher.TransformingClassLoader;
 import lombok.extern.slf4j.Slf4j;
 import n1luik.K_multi_threading.debug.GetterClassFileCommand;
@@ -42,7 +44,7 @@ public class Plugin implements IMixinConfigPlugin {
 
     @Override
     public String getRefMapperConfig() {
-        return null;
+        return AsmApi2.bootType != AsmApi2.BootType.NEO_FORGE ? "mixins.K_multi_threading.refmap.json" : null;
     }
 
     @Override
@@ -233,10 +235,11 @@ public class Plugin implements IMixinConfigPlugin {
     }
 
     private static boolean isModLoaded(String modId) {
-        if (ModList.get() == null) {
-            return LoadingModList.get().getMods().stream().map(ModInfo::getModId).anyMatch(modId::equals);
-        }
-        return ModList.get().isLoaded(modId);
+        return AsmApi.isModLoaded(modId);
+        //if (ModList.get() == null) {
+        //    return LoadingModList.get().getMods().stream().map(ModInfo::getModId).anyMatch(modId::equals);
+        //}
+        //return ModList.get().isLoaded(modId);
     }
     private static Optional<InputStream> getJarFile(String modId, String file) {
         List<ModFileInfo> list = LoadingModList.get().getModFiles().stream().filter(anObject -> {

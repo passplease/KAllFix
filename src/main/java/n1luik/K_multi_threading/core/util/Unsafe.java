@@ -400,4 +400,17 @@ public class Unsafe {
         }
         throw new RuntimeException("没有找到字段 " + c + " " + type);
     }
+
+    private static CallSite metafactory(MethodHandles.Lookup loader, Method impl, MethodHandle call, MethodType methodType) throws LambdaConversionException {
+        MethodType type = call.type();
+        if(methodType == null) methodType = MethodType.methodType(impl.getDeclaringClass());
+
+        return LambdaMetafactory.metafactory(
+                loader,
+                impl.getName(),
+                methodType,
+                MethodType.methodType(impl.getReturnType(), impl.getParameterTypes()),
+                call,
+                type);
+    }
 }

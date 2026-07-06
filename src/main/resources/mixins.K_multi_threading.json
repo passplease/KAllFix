@@ -1,8 +1,8 @@
 {
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
+  "required": false,
   "package": "n1luik.K_multi_threading.core.mixin",
-  "refmap": "mixins.K_multi_threading.refmap.json",
   "plugin": "n1luik.K_multi_threading.core.Imixin.Plugin",
   "mixins": [
     "ChunkAccessMixin",
@@ -18,8 +18,10 @@
     "fix.alexscaves.CommonEventsFix1",
     "fix.botania.ManaSparkEntityMixin",
     "fix.c2me.CheckedThreadLocalRandomFix1",
+    "fix.create.BeltInventoryFix1",
     "fix.create.CreateRegistrateFix1",
     "fix.create.ItemVaultBlockEntityFix1",
+    "fix.create.TorquePropagatorFix1",
     "fix.destroy.DestroyCommonEventsFix1",
     "fix.eclipticseasons.AllListenerFix1",
     "fix.extendedae_plus.WirelessTransceiverBlockEntityFix1",
@@ -77,6 +79,7 @@
     "minecraftfix.ServerPlayerGameModeFix1",
     "minecraftfix.ServerWatchdogFix1",
     "minecraftfix.ThreadedLevelLightEngineFix2",
+    "minecraftfix.TimerQueueFix1",
     "minecraftfix.loginMultiThreading.DistanceManagerFix1",
     "minecraftfix.loginMultiThreading.MinecraftServerImpl3",
     "minecraftfix.loginMultiThreading.PacketUtilsFix1",

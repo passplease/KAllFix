@@ -17,11 +17,12 @@ import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
 public class MappingTransformerForge extends MappingTransformer {
-    public static final Pattern FIELD_PATTERN = Pattern.compile("^f_\\d+_$");
-    public static final Pattern METHOD_PATTERN = Pattern.compile("^m_\\d+_$");
+    public static final Pattern FIELD_PATTERN = Pattern.compile("^f_\\d+_");
+    public static final Pattern METHOD_PATTERN = Pattern.compile("^m_\\d+_");
 
     public MappingTransformerForge(MappingImpl mappingImpl) {
-        super(new MappingImpl() {
+        super(mappingImpl);/*
+                new MappingImpl() {
             @Override
             public String[] mapMethod(String name) {
                 String orDefault = mappingImpl.map_(name);
@@ -37,7 +38,7 @@ public class MappingTransformerForge extends MappingTransformer {
             public String[] mapMethodNull(String name){
                 String orDefault = mapNull_(name);
                 if (orDefault == null) {
-                    String[] split = orDefault.split("\\.");
+                    String[] split = name.split("\\.");
                     String[] split1 = split[1].split("\\(");
 
                     if (METHOD_PATTERN.matcher(split1[0]).matches()) {
@@ -75,10 +76,11 @@ public class MappingTransformerForge extends MappingTransformer {
             public String mapClass(String name) {
                 return mappingImpl.mapClass(name);
             }
-        });
+        });*/
     }
     @Override
     public ClassNode transform(ClassNode input) {
+        input = super.transform(input);
         String[] names = fixMixin(input);
         Map<String, String> mixinNames = new HashMap<>();
         if (names == null || names.length == 0) {
@@ -99,6 +101,8 @@ public class MappingTransformerForge extends MappingTransformer {
                 method.desc = strings[2];
                 mixinNames.put(name, input.name+"."+method.name+method.desc);
                 continue;
+            }else {
+                fixMixinMethod(method, names);
             }
 
         }
@@ -170,7 +174,6 @@ public class MappingTransformerForge extends MappingTransformer {
                                 }
                                 boolean test = true;
                                 List<Object> values1 = annotationNode1.values;
-                                ArrayList<Object> nv = new ArrayList<>(values1.size());
                                 String type = null;
                                 remap = true;
                                 int targetPod = -1;
@@ -217,7 +220,7 @@ public class MappingTransformerForge extends MappingTransformer {
                                                 int endIndex = s.indexOf(":", p1);
                                                 String fieldName = s.substring(p1 + 1, endIndex);
                                                 String[] strings = mappingImpl.mapField(className + "." + fieldName);
-                                                values1.set(targetPod, "L"+strings[0] + ";" + strings[1]+":"+(s.substring(endIndex+1)));
+                                                values1.set(targetPod, "L"+strings[0] + ";" + strings[1]+":"+mappingImpl._mapMethodDesc(s.substring(endIndex+1)));
                                             }
                                             break;
                                         }
@@ -230,8 +233,8 @@ public class MappingTransformerForge extends MappingTransformer {
                                                 String className = s.substring(1, p1);
                                                 int p2 = s.indexOf("(", p1);
 
-                                                String[] strings = mappingImpl.mapMethod(className + (p2 != -1 ? ".": "}{") + s.substring(p1+1));
-                                                values1.set(targetPod, "L"+strings[0] + ";" + strings[1]+(p2 != -1 ? strings[2] : ""));
+                                                String[] strings = mappingImpl.mapMethod(className + (p2 != -1 ? "": "}{") + s.substring(p1+1));
+                                                values1.set(targetPod, "L"+mappingImpl.mapClass(strings[0]) + ";" + strings[1]+(p2 != -1 ? mappingImpl.mapMethodDesc(strings[2]) : ""));
                                             }
                                             break;
                                         }
@@ -332,16 +335,20 @@ public class MappingTransformerForge extends MappingTransformer {
         }
     }
     public String[] fixMixin(ClassNode classNode) {
-        for (AnnotationNode visibleAnnotation : classNode.visibleTypeAnnotations) {
-            String[] strings = fixMixin(visibleAnnotation);
-            if (strings != null) {
-                return strings;
+        if (classNode.visibleTypeAnnotations != null){
+            for (AnnotationNode visibleAnnotation : classNode.visibleTypeAnnotations) {
+                String[] strings = fixMixin(visibleAnnotation);
+                if (strings != null) {
+                    return strings;
+                }
             }
         }
-        for (AnnotationNode visibleAnnotation : classNode.visibleAnnotations) {
-            String[] strings = fixMixin(visibleAnnotation);
-            if (strings != null) {
-                return strings;
+        if (classNode.visibleAnnotations != null){
+            for (AnnotationNode visibleAnnotation : classNode.visibleAnnotations) {
+                String[] strings = fixMixin(visibleAnnotation);
+                if (strings != null) {
+                    return strings;
+                }
             }
         }
         return null;

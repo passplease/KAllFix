@@ -1,5 +1,6 @@
 package asm.n1luik.K_multi_threading.asm;
 
+import asm.n1luik.K_multi_threading.asm.util.AsmApi;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -17,12 +18,22 @@ import java.util.Set;
 public class AddArgSynchronized_Asm extends ITransformer2 {
 
     public record ReadBuf(String[] data, int index) {
-
+        @Override
+        public String toString() {
+            return "ReadBuf{" +
+                    "data=" + Arrays.toString(data) +
+                    ", index=" + index +
+                    '}';
+        }
     }
-    public final List<ReadBuf> stringsList = new ArrayList<>(List.of(
-            new ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.protoChunkToFullChunk(Lnet/minecraft/server/level/ChunkHolder;)Ljava/util/concurrent/CompletableFuture;"), 1)
-    ));
+    public final List<ReadBuf> stringsList = new ArrayList<>();
     {
+        String s = AsmApi.mcVersion;
+        if (s.startsWith("1.20") || s.startsWith("1.19")) {
+            stringsList.addAll(List.of(
+                    new ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.protoChunkToFullChunk(Lnet/minecraft/server/level/ChunkHolder;)Ljava/util/concurrent/CompletableFuture;"), 1)
+            ));
+        }
     }
 
     int posfilter = Opcodes.ACC_PUBLIC;

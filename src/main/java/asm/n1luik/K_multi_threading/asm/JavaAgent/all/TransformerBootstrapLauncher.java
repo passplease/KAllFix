@@ -3,19 +3,13 @@ package asm.n1luik.K_multi_threading.asm.JavaAgent.all;
 import asm.n1luik.K_multi_threading.asm.JavaAgent.AsmUtil;
 import asm.n1luik.K_multi_threading.asm.JavaAgent.JavaAgent;
 import asm.n1luik.K_multi_threading.asm.JavaAgent.all.replace.BootstrapLauncherAsm;
-import asm.n1luik.K_multi_threading.asm.JavaAgent.all.replace.Forge20Asn;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import cpw.mods.jarhandling.SecureJar;
 import lombok.extern.slf4j.Slf4j;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.io.File;
-import java.lang.module.Configuration;
-import java.lang.module.ModuleFinder;
-import java.util.Collection;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @Slf4j
 public class TransformerBootstrapLauncher extends ITransformer2 {

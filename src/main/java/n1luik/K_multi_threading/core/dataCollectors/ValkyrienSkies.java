@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static n1luik.K_multi_threading.forge.ModInit.getclass;
 
 public class ValkyrienSkies extends DataCollectors.CollectTools<ValkyrienSkies.Data>{
     public static final Gson GSON = new Gson();

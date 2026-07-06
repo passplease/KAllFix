@@ -1,8 +1,8 @@
 # This is an example mods.toml file for Neoforge
 # The mod loader type for Neoforge mods should be neoforge
-modLoader="neoforge" #mandatory
+modLoader = "javafml"
 # A version range to match for said mod loader
-loaderVersion="${loader_version_range}" #mandatory
+loaderVersion = "[1,)"
 # The license for you mod
 license="${mod_license}"
 # A URL to refer people to when problems occur with this mod

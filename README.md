@@ -63,12 +63,10 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
   
 ##  功能
 - 优化pmmo2的性能问题
-- 优化pmmo2的性能问题
 - 增加形状缓存
 - 生物ai预内存申请
 - EnchantmentHelper缓存
 - 删除create_connected的无效代码
-- 删除apotheosis的无效代码
 - 删除apotheosis的无效代码
 - 修复ae2 KeyCounter用错map类型导致遍历计算量是数据的平方
 - 修复ae2 某些操作搭配是开根计算量
@@ -130,10 +128,14 @@ debug的唯一作用就是连接多线程而不是替代专用工具，火花的
         - RemoveRemoveErrorSize 让服务器不会纪录崩溃的次数，无限拦截
 
 ##  可开启
+- -DKAF-RenderOptimizer=true 渲染优化
+  - 功能：
+    - 缩放实体tick
 - -DKMT-Debug=true 启用多线程同步
 - 可以使用-DKMT-OpenVanillaServerChunkCache=true强制打开原版ServerChunkCache修复
 - -DKMT-SafeUnloadChunk=true 启用在区块生成线程运行区块卸载
 - -DIndependencePlayer=true 开启玩家异步，这玩意大概率是负优化
+- -DKAF-PrimeScalarMap=true 使用更快地aab相交近似算法，多线程可能反而性能下降并且不是多线程也不建议使用
 - -DKAF-TagKeyFast=true 优化TagKey
 - -DKAF-ServerGamePacketListenerImplMixin2=true 移除服务器移动距离的安全检查，这个可能跟一个模组不兼容会让玩家进不去服务器
 - -DKAF-ChunkAwareBlockCollisionSweeperFast=true 使用近似算法给锂的ChunkAwareBlockCollisionSweeper

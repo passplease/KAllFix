@@ -28,6 +28,27 @@ repositories {
         url = 'https://repo.spongepowered.org/maven'
     }
 
+    maven {
+        name = 'NeoForge'
+        url = 'https://maven.neoforged.net/releases/'
+    }
+    maven {
+        name = 'NeoForge Snapshot'
+        url = 'https://maven.neoforged.net/snapshots/'
+    }
+
+}
+
+sourceSets {
+    java21 {
+        java {
+            srcDir 'src/java21/java'
+        }
+        // 让 java21 这个源码集能够访问主代码的类（可选，视你的架构而定）
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+    java21.resources.srcDirs('src/java21/resources')
 }
 
 dependencies {
@@ -35,6 +56,25 @@ dependencies {
     implementation("cpw.mods:modlauncher:10.0.8")
     implementation("net.minecraftforge:forgespi:7.0.0")
     implementation("net.minecraftforge:fmlloader:1.20.1-47.0.0")
+    java21Implementation ("net.neoforged.fancymodloader:loader:4.0.42")
+    java21Implementation("cpw.mods:bootstraplauncher:1.1.2")
+    java21Implementation("cpw.mods:modlauncher:10.0.8")
+    java21Implementation("net.minecraftforge:forgespi:7.0.0")
+}
+
+// 2. 为 java21 源码集单独配置 Java 21 的工具链
+java {
+    toolchain {
+        // 主代码使用 Java 17
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// 3. 强制 java21 源码集使用 Java 21 编译
+tasks.named('compileJava21Java') {
+    javaCompiler = javaToolchains.compilerFor {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 import java.util.jar.JarEntry
@@ -44,8 +84,10 @@ import java.util.jar.JarOutputStream
 // 创建自定义任务 splitJar
 tasks.register('splitJar') {
     var taskName = ':_createAllJar'//':jar'//':jarjar'
+    var taskNameNeo = ':neoforge_1.21:jar'//':jar'//':jarjar'
     // 执行任务时的操作
     dependsOn(taskName)
+    dependsOn(taskNameNeo)
     doLast {
         def outputPath = file("build")
         outputPath.mkdirs()
@@ -67,11 +109,18 @@ tasks.register('splitJar') {
                 "asm/KAllFix.fix/",
                 "META-INF/services"
         ]
+        def notNeo = [
+                "META-INF/services",
+                "META-INF/MANIFEST.MF",
+        ]
 
         // 打开源 JAR 文件
         def parentTask = tasks.getByPath(taskName)
+        def parentTaskNeo = tasks.getByPath(taskNameNeo)
         def sourceJarPath = new File(parentTask.destinationDirectory.get().asFile, "all.jar")
+        def sourceJarPathNeo = new File(parentTaskNeo.destinationDirectory.get().asFile, "neo21-1.0.jar")
         def sourceJar = new JarFile(sourceJarPath)
+        def sourceJarNeo = new JarFile(sourceJarPathNeo)
         def jarBase = new JarOutputStream(new FileOutputStream(baseJar))
         def jarAsm = new JarOutputStream(new FileOutputStream(asmJar))
 
@@ -79,6 +128,35 @@ tasks.register('splitJar') {
         def names2 = []
 
         // 遍历源 JAR 文件中的所有条目
+        sourceJarNeo.entries().each { JarEntry jarEntry ->
+            def name = jarEntry.getName()
+            if (name.endsWith("/")) return
+            // 处理复制列表
+            def isNot = false
+            notNeo.each { s ->
+                if (name.startsWith(s) && !names.contains(name)) {
+                    isNot = true
+                }
+            }
+            if (isNot) return
+
+            // 处理移动列表
+            mov.each { s ->
+                if (name.startsWith(s)) {
+                    if (!names.contains(name)) {
+                        names.add(name)
+                        jarAsm.putNextEntry(jarEntry)
+                        jarAsm.write(sourceJarNeo.getInputStream(jarEntry).bytes)
+                    }
+                    isNot = true
+                }
+            }
+            if (isNot) return
+
+            names2.add(name)
+            jarBase.putNextEntry(jarEntry)
+            jarBase.write(sourceJarNeo.getInputStream(jarEntry).bytes)
+        }
         sourceJar.entries().each { JarEntry jarEntry ->
             def name = jarEntry.getName()
             if (name.endsWith("/")) return
@@ -142,6 +220,7 @@ tasks.jar {
     //    }
     //}
     from zipTree(files("build/k_multi_threading-asm.jar").first())
+    from sourceSets.java21.output
 
     manifest {
         attributes([
