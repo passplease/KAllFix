@@ -1,6 +1,7 @@
 package n1luik.KAllFix;
 
 import asm.n1luik.K_multi_threading.asm.util.AsmApi;
+import lombok.extern.slf4j.Slf4j;
 import n1luik.KAllFix.forge.InitDataCollectorsEvent;
 import n1luik.K_multi_threading.core.dataCollectors.ValkyrienSkies;
 import n1luik.K_multi_threading.fix.canary.CanaryConfigAuto;
@@ -11,12 +12,14 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.io.IOException;
 
+@Slf4j
 public class DataCollectorsRun {
     private static boolean INIT_DATA_COLLECTORS_EVENT = false;
 
     public synchronized static void initDataCollectors(){
         if (INIT_DATA_COLLECTORS_EVENT) return;
         INIT_DATA_COLLECTORS_EVENT = true;
+        log.info("initDataCollectors");
         //InitDataCollectorsEvent event = new InitDataCollectorsEvent();
         //MinecraftForge.EVENT_BUS.post(event);
         DataCollectors dataCollectors = new DataCollectors();

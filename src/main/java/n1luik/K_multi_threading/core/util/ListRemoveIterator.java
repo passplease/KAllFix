@@ -1,5 +1,6 @@
 package n1luik.K_multi_threading.core.util;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -7,6 +8,9 @@ import java.util.function.Consumer;
 public class ListRemoveIterator<T> implements Iterator<T> {
 
     public static <T> Iterator<T> of(List<T> list) {
+        if (list instanceof ArrayList) {
+            return list.iterator();
+        }
         return new ListRemoveIterator<>(list, list.iterator());
     }
     public static <T> ListRemoveIterator<T> of(List<T> list, Iterator<T> iterator) {
