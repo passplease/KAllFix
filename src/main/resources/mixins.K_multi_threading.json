@@ -19,6 +19,7 @@
     "fix.botania.ManaSparkEntityMixin",
     "fix.c2me.CheckedThreadLocalRandomFix1",
     "fix.create.BeltInventoryFix1",
+    "fix.create.BrassTunnelBlockEntityFix1",
     "fix.create.CreateRegistrateFix1",
     "fix.create.ItemVaultBlockEntityFix1",
     "fix.create.TorquePropagatorFix1",

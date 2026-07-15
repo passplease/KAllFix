@@ -85,6 +85,9 @@ public class Plugin implements IMixinConfigPlugin {
                             throw new RuntimeException(e);
                         }
                     }
+                    if (AsmApi.mcVersion.startsWith("1.21")) {
+                        biolithFixVersion += 2;
+                    }
                     log.info("biolithFix: {}", biolithFixVersion);
                 }
             }
@@ -151,7 +154,7 @@ public class Plugin implements IMixinConfigPlugin {
             }
             case "n1luik.KAllFix.mixin.mixinfix.biolith.MinecraftServerMixin" -> biolithFixVersion != 0;
             //case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> isModLoaded("biolith");
-            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> biolithFixVersion != 0;
+            case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSourceMixin" -> biolithFixVersion != 0 ;
             case "n1luik.KAllFix.mixin.mixinfix.biolith.mod.TerramityModBiomesMixin" -> biolithFixVersion != 0;
             case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSource2" -> biolithFixVersion == 2;
             case "n1luik.KAllFix.mixin.mixinfix.biolith.MultiNoiseBiomeSource2Forge" -> biolithFixVersion == 1;
@@ -242,19 +245,7 @@ public class Plugin implements IMixinConfigPlugin {
         //return ModList.get().isLoaded(modId);
     }
     private static Optional<InputStream> getJarFile(String modId, String file) {
-        List<ModFileInfo> list = LoadingModList.get().getModFiles().stream().filter(anObject -> {
-            for (IModInfo modInfo2 : anObject.getMods()) {
-                if (modId.equals(modInfo2.getModId())) {
-                    return true;
-                }
-            }
-            return false;
-        }).toList();
-        if (list.isEmpty()) {
-            throw new RuntimeException("Mod not found: " + modId);
-        }
-        ModFileInfo modInfo = list.get(0);
-        return modInfo.getFile().getSecureJar().moduleDataProvider().open(file);
+        return AsmApi.getJarFile(modId, file);
     }
 
     public static boolean findAnnotation(FieldNode field, String annotation) {

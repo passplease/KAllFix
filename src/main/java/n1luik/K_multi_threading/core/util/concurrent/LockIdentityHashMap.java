@@ -18,6 +18,8 @@ package n1luik.K_multi_threading.core.util.concurrent;
 import it.unimi.dsi.fastutil.objects.*;
 import org.checkerframework.checker.units.qual.K;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.*;
 
 public class LockIdentityHashMap<K, V> extends AbstractObject2ObjectSortedMap<K, V> implements java.io.Serializable, Cloneable {
@@ -1073,81 +1075,85 @@ public class LockIdentityHashMap<K, V> extends AbstractObject2ObjectSortedMap<K,
     @Override
     @SuppressWarnings("unchecked")
     public ObjectSortedSet<Object2ObjectMap.Entry<K, V>> object2ObjectEntrySet() {
-        if (entries == null) entries = new AbstractObjectSortedSet<Object2ObjectMap.Entry<K, V>>() {
-            final Comparator<? super Object2ObjectMap.Entry<K, V>> comparator = (LockIdentityHashMap.this.actualComparator == null ? (Comparator<Object2ObjectMap.Entry<K, V>>)(x, y) -> (((Comparable<K>)(x.getKey())).compareTo(y.getKey())) : (Comparator<Object2ObjectMap.Entry<K, V>>)(x, y) -> LockIdentityHashMap.this.actualComparator.compare(x.getKey(), y.getKey()));
+        if (entries == null) {
+            AbstractObjectSortedSet<Object2ObjectMap.Entry<K, V>> entries1 = new AbstractObjectSortedSet<>() {
+                final Comparator<? super Object2ObjectMap.Entry<K, V>> comparator = (LockIdentityHashMap.this.actualComparator == null ? (Comparator<Object2ObjectMap.Entry<K, V>>) (x, y) -> (((Comparable<K>) (x.getKey())).compareTo(y.getKey())) : (Comparator<Object2ObjectMap.Entry<K, V>>) (x, y) -> LockIdentityHashMap.this.actualComparator.compare(x.getKey(), y.getKey()));
 
-            @Override
-            public Comparator<? super Object2ObjectMap.Entry<K, V>> comparator() {
-                return comparator;
-            }
+                @Override
+                public Comparator<? super Object2ObjectMap.Entry<K, V>> comparator() {
+                    return comparator;
+                }
 
-            @Override
-            public ObjectBidirectionalIterator<Object2ObjectMap.Entry<K, V>> iterator() {
-                return new EntryIterator();
-            }
+                @Override
+                public ObjectBidirectionalIterator<Object2ObjectMap.Entry<K, V>> iterator() {
+                    return new EntryIterator();
+                }
 
-            @Override
-            public ObjectBidirectionalIterator<Object2ObjectMap.Entry<K, V>> iterator(final Object2ObjectMap.Entry<K, V> from) {
-                return new EntryIterator(from.getKey());
-            }
+                @Override
+                public ObjectBidirectionalIterator<Object2ObjectMap.Entry<K, V>> iterator(final Object2ObjectMap.Entry<K, V> from) {
+                    return new EntryIterator(from.getKey());
+                }
 
-            @Override
-            @SuppressWarnings("unchecked")
-            public boolean contains(final Object o) {
-                if (o == null || !(o instanceof Map.Entry)) return false;
-                final Map.Entry<?, ?> e = (Map.Entry<?, ?>)o;
-                if (e.getKey() == null) return false;
-                final Entry<K, V> f = findKey(((K)e.getKey()));
-                return e == f;
-            }
+                @Override
+                @SuppressWarnings("unchecked")
+                public boolean contains(final Object o) {
+                    if (o == null || !(o instanceof Map.Entry)) return false;
+                    final Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
+                    if (e.getKey() == null) return false;
+                    final Entry<K, V> f = findKey(((K) e.getKey()));
+                    return e == f;
+                }
 
-            @Override
-            @SuppressWarnings("unchecked")
-            public boolean remove(final Object o) {
-                if (!(o instanceof Map.Entry)) return false;
-                final Map.Entry<?, ?> e = (Map.Entry<?, ?>)o;
-                if (e.getKey() == null) return false;
-                final Entry<K, V> f = findKey(((K)e.getKey()));
-                if (f == null || f.getValue() != (e.getValue())) return false;
-                this.remove(f.key);
-                return true;
-            }
+                @Override
+                @SuppressWarnings("unchecked")
+                public boolean remove(final Object o) {
+                    if (!(o instanceof Map.Entry)) return false;
+                    final Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
+                    if (e.getKey() == null) return false;
+                    final Entry<K, V> f = findKey(((K) e.getKey()));
+                    if (f == null || f.getValue() != (e.getValue())) return false;
+                    this.remove(f.key);
+                    return true;
+                }
 
-            @Override
-            public int size() {
-                return count;
-            }
+                @Override
+                public int size() {
+                    return count;
+                }
 
-            @Override
-            public void clear() {
-                this.clear();
-            }
+                @Override
+                public void clear() {
+                    this.clear();
+                }
 
-            @Override
-            public Object2ObjectMap.Entry<K, V> first() {
-                return firstEntry;
-            }
+                @Override
+                public Object2ObjectMap.Entry<K, V> first() {
+                    return firstEntry;
+                }
 
-            @Override
-            public Object2ObjectMap.Entry<K, V> last() {
-                return lastEntry;
-            }
+                @Override
+                public Object2ObjectMap.Entry<K, V> last() {
+                    return lastEntry;
+                }
 
-            @Override
-            public ObjectSortedSet<Object2ObjectMap.Entry<K, V>> subSet(Object2ObjectMap.Entry<K, V> from, Object2ObjectMap.Entry<K, V> to) {
-                return subMap(from.getKey(), to.getKey()).object2ObjectEntrySet();
-            }
+                @Override
+                public ObjectSortedSet<Object2ObjectMap.Entry<K, V>> subSet(Object2ObjectMap.Entry<K, V> from, Object2ObjectMap.Entry<K, V> to) {
+                    return subMap(from.getKey(), to.getKey()).object2ObjectEntrySet();
+                }
 
-            @Override
-            public ObjectSortedSet<Object2ObjectMap.Entry<K, V>> headSet(Object2ObjectMap.Entry<K, V> to) {
-                return headMap(to.getKey()).object2ObjectEntrySet();
-            }
+                @Override
+                public ObjectSortedSet<Object2ObjectMap.Entry<K, V>> headSet(Object2ObjectMap.Entry<K, V> to) {
+                    return headMap(to.getKey()).object2ObjectEntrySet();
+                }
 
-            @Override
-            public ObjectSortedSet<Object2ObjectMap.Entry<K, V>> tailSet(Object2ObjectMap.Entry<K, V> from) {
-                return tailMap(from.getKey()).object2ObjectEntrySet();
-            }
-        };
+                @Override
+                public ObjectSortedSet<Object2ObjectMap.Entry<K, V>> tailSet(Object2ObjectMap.Entry<K, V> from) {
+                    return tailMap(from.getKey()).object2ObjectEntrySet();
+                }
+            };
+            entries = entries1;
+            return entries1;
+        }
         return entries;
     }
 

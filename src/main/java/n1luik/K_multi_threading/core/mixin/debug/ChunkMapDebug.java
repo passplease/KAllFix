@@ -99,4 +99,8 @@ public class ChunkMapDebug {
 //    private void debug11(ChunkHolder p_140293_, ChunkStatus p_140294_, CallbackInfoReturnable<CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>>> cir){
 //        Base.LOGGER.debug("ChunkMapDebug13 {} {} {}", p_140293_.getPos().x, p_140293_.getPos().z, p_140294_.getIndex());//, new Exception());
 //    }
+    @Inject(method = "scheduleChunkGeneration", at = @At("HEAD"))
+    private void debug11(ChunkHolder p_140293_, ChunkStatus p_140362_, CallbackInfoReturnable<CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>>> cir){
+        Base.LOGGER.debug("ChunkMapDebug14 {} {}", p_140293_.getPos().x, p_140293_.getPos().z, new Exception());//, new Exception());
+    }
 }

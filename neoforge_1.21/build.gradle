@@ -75,7 +75,7 @@ runs {
         modSource project.sourceSets.main
     }
 }
-minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
+minecraft.accessTransformers.file project.file('accesstransformer.cfg')
 
 // Sets up a dependency configuration called 'localRuntime'.
 // This configuration should be used instead of 'runtimeOnly' to declare
@@ -104,6 +104,7 @@ dependencies {
             // exclude group: 'org.example', module: 'unwanted-lib'
         }
     }
+    implementation fileTree(dir: 'libs21', include: ['*.jar'])
 
     // Other dependencies
     //implementation "curse.maven:flib-661261:4583429"

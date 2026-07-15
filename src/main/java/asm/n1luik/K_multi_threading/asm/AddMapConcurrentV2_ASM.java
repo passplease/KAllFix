@@ -33,6 +33,11 @@ public class AddMapConcurrentV2_ASM extends ITransformer2 {
     }*/
     private final static AsmTarget Empty = new AsmTarget("", false);
     public final List<AsmTarget> stringsList = new ArrayList<>(List.of(
+            new AsmTarget("com.simibubi.create.content.fluids.FluidTransportBehaviour", false, new String[0],
+                    new MethodInfo[]{
+                            new MethodInfo(null, null, false, false)
+                    }),
+            new AsmTarget("com.simibubi.create.content.redstone.link.RedstoneLinkNetworkHandler", true),
             new AsmTarget("com.simibubi.create.content.logistics.tunnel.BrassTunnelBlockEntity", true),
             new AsmTarget("net.minecraft.world.level.timers.TimerQueue", true)
     ));

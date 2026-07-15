@@ -128,7 +128,13 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
             new AsmTarget("net.minecraft.client.sounds.SoundBufferLibrary", false),
             new AsmTarget("com.simibubi.create.foundation.sound.SoundScapes", false),
             new AsmTarget("com.simibubi.create.content.kinetics.TorquePropagator", false),
+            new AsmTarget("com.simibubi.create.content.fluids.FluidTransportBehaviour", false, new String[0],
+                    new MethodInfo[]{
+                            new MethodInfo(null, null, false, false)
+                    }),
             new AsmTarget("com.simibubi.create.foundation.advancement.CriterionTriggerBase", true),
+            new AsmTarget("com.simibubi.create.content.redstone.link.RedstoneLinkNetworkHandler", false, new String[0],
+                    new MethodInfo[]{new MethodInfo("onLoadWorld", null, true, true)}),
             new AsmTarget("com.railwayteam.railways.registry.advancement.CriterionTriggerBase", true),
             new AsmTarget("com.lightning.northstar.advancements.CriterionTriggerBase2ElectricBoogaloo", true),
             new AsmTarget("com.simibubi.create.content.fluids.FluidNetwork", true),

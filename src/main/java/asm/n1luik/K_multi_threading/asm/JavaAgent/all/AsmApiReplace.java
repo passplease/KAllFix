@@ -32,6 +32,7 @@ public class AsmApiReplace extends ITransformer2 {
             AsmUtil.replaceMethodImpl(input, AsmUtil.findMethod(target, "isModLoaded"), "isModLoaded");
             AsmUtil.replaceMethodImpl(input, AsmUtil.findMethod(target, "isClient_"), "isClient_");
             AsmUtil.replaceMethodImpl(input, AsmUtil.findMethod(target, "mcVersion_"), "mcVersion_");
+            AsmUtil.replaceMethodImpl(input, AsmUtil.findMethod(target, "getJarFile"), "getJarFile");
 
             //JavaAgent.saveClass(input);
             //Class<?> aClass = platformClassLoader.loadClass("jdk.internal.module.Modules");

@@ -126,7 +126,6 @@ public class ForgeAsm extends AgentAPI {
                 new ImplLevel1_Asm(),
                 new ShipObjectServerWorld_Asm(),
                 new ImplMetaMachine1_Asm(),
-                new FixMixinServerWorld1_Asm(),
                 new ImplServerLevel1_Asm(),
                 new MixinMinecraftServer2_Asm(),
                 new MixinMinecraftServer_Asm(),
@@ -164,6 +163,9 @@ public class ForgeAsm extends AgentAPI {
 
         }
         String s = AsmApi.mcVersion;
+        if (s.startsWith("1.19") || s.startsWith("1.20")){
+            iTransformers.add(new FixMixinServerWorld1_Asm());
+        }
         if (s.startsWith("1.19")){
             iTransformers.add(new TruePacketThreadTestAsm());
             iTransformers.add(new LevelChunk_Asm());
