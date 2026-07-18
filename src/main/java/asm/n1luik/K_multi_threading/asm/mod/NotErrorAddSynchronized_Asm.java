@@ -46,6 +46,8 @@ public class NotErrorAddSynchronized_Asm extends ITransformer2 {
             ForgeAsm.minecraft_map.mapMethod("auviotre/enigmatic/addon/contents/items/RevivalLeaf.handleFlight(Lnet/minecraft/world/entity/player/Player;)V"),
             //cgs
             ForgeAsm.minecraft_map.mapMethod("com/nukateam/cgs/common/handlers/GuanoAccumulationHandler.onBatUpdate(Lnet/minecraftforge/event/entity/living/LivingEvent$LivingTickEvent;)V"),
+            //quark
+            ForgeAsm.minecraft_map.mapMethod("org/violetmoon/quark/content/automation/module/FeedingTroughModule.modifyTempt(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/animal/Animal;Lnet/minecraft/world/item/crafting/Ingredient;)Lnet/minecraft/world/entity/player/Player;"),
             //lithium
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/common/util/collections/ReferenceMaskedList.addOrSet(Ljava/lang/Object;Z)V"),
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/common/util/collections/ReferenceMaskedList.setVisible(Ljava/lang/Object;Z)V"),

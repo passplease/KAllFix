@@ -84,9 +84,9 @@ public class Plugin implements IMixinConfigPlugin {
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
-                    }
-                    if (AsmApi.mcVersion.startsWith("1.21")) {
-                        biolithFixVersion += 2;
+                        if (AsmApi.mcVersion.startsWith("1.21")) {
+                            biolithFixVersion += 2;
+                        }
                     }
                     log.info("biolithFix: {}", biolithFixVersion);
                 }

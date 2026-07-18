@@ -1,5 +1,6 @@
 package asm.n1luik.K_multi_threading.asm.mod.create;
 
+import asm.n1luik.K_multi_threading.asm.ForgeAsm;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
@@ -14,9 +15,10 @@ public class CreateTrackBlockSynchronized_Asm extends ITransformer2 {
         boolean debug_add1 = false;
         boolean add1 = false;
         boolean add2 = false;
+        var n1 = ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/trains/track/TrackBlock.m_213897_(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLeve;Lnet/minecraft/util/RandomSource;)V")[1];
 
         for (MethodNode method : input.methods) {
-            if (method.name.equals("m_213897_")){
+            if (method.name.equals(n1)){
                 debug_add1 = true;
                 InsnList instructions = method.instructions;
                 InsnList instructions2 = method.instructions = new InsnList();
@@ -92,7 +94,7 @@ public class CreateTrackBlockSynchronized_Asm extends ITransformer2 {
         }
 
         if (!add1 || !add2){
-            throw new RuntimeException("Not mapping error: com/simibubi/create/content/trains/graph/TrackGraph");
+            throw new RuntimeException("Not mapping error: com/simibubi/create/content/trains/graph/TrackGraph %s %s %s".formatted(add1, add2, debug_add1));
         }
 
 
