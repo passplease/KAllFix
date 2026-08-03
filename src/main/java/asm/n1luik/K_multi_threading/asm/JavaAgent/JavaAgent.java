@@ -152,29 +152,29 @@ public class JavaAgent {
             throw new RuntimeException(e);
         }
         inst.addTransformer(transformer, false);
-        File zipFile = new File("classes.zip");
-        try {
-            ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile.toPath()));
-            inst.addTransformer(new ClassFileTransformer() {
-                int size = 0;
-                @Override
-                public synchronized byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-
-                    try {
-                        zos.putNextEntry(new ZipEntry(className + ".class"));
-                        zos.write(classfileBuffer);
-                        if (size++ % 1000 == 0) {
-                            zos.closeEntry();
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    return null;
-                }
-            }, false);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        File zipFile = new File("classes.zip");
+//        try {
+//            ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile.toPath()));
+//            inst.addTransformer(new ClassFileTransformer() {
+//                int size = 0;
+//                @Override
+//                public synchronized byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+//
+//                    try {
+//                        zos.putNextEntry(new ZipEntry(className + ".class"));
+//                        zos.write(classfileBuffer);
+//                        if (size++ % 1000 == 0) {
+//                            zos.closeEntry();
+//                        }
+//                    } catch (IOException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    return null;
+//                }
+//            }, false);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         log.info("KAllFix 智能体加载成功");
 
 

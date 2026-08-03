@@ -21,6 +21,7 @@ public class AddSynchronized_Asm extends ITransformer2 {
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.getEntities(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.getEntities(Lnet/minecraft/world/level/entity/EntityTypeTest;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;Ljava/util/List;I)V"),
             ////////
+            ForgeAsm.minecraft_map.mapMethod("net/neoforged/neoforge/capabilities/CapabilityListenerHolder.addListener(Lnet/minecraft/core/BlockPos;Lnet/neoforged/neoforge/capabilities/ICapabilityInvalidationListener;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/entity/PersistentEntitySectionManager.updateChunkStatus(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/world/level/entity/Visibility;)V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/entity/PersistentEntitySectionManager.processUnloads()V"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/ai/behavior/LongJumpToRandomPos.getJumpCandidate(Lnet/minecraft/server/level/ServerLevel;)Ljava/util/Optional;"),

@@ -6,6 +6,7 @@ import asm.n1luik.K_multi_threading.asm.Util;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public class MapMappingTsrgImplForge extends MappingImpl {
     public MapMappingTsrgImplForge(String m, BiFunction<String, String, String> function) {
@@ -50,6 +51,7 @@ public class MapMappingTsrgImplForge extends MappingImpl {
                 map.put(stringStringEntry.getKey(), stringStringEntry.getValue());
             }
         }
+        if (function instanceof Consumer c)c.accept(this);
 
     }
 }

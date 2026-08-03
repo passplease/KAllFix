@@ -1,6 +1,7 @@
 package asm.n1luik.K_multi_threading.asm.mod;
 
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
+import asm.n1luik.K_multi_threading.asm.util.AsmApi;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -68,9 +69,22 @@ public class NotErrorAddSynchronized_Asm extends ITransformer2 {
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_183237_(JLjava/util/function/Function;)Lnet/minecraft/nbt/ListTag;"),
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/world/tick_scheduler/ChunkTickSchedulerMixin.m_193171_(J)V"),
             ForgeAsm.minecraft_map.mapMethod("me/jellysquid/mods/lithium/mixin/chunk/entity_class_groups/TypeFilterableListMixin.createAllOfGroupType(Lme/jellysquid/mods/lithium/common/entity/EntityClassGroup;)Ljava/util/Collection;"),
+            //1.21
+            ForgeAsm.minecraft_map.mapMethod("net/caffeinemc/mods/lithium/common/world/listeners/WorldBorderPositionListenerMulti.add(Lnet/caffeinemc/mods/lithium/common/world/listeners/WorldBorderListenerOnce;)V"),
+            ForgeAsm.minecraft_map.mapMethod("net/caffeinemc/mods/lithium/common/world/listeners/WorldBorderPositionListenerMulti.onAreaReplaced(Lnet/caffeinemc/mods/lithium/common/world/listeners/WorldBorderPositionListenerMulti#onAreaReplaced;)V"),
+            ForgeAsm.minecraft_map.mapMethod("net/caffeinemc/mods/lithium/common/world/listeners/WorldBorderPositionListenerMulti.onBorderSizeSet(Lnet/minecraft/world/level/border/WorldBorder;D)V"),
+            ForgeAsm.minecraft_map.mapMethod("net/caffeinemc/mods/lithium/common/world/listeners/WorldBorderPositionListenerMulti.onBorderSizeLerping(Lnet/minecraft/world/level/border/WorldBorder;DDJ);"),
+            ForgeAsm.minecraft_map.mapMethod("net/caffeinemc/mods/lithium/common/world/listeners/WorldBorderPositionListenerMulti.onBorderCenterSet(Lnet/minecraft/world/level/border/WorldBorder;DD);"),
+            ForgeAsm.minecraft_map.mapMethod("net/caffeinemc/mods/lithium/common/tracking/entity/SectionedEntityMovementTracker.register(Lnet/minecraft/server/level/ServerLevel;)V"),
+            ForgeAsm.minecraft_map.mapMethod("net/caffeinemc/mods/lithium/common/tracking/entity/SectionedEntityMovementTracker.unRegister(Lnet/minecraft/server/level/ServerLevel;)V"),
+            ForgeAsm.minecraft_map.mapMethod("net/caffeinemc/mods/lithium/common/tracking/entity/SectionedEntityMovementTracker.listenToAllSectionsAndGetMaxChangeTime()J"),
             //血魔法
             ForgeAsm.minecraft_map.mapMethod("wayoftime/bloodmagic/util/handler/event/WillHandler.onServerWorldTick(Lnet/minecraftforge/event/TickEvent$LevelTickEvent;)V"),
+            //xycraft_machines
+            //ForgeAsm.minecraft_map.mapMethod("tv/soaryn/xycraft/machines/content/systems/ExtractorTickSystem.tickBatchBlocks(Lnet/minecraft/server/level/ServerLevel;Ltv/soaryn/xycraft/core/content/systems/BlockTickSystemLevelAttachment;Lnet/minecraft/core/BlockPos$MutableBlockPos;Lnet/minecraft/world/level/block/state/BlockState;J)V"),
+            //ForgeAsm.minecraft_map.mapMethod("tv/soaryn/xycraft/machines/content/systems/ExtractorTickSystem.resortList(Lnet/minecraft/server/level/ServerLevel;)V"),
             //机械动力
+            ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/chainConveyor/ChainConveyorBlockEntity.addTravellingPackage(Lcom/simibubi/create/content/kinetics/chainConveyor/ChainConveyorPackage;Lnet/minecraft/core/BlockPos;)Z"),
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/logistics/depot/DepotBehaviour.tick()V"),
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/fluids/FluidNetwork.tick()V"),
             ForgeAsm.minecraft_map.mapMethod("com/simibubi/create/content/kinetics/TorquePropagator.getOrCreateNetworkFor(Lcom/simibubi/create/content/kinetics/base/KineticBlockEntity;)Lcom/simibubi/create/content/kinetics/KineticNetwork;"),
@@ -272,6 +286,17 @@ public class NotErrorAddSynchronized_Asm extends ITransformer2 {
             ForgeAsm.minecraft_map.mapMethod("mekanism/common/lib/multiblock/Structure.setMultiblockData(Lmekanism/common/lib/multiblock/MultiblockData;)V"),
             ForgeAsm.minecraft_map.mapMethod("mekanism/common/lib/multiblock/Structure.removeMultiblock(Lnet/minecraft/world/level/Level;)V")
     ));
+    {
+        if (AsmApi.mcVersion.startsWith("1.21")) {
+            //mek
+            stringsList.add(ForgeAsm.minecraft_map.mapMethod("mekanism/common/lib/multiblock/Structure.removeMultiblock(Lnet/minecraft/world/level/Level;)V"));
+            //ae2
+            stringsList.add(ForgeAsm.minecraft_map.mapMethod("appeng/me/cluster/MBCalculator.calculateMultiblock(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;)V "));
+            stringsList.add(ForgeAsm.minecraft_map.mapMethod("appeng/me/energy/GridEnergyStorage.addNode()V"));
+            stringsList.add(ForgeAsm.minecraft_map.mapMethod("appeng/me/energy/GridEnergyStorage.removeNode()V"));
+            stringsList.add(ForgeAsm.minecraft_map.mapMethod("appeng/me/Grid.remove(Lappeng/me/GridNode;)V"));
+        }
+    }
 
     int posfilter = Opcodes.ACC_PUBLIC;
     int negfilter = /*Opcodes.ACC_STATIC |*/ Opcodes.ACC_SYNTHETIC/* | Opcodes.ACC_NATIVE */| Opcodes.ACC_ABSTRACT

@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Either;
 import n1luik.KAllFix.util.ChunkStatusSwap;
 import n1luik.K_multi_threading.core.base.ParaServerChunkProvider;
 import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.ChunkResult;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.progress.ChunkProgressListener;
@@ -23,6 +24,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
@@ -77,6 +79,21 @@ public abstract class ParaServerChunkProviderMixin extends ServerChunkCache {
             cacheChunk(i, cl, ChunkStatus.FULL);
             return cl;
         //}*/
+    }
+
+    @Overwrite
+    private ChunkAccess readChunk(Object o){
+        ChunkAccess chunkAccess = readChunkNull(o);
+        assert chunkAccess != null;
+        return chunkAccess;
+    }
+    @Overwrite
+    private ChunkAccess readChunkNull(Object o){
+        return ((ChunkResult<ChunkAccess>)o).orElse(null);
+    }
+    @Overwrite
+    private CompletableFuture genTask(ChunkAccess o){
+        return CompletableFuture.completedFuture(ChunkResult.of(o));
     }
 
 }

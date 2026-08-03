@@ -27,6 +27,12 @@ import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 
 @Slf4j
 public class Plugin implements IMixinConfigPlugin {
+    private final Map<String, List<AsmApi2.BootType>> NeoDisable = new HashMap<>();
+    {
+        NeoDisable.put("artifacts", List.of(AsmApi2.BootType.NEO_FORGE));
+        NeoDisable.put("cataclysm", List.of(AsmApi2.BootType.NEO_FORGE));
+
+    }
     static {
         System.setProperty("KAF-ChunkBreedingControlSizeEnable", getInt("KAF-ChunkBreedingControlSize") != null ? "true" : "false");
     }
@@ -138,8 +144,14 @@ public class Plugin implements IMixinConfigPlugin {
             }
             return false;
         }
+        String modId = mixinClassName.substring(s9.length()).split("\\.", 2)[0];
         if (mixinClassName.startsWith(s9)) {
-             return isModLoaded(mixinClassName.substring(s9.length()).split("\\.", 2)[0]);
+            if (!isModLoaded(modId)) {
+                return false;
+            }
+            if (NeoDisable.getOrDefault(modId, List.of()).contains(AsmApi2.bootType)) {
+                return false;
+            }
         }
         //KAF-NbtAZ
         return switch (mixinClassName) {

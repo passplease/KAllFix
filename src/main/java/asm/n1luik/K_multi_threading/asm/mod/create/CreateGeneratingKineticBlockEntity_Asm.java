@@ -1,5 +1,6 @@
 package asm.n1luik.K_multi_threading.asm.mod.create;
 
+import asm.n1luik.K_multi_threading.asm.ForgeAsm;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +16,7 @@ public class CreateGeneratingKineticBlockEntity_Asm extends ITransformer2 {
         boolean debug_add1 = false;
         boolean add1 = false;
         boolean add2 = false;
+        var s1 = ForgeAsm.minecraft_map.mapField("net/minecraft/world/level/block/entity/BlockEntity.level");
 
         if (input.name.equals("com/simibubi/create/content/kinetics/base/GeneratingKineticBlockEntity")){
             for (MethodNode method : input.methods) {
@@ -41,7 +43,7 @@ public class CreateGeneratingKineticBlockEntity_Asm extends ITransformer2 {
                             instructions2.add(labelNode);
 
                             instructions2.add(new VarInsnNode(Opcodes.ALOAD,0));
-                            instructions2.add(new FieldInsnNode(Opcodes.GETFIELD,"com/simibubi/create/content/kinetics/base/KineticBlockEntity","f_58857_","Lnet/minecraft/world/level/Level;"));
+                            instructions2.add(new FieldInsnNode(Opcodes.GETFIELD,"com/simibubi/create/content/kinetics/base/KineticBlockEntity",s1[1],"Lnet/minecraft/world/level/Level;"));
 
                             instructions2.add(new InsnNode(Opcodes.DUP));
                             instructions2.add(new VarInsnNode(Opcodes.ASTORE,method.maxLocals));

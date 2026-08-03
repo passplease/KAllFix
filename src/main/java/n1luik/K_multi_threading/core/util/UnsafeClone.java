@@ -17,11 +17,12 @@ public class UnsafeClone<S, T> {
         Class<? super S> superclass = src;
         fields = new ArrayList<>();
         while (superclass != null && superclass != Object.class){
-            superclass = superclass.getSuperclass();
-            List<Field> tfields1 = Arrays.stream(src.getDeclaredFields()).filter(field -> !Modifier.isStatic(field.getModifiers())).toList();
+            List<Field> tfields1 = Arrays.stream(superclass.getDeclaredFields()).filter(field -> !Modifier.isStatic(field.getModifiers())).toList();
             List<String> Tfields = tfields1.stream().map(Field::getName).toList();
             fields.addAll(tfields1);
-            Arrays.stream(src.getFields()).filter(field -> !Modifier.isStatic(field.getModifiers()) && !Tfields.contains(field.getName())).forEach(fields::add);
+            Arrays.stream(superclass.getFields()).filter(field -> !Modifier.isStatic(field.getModifiers()) && !Tfields.contains(field.getName())).forEach(fields::add);
+            superclass = superclass.getSuperclass();
+
         }
         //fields = Arrays.stream(declared ? src.getDeclaredFields() : src.getFields()).filter(field -> !Modifier.isStatic(field.getModifiers())).toList();
         ids = new long[fields.size()]; // 创建一个与字段数量相同的long数组

@@ -11,7 +11,9 @@ import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Plugin implements IMixinConfigPlugin {
@@ -39,11 +41,14 @@ public class Plugin implements IMixinConfigPlugin {
             case "n1luik.K_multi_threading.core.mixin.minecraftfix.ServerChunkCacheFix2" -> (!(isModLoaded("harium") || isModLoaded("canary") || isModLoaded("radium") || isModLoaded("lithium"))) || Boolean.getBoolean("KMT-OpenVanillaServerChunkCache");
             case "n1luik.K_multi_threading.core.mixin.minecraftfix.LegacyRandomSourceFix2" -> !isModLoaded("structureessentials");
             case "n1luik.K_multi_threading.core.mixin.minecraftfix.ServerWatchdogFix1" -> !isModLoaded("fullstackwatchdog");
+            case "n1luik.K_multi_threading.neoforge.mixin.fix.sable.LevelChunkMixin" -> isModLoaded("observable");
             case "n1luik.K_multi_threading.core.mixin.impl.LevelImpl2" -> isModLoaded("observable");
             case "n1luik.K_multi_threading.core.mixin.impl.LevelImpl1" -> !isModLoaded("observable");
             case "n1luik.K_multi_threading.core.mixin.minecraftfix.FlowingFluidFix1" -> AsmApi.mcVersion.startsWith("1.19") || AsmApi.mcVersion.startsWith("1.20");
             case "n1luik.K_multi_threading.core.mixin.impl.MinecraftServerImpl1",
-                 "n1luik.K_multi_threading.core.mixin.minecraftfix.ChunkMapFix1" -> AsmApi2.bootType != AsmApi2.BootType.NEO_FORGE;
+                 //"n1luik.K_multi_threading.core.mixin.fix.mek.BasicFluidTankFix1",
+                 "n1luik.K_multi_threading.core.mixin.minecraftfix.ChunkMapFix1"
+                    -> AsmApi2.bootType != AsmApi2.BootType.NEO_FORGE;
             default -> true;
         };
     }

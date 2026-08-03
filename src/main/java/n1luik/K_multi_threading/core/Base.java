@@ -6,6 +6,7 @@ import n1luik.KAllFix.forge.ModInit;
 import n1luik.K_multi_threading.core.base.CalculateTask;
 import n1luik.K_multi_threading.core.sync.GetterDataMap;
 import n1luik.K_multi_threading.debug.GetterClassFileCommand;
+import n1luik.K_multi_threading.debug.InfRunPos;
 import n1luik.K_multi_threading.fix.FixGetterRoot;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
@@ -278,5 +279,6 @@ public class Base {
         //}
         Base.LOGGER.info("threadMax {}",threadMax);
         FixGetterRoot.cinit();
+        //new InfRunPos().start();
     }
 }

@@ -188,6 +188,7 @@ public class ForgeAsm extends AgentAPI {
         iTransformers.add(new BeltInventory_ASM());
         iTransformers.add(new AddListRemoveIterator_Asm());
         iTransformers.add(new NotErrorSafeIndependenceAddSynchronized_Asm());
+        iTransformers.add(new ClearMixinClass_ASM());
         return iTransformers;
     }
 }

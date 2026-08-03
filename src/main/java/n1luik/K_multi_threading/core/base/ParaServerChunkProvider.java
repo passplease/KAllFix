@@ -509,9 +509,9 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
                         if (c != null) {
                             return c;
                         }
-                        CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> ct = getChunkFutureMainThread(chunkX, chunkZ, requiredStatus, load);
+                        CompletableFuture ct = getChunkFutureMainThread(chunkX, chunkZ, requiredStatus, load);
                         mainThreadProcessor.managedBlock(ct::isDone);
-                        return ct.join().left().get();
+                        return readChunk(ct.join());
                     }
                     synchronized (l) {
                         l.status = requiredStatus.getIndex();
@@ -700,7 +700,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     public CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> getChunkFuture(int p_8432_, int p_8433_, @NotNull ChunkStatus p_8434_, boolean p_8435_) {
         ChunkAccess chunk = lookupChunk(ChunkPos.asLong(p_8432_, p_8433_), p_8434_);//chunkCache.get(new ChunkCacheAddress(ChunkPos.asLong(p_8432_, p_8433_), p_8434_));
         if (chunk != null) {
-            return CompletableFuture.completedFuture(Either.left(chunk));
+            return genTask(chunk);
         }
 
         Thread value = Thread.currentThread();
@@ -843,11 +843,11 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
             } catch (IllegalAccessException e) {
                 return null;
             }
-            Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure> either = chunkholder.getFutureIfPresent(ChunkStatus.FULL).getNow(null);
+            Object either = ((CompletableFuture)chunkholder.getFutureIfPresent(ChunkStatus.FULL)).getNow(null);
             if (either == null) {
                 return null;
             } else {
-                ChunkAccess chunkaccess1 = either.left().orElse(null);
+                ChunkAccess chunkaccess1 = readChunkNull(either);
                 if (chunkaccess1 != null) {
                     //this.storeInCache(i, chunkaccess1, ChunkStatus.FULL);
                     if (chunkaccess1 instanceof LevelChunk) {
@@ -1276,5 +1276,15 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
     @Override
     public IMainThreadExecutor KMTIMainThreadExecutor() {
         return (IMainThreadExecutor)mainThreadProcessor;
+    }
+
+    private ChunkAccess readChunk(Object o){
+        return ((Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>)o).left().get();
+    }
+    private ChunkAccess readChunkNull(Object o){
+        return ((Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>)o).left().orElse(null);
+    }
+    private CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> genTask(ChunkAccess o){
+        return CompletableFuture.completedFuture(Either.left(o));
     }
 }

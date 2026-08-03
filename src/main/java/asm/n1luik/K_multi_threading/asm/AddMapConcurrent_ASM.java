@@ -94,6 +94,8 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
             new AsmTarget("net.minecraft.server.level.PlayerMap", false),
             new AsmTarget("net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.ServerStorageSoundHandler", false),
             new AsmTarget("mekanism.common.recipe.lookup.cache.type.BaseInputCache", false),
+            new AsmTarget("mekanism.common.lib.transmitter.TransmitterNetworkRegistry", false),
+            new AsmTarget("mekanism.common.content.network.transmitter.LogisticalTransporterBase", false),
             new AsmTarget("net.minecraft.world.level.chunk.ChunkAccess", false),
             new AsmTarget("net.minecraft.util.ClassInstanceMultiMap", false),
             new AsmTarget("net.minecraft.world.level.entity.EntitySectionStorage", false),
@@ -104,7 +106,6 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
             new AsmTarget("me.desht.pneumaticcraft.common.drone.DroneClaimManager", false),
             new AsmTarget("com.github.alexthe666.iceandfire.entity.util.MyrmexHive", false),
             new AsmTarget("baguchan.tofucraft.CommonEvents", false),
-            new AsmTarget("mekanism.common.lib.transmitter.TransmitterNetworkRegistry", false),
             new AsmTarget("com.github.alexthe666.alexsmobs.event.ServerEvents", false),
             new AsmTarget("com.teammoeg.caupona.CPCommonBootStrap", false),
             new AsmTarget("me.jellysquid.mods.lithium.mixin.collections.entity_by_type.TypeFilterableListMixin", false),
@@ -126,11 +127,16 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
             new AsmTarget("forge.net.mca.server.world.data.FamilyTree", false),
             new AsmTarget("com.wintercogs.beyonddimensions.api.storage.handler.impl.StackHandler", false),
             new AsmTarget("net.minecraft.client.sounds.SoundBufferLibrary", false),
+            new AsmTarget("rearth.oritech.api.networking.NetworkManager", false),
             new AsmTarget("com.simibubi.create.foundation.sound.SoundScapes", false),
             new AsmTarget("com.simibubi.create.content.kinetics.TorquePropagator", false),
             new AsmTarget("com.simibubi.create.content.fluids.FluidTransportBehaviour", false, new String[0],
                     new MethodInfo[]{
                             new MethodInfo(null, null, false, false)
+                    }),
+            new AsmTarget("com.simibubi.create.content.kinetics.belt.BeltBlockEntity", false, new String[0],
+                    new MethodInfo[]{
+                            new MethodInfo("tick", null, true, true)
                     }),
             new AsmTarget("com.simibubi.create.foundation.advancement.CriterionTriggerBase", true),
             new AsmTarget("com.simibubi.create.content.redstone.link.RedstoneLinkNetworkHandler", false, new String[0],
@@ -142,6 +148,7 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
             new AsmTarget("com.hlysine.create_connected.datagen.advancements.CriterionTriggerBase", false),
             new AsmTarget("plus.dragons.createenchantmentindustry.dragonLibLegacy.advancement.critereon.AbstractTrigger", false),
             new AsmTarget("com.teamabnormals.blueprint.common.advancement.EmptyTrigger", false),
+            new AsmTarget("net.mehvahdjukaar.supplementaries.common.misc.CooperativePistonData", false),
             new AsmTarget("appeng.me.service.CraftingService", false),
             new AsmTarget("appeng.api.stacks.KeyCounter", true)
     ));

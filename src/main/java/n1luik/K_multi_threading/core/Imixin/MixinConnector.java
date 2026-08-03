@@ -21,8 +21,12 @@ public class MixinConnector implements IMixinConnector {
             Mixins.addConfigurations("mixins.K_multi_threadingAll.json");
 
         }
-        if (System.getProperty("KAllFix_D") == null)
+        if (System.getProperty("KAllFix_D") == null) {
             Mixins.addConfigurations("mixins.KAllFix.json");
+            if(AsmApi2.bootType == AsmApi2.BootType.NEO_FORGE){
+                Mixins.addConfigurations("mixins.KAllFix_neo.json");
+            }
+        }
         if (Boolean.getBoolean("KAF-LoginProtectionMod"))
             Mixins.addConfigurations("mixins.KAllFix$KAF-LoginProtectionMod.json");
         if (Boolean.getBoolean("KAF-RenderOptimizer"))

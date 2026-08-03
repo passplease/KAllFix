@@ -59,3 +59,7 @@ mandatory=true
 versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
+
+
+["lithium:options"]
+"mixin.chunk.entity_class_groups" = false

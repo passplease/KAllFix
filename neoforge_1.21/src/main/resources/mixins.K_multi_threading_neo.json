@@ -5,6 +5,10 @@
   "package": "n1luik.K_multi_threading.neoforge.mixin",
   "plugin": "n1luik.K_multi_threading.core.Imixin.Plugin",
   "mixins": [
+    "fix.lithium.ChunkStatusTrackerMixin",
+    "fix.modern_industrialization.ChunkEventListenersMixin",
+    "fix.sable.LevelChunkMixin",
+    "fix.xycraft.ExtractorTickSystemMixin",
     "impl.MinecraftServerImpl1",
     "impl.ParaServerChunkProviderMixin",
     "minecraftfix.BlockFix1",

@@ -4,6 +4,7 @@ package asm.n1luik.K_multi_threading.asm.mapping;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public class MapMappingSrgImplForge extends MappingImpl {
 
@@ -42,6 +43,6 @@ public class MapMappingSrgImplForge extends MappingImpl {
                 }
             }
         }
-
+        if (function instanceof Consumer c)c.accept(this);
     }
 }
