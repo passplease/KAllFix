@@ -1,0 +1,9 @@
+{
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "required": false,
+  "package": "n1luik.KAllFix.neoforge.mixin",
+  "plugin": "n1luik.K_multi_threading.core.Imixin.Plugin",
+  "mixins": [
+  ]
+}
