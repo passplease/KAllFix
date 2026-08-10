@@ -2,6 +2,7 @@ package asm.n1luik.K_multi_threading.asm;
 
 import asm.n1luik.K_multi_threading.asm.mapping.MappingImpl;
 import asm.n1luik.K_multi_threading.asm.mapping.MappingTransformer;
+import asm.n1luik.K_multi_threading.asm.util.AsmApi;
 import asm.n1luik.K_multi_threading.asm.util.AsmApi2;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +20,12 @@ public class PreMixin_ASM extends ITransformer2 {
     public final Map<String, List<String>> preOverwrites = new HashMap<>();
 
     {
-
-        preOverwrites.put(ForgeAsm.minecraft_map.mapClass("net.minecraft.world.item.crafting.Ingredient".replace(".", "/"))
-                , new ArrayList<>(List.of(
-                        "asm.n1luik.K_multi_threading.asm.falseMixin.PreIngredientFix1"
-                )));
+        if(AsmApi.mcVersion.startsWith("1.20") && AsmApi.mcVersion.startsWith("1.19")){
+            preOverwrites.put(ForgeAsm.minecraft_map.mapClass("net.minecraft.world.item.crafting.Ingredient".replace(".", "/"))
+                    , new ArrayList<>(List.of(
+                            "asm.n1luik.K_multi_threading.asm.falseMixin.PreIngredientFix1"
+                    )));
+        }
         if (AsmApi2.bootType == AsmApi2.BootType.NEO_FORGE){
 
             preOverwrites.put(ForgeAsm.minecraft_map.mapClass("net.minecraft.world.level.block.Block".replace(".", "/"))

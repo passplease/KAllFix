@@ -2,7 +2,6 @@ package n1luik.K_multi_threading.debug;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectAVLTreeMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.objects.ObjectSortedSet;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,11 +18,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Slf4j
 public class InfRunPos {
     public static final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
     public static final Method rootMethod;
+    public static ZipOutputStream sharedZipOutputStream;
+    public final List<Worker> workers = new ArrayList<>();
 
     static {
         try {
@@ -134,10 +138,6 @@ public class InfRunPos {
 
     public final ConcurrentHashMap<String, Integer> stringId = new ConcurrentHashMap<>();
     public final AtomicInteger stringIdSize = new AtomicInteger();
-    public DataOutputStream sharedDataOutputStream;
-    public final Object saveLock = new Object();
-    public final List<Worker> workers = new ArrayList<>();
-    public volatile long nextSaveTime;
     {
         getStringId(".");
         getStringId("/");
@@ -154,76 +154,9 @@ public class InfRunPos {
         return ((long)cni) << 32 | mni;
     }
 
-    public void saveAll(long time2) throws IOException {
-        synchronized (saveLock) {
-            if (time2 < nextSaveTime) return;
-            nextSaveTime = time2 + SAVE;
-
-            DataOutputStream d = sharedDataOutputStream;
-            d.writeLong(System.currentTimeMillis());
-
-            // 显存合并：汇总所有 worker 的线程数
-            int totalSize = 0;
-            for (Worker w : workers) {
-                totalSize += w.bufTree.size();
-            }
-            d.writeInt(totalSize);
-
-            // 写入所有 worker 的 bufTree 数据
-            for (Worker w : workers) {
-                ObjectSortedSet<Long2ObjectMap.Entry<BufTree>> entries = w.bufTree.long2ObjectEntrySet();
-                for (Long2ObjectMap.Entry<BufTree> bufTreeEntry : entries) {
-                    d.writeLong(bufTreeEntry.getLongKey());
-                    d.writeInt(bufTreeEntry.getValue().max);
-                    d.writeInt(bufTreeEntry.getValue().empty);
-                    String name = bufTreeEntry.getValue().threadName;
-                    d.writeBoolean(name != null);
-                    if (name != null) d.writeUTF(name);
-                    for (int i = 0; i < bufTreeEntry.getValue().max; i++) {
-                        d.writeLong(bufTreeEntry.getValue().buf[i / MAX_BUF].call[i % MAX_BUF]);
-                    }
-                    for (int i = 0; i < bufTreeEntry.getValue().max; i++) {
-                        d.writeInt(bufTreeEntry.getValue().buf[i / MAX_BUF].time[i % MAX_BUF]);
-                    }
-                    for (int i = 0; i < bufTreeEntry.getValue().max; i++) {
-                        d.writeInt(bufTreeEntry.getValue().buf[i / MAX_BUF].thisnext[i % MAX_BUF]);
-                    }
-                    for (int i = 0; i < bufTreeEntry.getValue().max; i++) {
-                        d.writeInt(bufTreeEntry.getValue().buf[i / MAX_BUF].callnext[i % MAX_BUF]);
-                    }
-                }
-            }
-
-            // 文本合并：stringId 只写一次
-            for (Map.Entry<String, Integer> entry : stringId.entrySet()) {
-                String k = entry.getKey();
-                Integer v = entry.getValue();
-                d.write(1);
-                d.writeUTF(k);
-                d.writeInt(v);
-            }
-            d.write(0);
-
-            // speed 数据合并（老格式：int + 数组，所有 worker 拼接）
-            int totalSpeedSize = 0;
-            for (Worker w : workers) {
-                totalSpeedSize += w.speedSize;
-            }
-            d.writeInt(totalSpeedSize);
-            for (Worker w : workers) {
-                for (int i = 0; i < w.speedSize; i++) {
-                    int idx = (w.speedIndex - w.speedSize + i + SPEED_BUF) % SPEED_BUF;
-                    d.writeLong(w.speedTime[idx]);
-                    d.writeInt(w.speedCount[idx]);
-                }
-            }
-
-            sharedDataOutputStream.flush();
-        }
-    }
-
     public final class Worker implements Runnable {
         public final int index;
+        public final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
         public long[] methods = new long[64];
         public final Long2ObjectAVLTreeMap<BufTree> bufTree = new Long2ObjectAVLTreeMap<>();
 
@@ -245,11 +178,16 @@ public class InfRunPos {
         }
 
         public void recordSpeed(long timeMs, int count){
-            int i = speedIndex;
-            speedTime[i] = timeMs;
-            speedCount[i] = count;
-            speedIndex = (i + 1) % SPEED_BUF;
-            if (speedSize < SPEED_BUF) speedSize++;
+            rwLock.writeLock().lock();
+            try {
+                int i = speedIndex;
+                speedTime[i] = timeMs;
+                speedCount[i] = count;
+                speedIndex = (i + 1) % SPEED_BUF;
+                if (speedSize < SPEED_BUF) speedSize++;
+            } finally {
+                rwLock.writeLock().unlock();
+            }
         }
 
         public void run(){
@@ -272,7 +210,73 @@ public class InfRunPos {
                     int mni = getStringId(stackTraceElement.getMethodName());
                     callpos[i+1] = className(cni, mni);
                 }
-                getBufTree(allThreadId, threadInfo.getThreadName()).add(callpos, len + 1, 0, 0);
+                rwLock.writeLock().lock();
+                try {
+                    getBufTree(allThreadId, threadInfo.getThreadName()).add(callpos, len + 1, 0, 0);
+                } finally {
+                    rwLock.writeLock().unlock();
+                }
+            }
+        }
+
+        public void save() throws IOException {
+            if (index != 0) return;
+            List<Worker> ws = InfRunPos.this.workers;
+            for (Worker w : ws) w.rwLock.writeLock().lock();
+            try {
+                long now = System.currentTimeMillis();
+                if (sharedZipOutputStream == null) {
+                    sharedZipOutputStream = new ZipOutputStream(new FileOutputStream(String.valueOf(now)));
+                }
+                sharedZipOutputStream.putNextEntry(new ZipEntry(String.valueOf(now)));
+                DataOutputStream d = new DataOutputStream(sharedZipOutputStream);
+                int size = 0;
+                for (Worker w : ws) size += w.bufTree.size();
+                d.writeInt(size);
+                for (Worker w : ws) {
+                    for (Long2ObjectMap.Entry<BufTree> bufTreeEntry : w.bufTree.long2ObjectEntrySet()) {
+                        BufTree t = bufTreeEntry.getValue();
+                        d.writeLong(bufTreeEntry.getLongKey());
+                        d.writeInt(t.max);
+                        d.writeInt(t.empty);
+                        String name = t.threadName;
+                        d.writeBoolean(name != null);
+                        if (name != null) d.writeUTF(name);
+                        for (int i = 0; i < t.max; i++) {
+                            d.writeLong(t.buf[i/MAX_BUF].call[i % MAX_BUF]);
+                        }
+                        for (int i = 0; i < t.max; i++) {
+                            d.writeInt(t.buf[i/MAX_BUF].time[i % MAX_BUF]);
+                        }
+                        for (int i = 0; i < t.max; i++) {
+                            d.writeInt(t.buf[i/MAX_BUF].thisnext[i % MAX_BUF]);
+                        }
+                        for (int i = 0; i < t.max; i++) {
+                            d.writeInt(t.buf[i/MAX_BUF].callnext[i % MAX_BUF]);
+                        }
+                    }
+                }
+                for (Map.Entry<String, Integer> entry : stringId.entrySet()) {
+                    d.write(1);
+                    d.writeUTF(entry.getKey());
+                    d.writeInt(entry.getValue());
+                }
+                d.write(0);
+
+                int speedSize = 0;
+                for (Worker w : ws) speedSize += w.speedSize;
+                d.writeInt(speedSize);
+                for (Worker w : ws) {
+                    for (int i = 0; i < w.speedSize; i++) {
+                        int idx = (w.speedIndex - w.speedSize + i + SPEED_BUF) % SPEED_BUF;
+                        d.writeLong(w.speedTime[idx]);
+                        d.writeInt(w.speedCount[idx]);
+                    }
+                }
+
+                sharedZipOutputStream.flush();
+            } finally {
+                for (int i = ws.size() - 1; i >= 0; i--) ws.get(i).rwLock.writeLock().unlock();
             }
         }
 
@@ -280,14 +284,16 @@ public class InfRunPos {
         public void task(){
             long time = System.nanoTime();
             long time2 = time / 1000000;
+            long save = time2 + SAVE;
 
             long windowStart = time;
             long count = 0;
 
             while (true){
                 run();
-                if (time2 > nextSaveTime) {
-                    saveAll(time2);
+                if (index == 0 && time2 > save) {
+                    save();
+                    save = time2 + SAVE;
                 }
                 long time3 = System.nanoTime();
                 time2 = time3 / 1000000;
@@ -310,14 +316,14 @@ public class InfRunPos {
         }
     }
 
-    @SneakyThrows
     public void start(){
         log.info("InfRunPos start, workers={}", WORKERS);
-        sharedDataOutputStream = new DataOutputStream(new FileOutputStream(String.valueOf(System.currentTimeMillis()) + "_infrunpos"));
-        nextSaveTime = System.currentTimeMillis() + SAVE;
         for (int i = 0; i < WORKERS; i++) {
             final Worker worker = new Worker(i);
             workers.add(worker);
+        }
+        for (int i = 0; i < WORKERS; i++) {
+            final Worker worker = workers.get(i);
             var i2 = i;
             Thread thread = new Thread(() -> {
                 try{
@@ -330,6 +336,16 @@ public class InfRunPos {
             thread.setDaemon(true);
             thread.start();
         }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            for (Worker w : workers) w.rwLock.writeLock().lock();
+            try {
+                if (sharedZipOutputStream != null) sharedZipOutputStream.close();
+            } catch (IOException e) {
+                log.error("InfRunPos close error", e);
+            } finally {
+                for (int i = workers.size() - 1; i >= 0; i--) workers.get(i).rwLock.writeLock().unlock();
+            }
+        }));
     }
 
 }

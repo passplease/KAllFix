@@ -7,7 +7,6 @@ import org.objectweb.asm.tree.*;
 
 import java.util.Set;
 
-@Deprecated
 public class ChunkMap_Asm extends ITransformer2{
     @NotNull
     @Override
@@ -23,9 +22,9 @@ public class ChunkMap_Asm extends ITransformer2{
                 debug_add1 = true;
                 for (AbstractInsnNode instruction : instructions) {
                     if (instruction.getOpcode() == Opcodes.INVOKESPECIAL && instruction instanceof MethodInsnNode methodInsnNode) {
-                        if (methodInsnNode.owner.equals("it/unimi/dsi/fastutil/longs/LongOpenHashSet")) {
+                        if (methodInsnNode.owner.equals("it/unimi/dsi/fastutil/longs/LongAVLTreeSet")) {
                             if (methodInsnNode.name.equals("<init>") && methodInsnNode.desc.equals("()V")) {
-                                method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/LongConcurrentHashSet", "<init>", "()V", false));
+                                method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/AsyncLongAVLTreeSet", "<init>", "()V", false));
                             } else {
                                 method.instructions.add(instruction);
                             }
@@ -38,8 +37,8 @@ public class ChunkMap_Asm extends ITransformer2{
                         //        "n1luik/K_multi_threading/core/util/concurrent/FastUtilHackUtil",
                         //        "concurrentLongSet",
                         //        "()Lit/unimi/dsi/fastutil/longs/LongSortedSet;"));
-                        if (typeInsnNode.desc.equals("it/unimi/dsi/fastutil/longs/LongOpenHashSet")) {
-                            method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/LongConcurrentHashSet"));
+                        if (typeInsnNode.desc.equals("it/unimi/dsi/fastutil/longs/LongAVLTreeSet")) {
+                            method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/AsyncLongAVLTreeSet"));
                         } else {
                             method.instructions.add(instruction);
                         }

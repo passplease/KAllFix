@@ -121,7 +121,7 @@ public class ForgeAsm extends AgentAPI {
     public @NotNull List<ITransformer2> transformers() {
         if (System.getProperty("KMT_D") != null || (AsmApi.isClient && !Boolean.getBoolean("KMT_Client")))
             return List.of();
-        List<ITransformer2> iTransformers = new ArrayList<>(List.of(
+        List<ITransformer2> iTransformers = new ArrayList<ITransformer2>(List.of(
                 //new SyncImplGetterChunk_ASM(),
                 new ImplLevel1_Asm(),
                 new ShipObjectServerWorld_Asm(),
@@ -153,6 +153,7 @@ public class ForgeAsm extends AgentAPI {
                 new ServerChunkCacheMixin_Asm(),
                 new AddMapConcurrent_ASM(),
                 new NoiseChunkGeneratorMixinFix1_Asm(),
+                new asm.n1luik.K_multi_threading.asm.ChunkMap_Asm(),
                 new MixinTypeFilterableListAsm()//,
                 //new ChunkMapSynchronized_Asm(),
                 //new FastUtilTransformerService()
@@ -170,7 +171,7 @@ public class ForgeAsm extends AgentAPI {
             iTransformers.add(new TruePacketThreadTestAsm());
             iTransformers.add(new LevelChunk_Asm());
         }
-        if (AsmApi.isModLoaded("canary") || AsmApi.isModLoaded("radium") || AsmApi.isModLoaded("lithium") || AsmApi.isModLoaded("harium")){
+        if (AsmApi.isModLoaded("canary") || AsmApi.isModLoaded("radium") || AsmApi.isModLoaded("lithium") || AsmApi.isModLoaded("harium") || AsmApi.mcVersion.startsWith("1.21")){
             iTransformers.add(new ChunkMap_Asm());
         }
         if (AsmApi.isModLoaded("vmp")){
@@ -189,6 +190,7 @@ public class ForgeAsm extends AgentAPI {
         iTransformers.add(new AddListRemoveIterator_Asm());
         iTransformers.add(new NotErrorSafeIndependenceAddSynchronized_Asm());
         iTransformers.add(new ClearMixinClass_ASM());
+        iTransformers.add(new RedstoneTorchBlock_Asm());
         return iTransformers;
     }
 }

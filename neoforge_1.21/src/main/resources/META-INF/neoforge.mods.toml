@@ -63,3 +63,4 @@ side="BOTH"
 
 ["lithium:options"]
 "mixin.chunk.entity_class_groups" = false
+"mixin.collections.entity_by_type" = false

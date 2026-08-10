@@ -144,13 +144,16 @@ public class Plugin implements IMixinConfigPlugin {
             }
             return false;
         }
-        String modId = mixinClassName.substring(s9.length()).split("\\.", 2)[0];
-        if (mixinClassName.startsWith(s9)) {
-            if (!isModLoaded(modId)) {
-                return false;
-            }
-            if (NeoDisable.getOrDefault(modId, List.of()).contains(AsmApi2.bootType)) {
-                return false;
+        int length = s9.length();
+        if (mixinClassName.length() > length){
+            String modId = mixinClassName.substring(length).split("\\.", 2)[0];
+            if (mixinClassName.startsWith(s9)) {
+                if (!isModLoaded(modId)) {
+                    return false;
+                }
+                if (NeoDisable.getOrDefault(modId, List.of()).contains(AsmApi2.bootType)) {
+                    return false;
+                }
             }
         }
         //KAF-NbtAZ

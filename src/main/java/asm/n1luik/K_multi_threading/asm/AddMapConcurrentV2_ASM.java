@@ -41,6 +41,7 @@ public class AddMapConcurrentV2_ASM extends ITransformer2 {
             new AsmTarget("com.simibubi.create.content.logistics.tunnel.BrassTunnelBlockEntity", false),
             new AsmTarget("aztech.modern_industrialization.machines.multiblocks.world.ChunkEventListeners", false),
             new AsmTarget("com.ldtteam.structurize.util.BlockUtils", false),
+            new AsmTarget("net.minecraft.world.level.block.RedstoneTorchBlock", false),
             new AsmTarget("net.minecraft.world.level.timers.TimerQueue", false)
     ));
     public final Map<String, AsmTarget> nameMap = new HashMap<>();

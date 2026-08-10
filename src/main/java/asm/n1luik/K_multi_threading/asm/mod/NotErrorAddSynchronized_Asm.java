@@ -211,10 +211,13 @@ public class NotErrorAddSynchronized_Asm extends ITransformer2 {
             ForgeAsm.minecraft_map.mapMethod("appeng/me/storage/NetworkStorage.isQueuedForRemoval(Lappeng/api/storage/MEStorage;)V"),
             ForgeAsm.minecraft_map.mapMethod("appeng/me/storage/NetworkStorage.getAvailableStacks(Lappeng/api/stacks/KeyCounter;)V"),
             ForgeAsm.minecraft_map.mapMethod("appeng/me/storage/NetworkStorage.extract(Lappeng/api/stacks/AEKey;JLappeng/api/config/Actionable;Lappeng/api/networking/security/IActionSource;)V"),
+            ForgeAsm.minecraft_map.mapMethod("appeng/me/storage/NetworkStorage.extract(Lappeng/api/stacks/AEKey;JLappeng/api/config/Actionable;Lappeng/api/networking/security/IActionSource;)J"),
+            ForgeAsm.minecraft_map.mapMethod("n1luik/KAllFix/mixin/mixinfix/ae/NetworkStorageMixin.extract(Lappeng/api/stacks/AEKey;JLappeng/api/config/Actionable;Lappeng/api/networking/security/IActionSource;)J"),
             ForgeAsm.minecraft_map.mapMethod("appeng/me/storage/NetworkStorage.flushQueuedOperations()V"),
             ForgeAsm.minecraft_map.mapMethod("appeng/me/storage/NetworkStorage.mount(ILappeng/api/storage/MEStorage;)V"),
             ForgeAsm.minecraft_map.mapMethod("appeng/me/storage/NetworkStorage.unmount(Lappeng/api/storage/MEStorage;)V"),
             ForgeAsm.minecraft_map.mapMethod("appeng/me/storage/NetworkStorage.insert(Lappeng/api/stacks/AEKey;JLappeng/api/config/Actionable;Lappeng/api/networking/security/IActionSource;)V"),
+            ForgeAsm.minecraft_map.mapMethod("appeng/me/storage/NetworkStorage.insert(Lappeng/api/stacks/AEKey;JLappeng/api/config/Actionable;Lappeng/api/networking/security/IActionSource;)J"),
             ForgeAsm.minecraft_map.mapMethod("appeng/me/service/StorageService.postWatcherUpdate(Lappeng/api/stacks/AEKey;J)V"),
             ForgeAsm.minecraft_map.mapMethod("appeng/me/service/StorageService.addNode(Lappeng/api/networking/IGridNode;Lnet/minecraft/nbt/CompoundTag;)V"),
             ForgeAsm.minecraft_map.mapMethod("appeng/me/service/StorageService.removeNode(Lappeng/api/networking/IGridNode;)V"),
@@ -290,6 +293,10 @@ public class NotErrorAddSynchronized_Asm extends ITransformer2 {
         if (AsmApi.mcVersion.startsWith("1.21")) {
             //mek
             stringsList.add(ForgeAsm.minecraft_map.mapMethod("mekanism/common/lib/multiblock/Structure.removeMultiblock(Lnet/minecraft/world/level/Level;)V"));
+            ////curios
+            //stringsList.add(ForgeAsm.minecraft_map.mapMethod("top/theillusivec4/curios/common/inventory/DynamicStackHandler.setPreviousStackInSlot(ILnet/minecraft/world/item/ItemStack;)V"));
+            //stringsList.add(ForgeAsm.minecraft_map.mapMethod("top/theillusivec4/curios/common/inventory/DynamicStackHandler.grow(I)V"));
+            //stringsList.add(ForgeAsm.minecraft_map.mapMethod("top/theillusivec4/curios/common/inventory/DynamicStackHandler.shrink(I)V"));
             //ae2
             stringsList.add(ForgeAsm.minecraft_map.mapMethod("appeng/me/cluster/MBCalculator.calculateMultiblock(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;)V "));
             stringsList.add(ForgeAsm.minecraft_map.mapMethod("appeng/me/energy/GridEnergyStorage.addNode()V"));

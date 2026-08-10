@@ -15,12 +15,12 @@ public class MBCalculatorFix1 {
 
     @Overwrite(remap = false)
     public static boolean isModificationInProgress() {
-        return modificationInProgress.get() != null;
+        return modificationInProgress.get().get() != null;
     }
 
     @Overwrite(remap = false)
     public static void setModificationInProgress(IAECluster cluster) {
-        IAECluster inProgress = (IAECluster)modificationInProgress.get();
+        IAECluster inProgress = modificationInProgress.get().get();
         if (inProgress != cluster) {
             if (inProgress != null && cluster != null) {
                 throw new IllegalStateException("A modification is already in-progress for: " + String.valueOf(inProgress));

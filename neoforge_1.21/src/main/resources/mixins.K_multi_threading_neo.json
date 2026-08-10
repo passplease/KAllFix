@@ -5,6 +5,8 @@
   "package": "n1luik.K_multi_threading.neoforge.mixin",
   "plugin": "n1luik.K_multi_threading.core.Imixin.Plugin",
   "mixins": [
+    "fix.curios.DynamicStackHandlerMixin",
+    "fix.fastbench.SlotUpdateManagerMixin",
     "fix.lithium.ChunkStatusTrackerMixin",
     "fix.modern_industrialization.ChunkEventListenersMixin",
     "fix.sable.LevelChunkMixin",

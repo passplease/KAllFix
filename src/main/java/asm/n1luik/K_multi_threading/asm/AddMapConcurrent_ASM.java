@@ -1,6 +1,7 @@
 package asm.n1luik.K_multi_threading.asm;
 
 import asm.n1luik.K_multi_threading.asm.mod.valkyrienskies.AddMapConcurrent;
+import asm.n1luik.K_multi_threading.asm.util.AsmApi;
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
 import cpw.mods.modlauncher.TransformingClassLoader;
 import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
@@ -101,8 +102,12 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
             new AsmTarget("net.minecraft.world.level.entity.EntitySectionStorage", false),
             new AsmTarget("net.minecraft.world.level.entity.EntityLookup", false),
             new AsmTarget("appeng.hooks.ticking.TickHandler", true),
-            new AsmTarget("net.minecraft.world.entity.ai.village.poi.PoiManager", false),
             new AsmTarget("appeng.me.service.PathingService", false),
+            new AsmTarget("appeng.me.cells.BasicCellInventory", false, new String[]{},
+                    new MethodInfo[]{
+                            new MethodInfo("getCellItems", null, true, false)
+                    }),
+            new AsmTarget("net.minecraft.world.entity.ai.village.poi.PoiManager", false),
             new AsmTarget("me.desht.pneumaticcraft.common.drone.DroneClaimManager", false),
             new AsmTarget("com.github.alexthe666.iceandfire.entity.util.MyrmexHive", false),
             new AsmTarget("baguchan.tofucraft.CommonEvents", false),
@@ -128,8 +133,18 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
             new AsmTarget("com.wintercogs.beyonddimensions.api.storage.handler.impl.StackHandler", false),
             new AsmTarget("net.minecraft.client.sounds.SoundBufferLibrary", false),
             new AsmTarget("rearth.oritech.api.networking.NetworkManager", false),
+            new AsmTarget("com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorBlockEntity", false),//, new String[0],
+                    //new MethodInfo[]{
+                    //        new MethodInfo(null, null, true, true)
+                    //}),
+            new AsmTarget("net.minecraft.world.level.block.RedstoneTorchBlock", false, new String[0],
+                    new MethodInfo[]{
+                            new MethodInfo(null, null, false, false)
+                    }),
+            new AsmTarget("com.simibubi.create.content.kinetics.belt.BeltHelper", false),
             new AsmTarget("com.simibubi.create.foundation.sound.SoundScapes", false),
             new AsmTarget("com.simibubi.create.content.kinetics.TorquePropagator", false),
+            new AsmTarget("com.simibubi.create.content.logistics.depot.DepotBehaviour", false),
             new AsmTarget("com.simibubi.create.content.fluids.FluidTransportBehaviour", false, new String[0],
                     new MethodInfo[]{
                             new MethodInfo(null, null, false, false)
@@ -149,6 +164,8 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
             new AsmTarget("plus.dragons.createenchantmentindustry.dragonLibLegacy.advancement.critereon.AbstractTrigger", false),
             new AsmTarget("com.teamabnormals.blueprint.common.advancement.EmptyTrigger", false),
             new AsmTarget("net.mehvahdjukaar.supplementaries.common.misc.CooperativePistonData", false),
+            new AsmTarget("com.refinedmods.refinedstorage.common.support.resource.list.FuzzyResourceListImpl", false),
+            new AsmTarget("de.devin.pipesnphysics.engine.EngineTickHandler", false),
             new AsmTarget("appeng.me.service.CraftingService", false),
             new AsmTarget("appeng.api.stacks.KeyCounter", true)
     ));
@@ -157,6 +174,10 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
     //public final Map<String, List<String>> compatible = new HashMap<>();
     public final Map<String, String> typeMapping = new HashMap<>();
     {
+        if (AsmApi.mcVersion.startsWith("1.21")){
+            stringsList.add(new AsmTarget("com.tacz.guns.entity.sync.core.SyncedEntityData", false));
+            stringsList.add(new AsmTarget("net.minecraft.server.PlayerAdvancements", false));
+        }
         typeMapping.put("java/util/HashMap", "java/util/concurrent/ConcurrentHashMap");
         //////////////////////////////////
         typeMapping.put("it/unimi/dsi/fastutil/objects/ReferenceOpenHashSet", "n1luik/K_multi_threading/core/util/concurrent/FalseReferenceOpenHashSet");
@@ -186,6 +207,8 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
         typeMapping.put("it/unimi/dsi/fastutil/objects/ReferenceLinkedOpenHashSet", "n1luik/K_multi_threading/core/util/concurrent/FalseReferenceLinkedOpenHashSet");
         //////////////////////////////////
         typeMapping.put("it/unimi/dsi/fastutil/objects/Object2BooleanOpenHashMap", "n1luik/K_multi_threading/core/util/concurrent/Object2BooleanConcurrentHashMap");
+        //////////////////////////////////
+        typeMapping.put("it/unimi/dsi/fastutil/objects/Object2LongOpenHashMap", "n1luik/K_multi_threading/core/util/concurrent/ConcurrentObject2LongMap");
 
         /*compatible.put("java/util/concurrent/ConcurrentHashMap", Stream.of(
                 "java/util/concurrent/ConcurrentHashMap",
@@ -468,6 +491,13 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
                                         method.instructions.add(instruction);
                                     }
                                     break;
+                                case "it/unimi/dsi/fastutil/objects/Object2LongOpenHashMap":
+                                    if (methodInsnNode.name.equals("<init>") && methodInsnNode.desc.equals("()V")) {
+                                        method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/ConcurrentObject2LongMap", "<init>", "()V", false));
+                                    } else {
+                                        method.instructions.add(instruction);
+                                    }
+                                    break;
                                 case "it/unimi/dsi/fastutil/longs/LongOpenHashSet":
                                     if (methodInsnNode.name.equals("<init>") && methodInsnNode.desc.equals("()V")) {
                                         method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/LongConcurrentHashSet", "<init>", "()V", false));
@@ -478,8 +508,14 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
                                 case "java/util/HashSet":
                                 case "it/unimi/dsi/fastutil/objects/ObjectArraySet":
                                 case "it/unimi/dsi/fastutil/objects/ObjectOpenHashSet":
-                                    if (methodInsnNode.name.equals("<init>") && methodInsnNode.desc.equals("()V")) {
-                                        method.instructions.add(new InsnNode(Opcodes.POP));
+                                    if (methodInsnNode.name.equals("<init>")) {
+                                        if (methodInsnNode.desc.equals("()V")) {
+                                            method.instructions.add(new InsnNode(Opcodes.POP));
+                                        } else if(methodInsnNode.desc.equals("(Ljava/util/Collection;)V")){
+                                            method.instructions.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE, methodInsnNode.owner, "addAll", methodInsnNode.desc));
+                                        } else {
+                                            method.instructions.add(instruction);
+                                        }
                                     } else {
                                         method.instructions.add(instruction);
                                     }
@@ -517,6 +553,8 @@ public class AddMapConcurrent_ASM extends ITransformer2 {
                                         method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/FalseReferenceOpenHashSet"));
                                 case "it/unimi/dsi/fastutil/objects/Object2BooleanOpenHashMap" ->
                                         method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/Object2BooleanConcurrentHashMap"));
+                                case "it/unimi/dsi/fastutil/objects/Object2LongOpenHashMap" ->
+                                        method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/ConcurrentObject2LongMap"));
                                 case "java/util/ArrayList" ->
                                         method.instructions.add(new TypeInsnNode(Opcodes.NEW, "java/util/concurrent/CopyOnWriteArrayList"));
                                 case "it/unimi/dsi/fastutil/objects/ObjectOpenHashSet" ->
