@@ -44,7 +44,7 @@ public class SetterWorldConfigCommand {
             ((IMinecraftServerTickMixin1)v.getSource().getServer()).setK_multi_threading$removeErrorSize(50);
             return 1;
         })).then(Commands.literal("RemoveRemoveErrorSize").executes(v->{
-            ((IMinecraftServerTickMixin1)v.getSource().getServer()).setK_multi_threading$removeErrorSize(0x80000000);
+            ((IMinecraftServerTickMixin1)v.getSource().getServer()).setK_multi_threading$removeErrorSize(0x7fffffff);
             return 1;
         })));
     }

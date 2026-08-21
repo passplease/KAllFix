@@ -28,6 +28,12 @@ public class ChunkMap_Asm extends ITransformer2{
                             } else {
                                 method.instructions.add(instruction);
                             }
+                        } else if (methodInsnNode.owner.equals("it/unimi/dsi/fastutil/longs/Long2ByteOpenHashMap")) {
+                            if (methodInsnNode.name.equals("<init>") && methodInsnNode.desc.equals("()V")) {
+                                method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "n1luik/K_multi_threading/core/util/concurrent/ConcurrentLong2ByteMap", "<init>", "()V", false));
+                            } else {
+                                method.instructions.add(instruction);
+                            }
                         } else {
                             method.instructions.add(instruction);
                         }
@@ -39,6 +45,8 @@ public class ChunkMap_Asm extends ITransformer2{
                         //        "()Lit/unimi/dsi/fastutil/longs/LongSortedSet;"));
                         if (typeInsnNode.desc.equals("it/unimi/dsi/fastutil/longs/LongAVLTreeSet")) {
                             method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/AsyncLongAVLTreeSet"));
+                        } else if (typeInsnNode.desc.equals("it/unimi/dsi/fastutil/longs/Long2ByteOpenHashMap")) {
+                            method.instructions.add(new TypeInsnNode(Opcodes.NEW, "n1luik/K_multi_threading/core/util/concurrent/ConcurrentLong2ByteMap"));
                         } else {
                             method.instructions.add(instruction);
                         }

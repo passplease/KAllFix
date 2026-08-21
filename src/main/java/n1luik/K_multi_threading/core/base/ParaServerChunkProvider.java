@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 
 import asm.n1luik.K_multi_threading.asm.ForgeAsm;
 import asm.n1luik.K_multi_threading.asm.util.AsmApi;
+import asm.n1luik.K_multi_threading.asm.util.AsmApi2;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.longs.Long2ObjectAVLTreeMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -504,8 +505,9 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
             ChunkAccess chunk = lookupChunk(ChunkPos.asLong(chunkX, chunkZ), requiredStatus);
             if (chunk == null) {
                 chunk = KMT$LockChunk(ChunkPos.asLong(chunkX, chunkZ), (l, l2) -> {
+                    long aLong = ChunkPos.asLong(chunkX, chunkZ);
                     if (l2 != null && l.status > requiredStatus.getIndex()){
-                        ChunkAccess c = lookupChunk(ChunkPos.asLong(chunkX, chunkZ), requiredStatus);
+                        ChunkAccess c = lookupChunk(aLong, requiredStatus);
                         if (c != null) {
                             return c;
                         }
@@ -513,9 +515,23 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
                         mainThreadProcessor.managedBlock(ct::isDone);
                         return readChunk(ct.join());
                     }
+                    if (AsmApi2.bootType == AsmApi2.BootType.NEO_FORGE){
+                        if (l.lock > 0) {
+                            ChunkHolder visibleChunkIfPresent = chunkMap.getVisibleChunkIfPresent(aLong);
+                            if (visibleChunkIfPresent != null) {
+                                LevelChunk levelChunk = KMT$currentlyLoading(visibleChunkIfPresent);
+                                if(levelChunk != null)return levelChunk;
+                            }
+                        }
+                    }
                     synchronized (l) {
-                        l.status = requiredStatus.getIndex();
-                        return super.getChunk(chunkX, chunkZ, requiredStatus, load);
+                        l.lock++;
+                        try{
+                            l.status = requiredStatus.getIndex();
+                            return super.getChunk(chunkX, chunkZ, requiredStatus, load);
+                        }finally {
+                            l.lock--;
+                        }
                     }
                 });
                 if (requiredStatus == ChunkStatus.FULL) {
@@ -816,6 +832,15 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         }
     }
 
+    public LevelChunk KMT$currentlyLoading(ChunkHolder chunkholder) {
+        try {
+            return (LevelChunk) currentlyLoading.get(chunkholder);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     @Override
     @Nullable
     public LevelChunk getChunkNow(int chunkX, int chunkZ) {
@@ -836,13 +861,9 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
         if (chunkholder == null) {
             return null;
         } else {
-            try {
-                Object o = currentlyLoading.get(chunkholder);
-                if (o != null)
-                    return (LevelChunk) o; // Forge: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
-            } catch (IllegalAccessException e) {
-                return null;
-            }
+            var o = KMT$currentlyLoading(chunkholder);
+            if (o != null)
+                return (LevelChunk) o; // Forge: If the requested chunk is loading, bypass the future chain to prevent a deadlock.
             Object either = ((CompletableFuture)chunkholder.getFutureIfPresent(ChunkStatus.FULL)).getNow(null);
             if (either == null) {
                 return null;
@@ -1258,6 +1279,7 @@ public class ParaServerChunkProvider extends ServerChunkCache implements IWorldC
 
     public static final class LockObj {
         public volatile int status;
+        public volatile int lock;
     }
 
     private class MyBooleanSupplier implements BooleanSupplier {

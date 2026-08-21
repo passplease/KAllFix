@@ -13,28 +13,57 @@ import java.util.*;
 //D:\-saa\openjdk-11+28_windows-x64_bin\jdk-11\bin/java.exe -agentpath:D:\JPROFI~2\bin\WINDOW~1\jprofilerti.dll=port=12345 -cp log4j-iostreams-2.17.1.jar --add-opens java.base/jdk.internal.loader=ALL-UNNAMED --illegal-access=warn -Xmx10G -Xms10G -jar forge-1.16.5-36.2.39-launcher.jar
 @SuppressWarnings("all")
 public class Unsafe {
-    public static final sun.misc.Unsafe unsafe;
+    public static class Unsafe21 {
+        public static final sun.misc.Unsafe unsafe;
+        static {
+
+            try {
+                Field theUnsafe = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+                theUnsafe.setAccessible(true);
+                unsafe = (sun.misc.Unsafe) theUnsafe.get(null);
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
     public static final MethodHandles.Lookup lookup;
     public static final MethodHandle defineClass;
+    public static final sun.misc.Unsafe unsafe = Unsafe21.unsafe;
+
+
+    //public void ensureInit(Class<?> clazz) {
+    //    try {
+    //        // 使用 MethodHandles.Lookup 来确保类初始化
+    //        MethodHandles.lookup().ensureInitialized(clazz);
+    //    } catch (IllegalAccessException e) {
+    //        // 处理异常，例如记录日志或抛出运行时异常
+    //        throw new RuntimeException("Failed to ensure class is initialized", e);
+    //    }
+    //}
+
 
     static {
         try {
             Field theUnsafe = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
             theUnsafe.setAccessible(true);
-            unsafe = (sun.misc.Unsafe) theUnsafe.get(null);
-            unsafe.ensureClassInitialized(MethodHandles.Lookup.class);
+            MethodHandles.lookup().ensureInitialized(MethodHandles.Lookup.class);//unsafe.ensureClassInitialized(MethodHandles.Lookup.class);
             Field field = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
             Object base = unsafe.staticFieldBase(field);
             long offset = unsafe.staticFieldOffset(field);
-            lookup = (MethodHandles.Lookup) unsafe.getObject(base, offset);
+            //field.setAccessible(true);
+            lookup = (MethodHandles.Lookup) //field.get(null);//
+             unsafe.getObject(base, offset);
             MethodHandle mh;
             try {
-                Method sunMisc = unsafe.getClass().getMethod("defineClass", String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class);
-                mh = lookup.unreflect(sunMisc).bindTo(unsafe);
+                Method sunMisc = Class.forName("sun.misc.Unsafe").getMethod("defineClass", String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class);
+                mh = lookup.unreflect(sunMisc).bindTo(Unsafe21.unsafe);
             } catch (Exception e) {
                 Class<?> jdkInternalUnsafe = Class.forName("jdk.internal.misc.Unsafe");
                 Field internalUnsafeField = jdkInternalUnsafe.getDeclaredField("theUnsafe");
-                Object internalUnsafe = unsafe.getObject(unsafe.staticFieldBase(internalUnsafeField), unsafe.staticFieldOffset(internalUnsafeField));
+                //internalUnsafeField.setAccessible(true);
+                Object internalUnsafe = //internalUnsafeField.get(null);//
+                 unsafe.getObject(unsafe.staticFieldBase(internalUnsafeField), unsafe.staticFieldOffset(internalUnsafeField));
                 Method internalDefineClass = jdkInternalUnsafe.getMethod("defineClass", String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class);
                 mh = lookup.unreflect(internalDefineClass).bindTo(internalUnsafe);
             }
@@ -55,7 +84,7 @@ public class Unsafe {
     @SuppressWarnings("unchecked")
     public static <T> T makeEnum(Class<T> cl, String name, int i, List<Class<?>> ctorTypes, List<Object> ctorParams) {
         try {
-            unsafe.ensureClassInitialized(cl);
+            lookup.ensureInitialized(cl);
             List<Class<?>> ctor = new ArrayList<>(ctorTypes.size() + 2);
             ctor.add(String.class);//名字
             ctor.add(int.class);//第几个元素
@@ -79,7 +108,7 @@ public class Unsafe {
      */
     public static <T> MethodHandle makeEnum(Class<T> cl, Class<?>... ctorTypes) {
         try {
-            unsafe.ensureClassInitialized(cl);
+            lookup.ensureInitialized(cl);
             List<Class<?>> ctor = new ArrayList<>(ctorTypes.length + 2);
             ctor.add(String.class);//名字
             ctor.add(int.class);//第几个元素
@@ -90,16 +119,14 @@ public class Unsafe {
             throw new RuntimeException(e);
         }
     }
-
     public static <T> T getStatic(Class<?> cl, String name) {
         try {
-            unsafe.ensureClassInitialized(cl);
+            MethodHandles.lookup().ensureInitialized(cl);
             Field field = cl.getDeclaredField(name);
-            Object materialByNameBase = unsafe.staticFieldBase(field);
-            long materialByNameOffset = unsafe.staticFieldOffset(field);
-            return (T) unsafe.getObject(materialByNameBase, materialByNameOffset);
+            field.setAccessible(true); // 替代 Unsafe 的权限绕过
+            return (T) field.get(null); // 静态字段传 null
         } catch (Exception e) {
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
@@ -299,25 +326,25 @@ public class Unsafe {
         }
     }
 
-    public static long addressOf(Object o) {
-
-        Object[] array = new Object[]{o};
-
-        long baseOffset = unsafe.arrayBaseOffset(Object[].class);
-        int addressSize = unsafe.addressSize();
-        long objectAddress;
-        switch (addressSize) {
-            case 4:
-                objectAddress = unsafe.getInt(array, baseOffset);
-                break;
-            case 8:
-                objectAddress = unsafe.getLong(array, baseOffset);
-                break;
-            default:
-                throw new RuntimeException("你的内存一定大于9223372036854775807bit了吧，或者你要瞎搞jvm好吗这玩意他不行搞 或者你是一个非常nb的人你会印cpu？？？ 我整个紧适用x86或amd64也可能是arm64但是他不适用与未来啊老弟     因为描述描述内存他有这么大啊: " + addressSize);
-        }
-        return (objectAddress);
-    }
+//    public static long addressOf(Object o) {
+//
+//        Object[] array = new Object[]{o};
+//
+//        long baseOffset = unsafe.arrayBaseOffset(Object[].class);
+//        int addressSize = unsafe.addressSize();
+//        long objectAddress;
+//        switch (addressSize) {
+//            case 4:
+//                objectAddress = unsafe.getInt(array, baseOffset);
+//                break;
+//            case 8:
+//                objectAddress = unsafe.getLong(array, baseOffset);
+//                break;
+//            default:
+//                throw new RuntimeException("你的内存一定大于9223372036854775807bit了吧，或者你要瞎搞jvm好吗这玩意他不行搞 或者你是一个非常nb的人你会印cpu？？？ 我整个紧适用x86或amd64也可能是arm64但是他不适用与未来啊老弟     因为描述描述内存他有这么大啊: " + addressSize);
+//        }
+//        return (objectAddress);
+//    }
 
     public static Class defineClass(String name, byte[] b, ProtectionDomain pd){
         try {
@@ -387,7 +414,7 @@ public class Unsafe {
     public static long getTypeFieldAddress(Class<?> c, Class<?> type) {
         for (Field declaredField : c.getDeclaredFields()) {
             if (declaredField.getType().isAssignableFrom(type)) {
-                return addressOf(declaredField);
+                return getFieldAddress(declaredField);
             }
         }
         throw new RuntimeException("没有找到字段 " + c + " " + type);

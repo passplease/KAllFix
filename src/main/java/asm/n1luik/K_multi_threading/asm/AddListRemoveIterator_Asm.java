@@ -16,6 +16,9 @@ import java.util.Set;
 @Slf4j
 public class AddListRemoveIterator_Asm extends ITransformer2 {
     public final List<String> stringsList = new ArrayList<>(List.of(
+            "com.simibubi.create.content.logistics.depot.DepotBehaviour",
+            "com.simibubi.create.content.processing.basin.BasinBlockEntity",
+            "com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorBlockEntity",
             "com.simibubi.create.content.fluids.FluidNetwork",
             "net.pinkcats.createlazytick.mixin.OptElement.belt.BeltTickMixin"
     ));

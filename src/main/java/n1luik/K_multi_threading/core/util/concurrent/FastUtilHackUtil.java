@@ -1425,6 +1425,110 @@ public class FastUtilHackUtil {
 		return new ConvertingObjectSet<Map.Entry<Long, Byte>, Long2ByteMap.Entry>(map.entrySet(), FastUtilHackUtil::longByteEntryForwards, FastUtilHackUtil::longByteEntryBackwards);
 	}
 
+	private static Int2IntMap.Entry intIntEntryForwards(Map.Entry<Integer, Integer> entry) {
+		return new Int2IntMap.Entry() {
+
+			@Override
+			public Integer getValue() {
+				return entry.getValue();
+			}
+
+			@Override
+			public int setValue(int value) {
+				return entry.setValue(value);
+			}
+
+			@Override
+			public int getIntValue() {
+				return entry.getValue();
+			}
+
+			@Override
+			public int getIntKey() {
+				return entry.getKey();
+			}
+
+			@Override
+			public boolean equals(Object obj) {
+				if (obj == entry) {
+					return true;
+				}
+				return super.equals(obj);
+			}
+
+			@Override
+			public int hashCode() {
+				return entry.hashCode();
+			}
+
+		};
+	}
+
+	private static <T> Map.Entry<Integer, Integer> intIntEntryBackwards(Int2IntMap.Entry entry) {
+		return entry;
+	}
+
+	public static ObjectSet<Int2IntMap.Entry> entrySetIntIntWrap(Map<Integer, Integer> map) {
+		return new ConvertingObjectSet<Map.Entry<Integer, Integer>, Int2IntMap.Entry>(map.entrySet(), FastUtilHackUtil::intIntEntryForwards, FastUtilHackUtil::intIntEntryBackwards);
+	}
+
+	private static Int2BooleanMap.Entry intBooleanEntryForwards(Map.Entry<Integer, Boolean> entry) {
+		return new Int2BooleanMap.Entry() {
+
+			@Override
+			public Integer getKey() {
+				return entry.getKey();
+			}
+
+			@Override
+			public int getIntKey() {
+				return entry.getKey();
+			}
+
+			@Override
+			public Boolean getValue() {
+				return entry.getValue();
+			}
+
+			@Override
+			public boolean getBooleanValue() {
+				return entry.getValue();
+			}
+
+			@Override
+			public Boolean setValue(Boolean value) {
+				return entry.setValue(value);
+			}
+
+			@Override
+			public boolean setValue(boolean value) {
+				return entry.setValue(value);
+			}
+
+			@Override
+			public boolean equals(Object obj) {
+				if (obj == entry) {
+					return true;
+				}
+				return super.equals(obj);
+			}
+
+			@Override
+			public int hashCode() {
+				return entry.hashCode();
+			}
+
+		};
+	}
+
+	private static Map.Entry<Integer, Boolean> intBooleanEntryBackwards(Int2BooleanMap.Entry entry) {
+		return entry;
+	}
+
+	public static ObjectSet<Int2BooleanMap.Entry> entrySetIntBooleanWrap(Map<Integer, Boolean> map) {
+		return new ConvertingObjectSet<Map.Entry<Integer, Boolean>, Int2BooleanMap.Entry>(map.entrySet(), FastUtilHackUtil::intBooleanEntryForwards, FastUtilHackUtil::intBooleanEntryBackwards);
+	}
+
 
 	static class WrappingIntIterator implements IntBidirectionalIterator {
 

@@ -19,7 +19,9 @@ public class AllAddSynchronized_Asm extends ITransformer2 {
             //百年战争
             ForgeAsm.minecraft_map.mapClass("ydmsama/hundred_years_war/main/entity/utils/PathingTaskManager"),
             //lithium
-            ForgeAsm.minecraft_map.mapClass("me/jellysquid/mods/lithium/common/world/listeners/WorldBorderListenerOnceMulti")
+            ForgeAsm.minecraft_map.mapClass("me/jellysquid/mods/lithium/common/world/listeners/WorldBorderListenerOnceMulti"),
+            //sable
+            ForgeAsm.minecraft_map.mapClass("dev/ryanhcode/sable/physics/impl/rapier/Rapier3D")
     ));
 
     int posfilter = Opcodes.ACC_PUBLIC;

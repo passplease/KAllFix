@@ -279,6 +279,8 @@ public class Base {
         //}
         Base.LOGGER.info("threadMax {}",threadMax);
         FixGetterRoot.cinit();
-        //new InfRunPos().start();
+        if(System.getProperty("KMT-cvhjfg") != null) {
+            new InfRunPos().start();
+        }
     }
 }

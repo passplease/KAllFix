@@ -5,15 +5,18 @@
   "package": "n1luik.K_multi_threading.neoforge.mixin",
   "plugin": "n1luik.K_multi_threading.core.Imixin.Plugin",
   "mixins": [
+    "fix.create.ChainConveyorBlockEntityMixin",
     "fix.curios.DynamicStackHandlerMixin",
     "fix.fastbench.SlotUpdateManagerMixin",
     "fix.lithium.ChunkStatusTrackerMixin",
     "fix.modern_industrialization.ChunkEventListenersMixin",
+    "fix.rpc.RPCTargetMixin",
     "fix.sable.LevelChunkMixin",
     "fix.xycraft.ExtractorTickSystemMixin",
     "impl.MinecraftServerImpl1",
     "impl.ParaServerChunkProviderMixin",
     "minecraftfix.BlockFix1",
-    "minecraftfix.ChunkMapFix1"
+    "minecraftfix.ChunkMapFix1",
+    "minecraftfix.EntityFix1"
   ]
 }

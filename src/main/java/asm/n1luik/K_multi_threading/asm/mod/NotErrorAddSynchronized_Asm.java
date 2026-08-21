@@ -172,6 +172,9 @@ public class NotErrorAddSynchronized_Asm extends ITransformer2 {
             ForgeAsm.minecraft_map.mapMethod("com/github/alexthe666/alexsmobs/entity/EntityFly$AnnoyZombieGoal.m_8037_()V"),
             ForgeAsm.minecraft_map.mapMethod("com/github/alexthe666/alexsmobs/entity/EntityFly$AnnoyZombieGoal.m_8036_()Z"),
             ForgeAsm.minecraft_map.mapMethod("com/github/alexthe666/alexsmobs/entity/EntityFly$AnnoyZombieGoal.m_8041_()V"),
+            //l2damagetracker
+            ForgeAsm.minecraft_map.mapMethod("dev/xkmc/l2damagetracker/contents/attack/DamageAccumulator.run(FLdev/xkmc/l2damagetracker/contents/attack/LogEntry;Ljava/util/function/Consumer;Ljava/util/function/Consumer;)F"),
+            ForgeAsm.minecraft_map.mapMethod("dev/xkmc/l2damagetracker/contents/attack/DamageAccumulator.run(FLdev/xkmc/l2damagetracker/contents/logging/AttackLogEntry;Ljava/util/function/Consumer;Ljava/util/function/Consumer;Ldev/xkmc/l2damagetracker/contents/attack/DamageModifier;)F"),
             //气动工艺
             ForgeAsm.minecraft_map.mapMethod("me/desht/pneumaticcraft/common/drone/DroneClaimManager.getInstance(Lnet/minecraft/world/level/Level;)Lme/desht/pneumaticcraft/common/drone/DroneClaimManager;"),
             ForgeAsm.minecraft_map.mapMethod("me/desht/pneumaticcraft/common/amadron/AmadronOfferManager.compileActiveOffersList()V"),
@@ -187,6 +190,8 @@ public class NotErrorAddSynchronized_Asm extends ITransformer2 {
             ForgeAsm.minecraft_map.mapMethod("me/desht/pneumaticcraft/common/amadron/AmadronOfferManager.checkForFullRebuild(Lnet/minecraft/world/level/Level;)V"),
             //瓦尔基里
             ForgeAsm.minecraft_map.mapMethod("org/valkyrienskies/core/impl/util/assertions/stages/TickStageEnforcerImpl.stage(Ljava/lang/Object;)V"),
+            //esl
+            ForgeAsm.minecraft_map.mapMethod("org/antarcticgardens/esl/neoforge/energy/F2EEnergyStorageAdapter.getOrCreate(Lnet/neoforged/neoforge/energy/IEnergyStorage;)Lorg/antarcticgardens/esl/neoforge/energy/F2EEnergyStorageAdapter;"),
             //gtceu
             ForgeAsm.minecraft_map.mapMethod("com/regtechceu/gtceu/api/machine/MetaMachine.serverTick()V"),
             ForgeAsm.minecraft_map.mapMethod("com/regtechceu/gtceu/api/machine/MetaMachine.executeTick()V"),

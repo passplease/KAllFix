@@ -24,11 +24,12 @@ public abstract class MinecraftServerImpl3 {
     private static final boolean K_multi_threading$ConnectionLock = Boolean.getBoolean("KMT-LoginMultiThreading.ConnectionLock");
     @Unique
     volatile long K_multi_threading$nullJ1 = 0;
+    final Object K_multi_threading$nullJ2 = new Object();
     @Redirect(method = "tickChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerConnectionListener;tick()V"))
     public void impl1(ServerConnectionListener instance){
         Base.ForkJoinPool_ ex = Base.getEx();
         //这样可以保证tick不会无限创建任务
-        synchronized (getConnection().getConnections()) {
+        synchronized (K_multi_threading$nullJ2) {
             K_multi_threading$nullJ1 = 1;
         }
         RecursiveTask<?> task = new RecursiveTask<>() {
@@ -45,7 +46,7 @@ public abstract class MinecraftServerImpl3 {
     public void impl2(BooleanSupplier p_129954_, CallbackInfo ci){
         if (K_multi_threading$ConnectionLock) {
             //ServerConnectionListener.tick会sync connections通过在sync这个就可以同步
-            synchronized (getConnection().getConnections()) {
+            synchronized (K_multi_threading$nullJ2) {
                 K_multi_threading$nullJ1 = 1;
             }
         }

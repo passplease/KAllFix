@@ -12,6 +12,7 @@ import net.minecraft.server.level.progress.ChunkProgressListener;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.ImposterProtoChunk;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.entity.ChunkStatusUpdateListener;
@@ -26,6 +27,7 @@ import org.spongepowered.asm.mixin.Unique;
 import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @Mixin(value = ParaServerChunkProvider.class)
@@ -94,6 +96,10 @@ public abstract class ParaServerChunkProviderMixin extends ServerChunkCache {
     @Overwrite
     private CompletableFuture genTask(ChunkAccess o){
         return CompletableFuture.completedFuture(ChunkResult.of(o));
+    }
+    @Overwrite
+    public LevelChunk KMT$currentlyLoading(ChunkHolder chunkholder) {
+        return chunkholder.currentlyLoading;
     }
 
 }

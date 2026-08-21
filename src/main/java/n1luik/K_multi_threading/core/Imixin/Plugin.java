@@ -41,7 +41,7 @@ public class Plugin implements IMixinConfigPlugin {
             case "n1luik.K_multi_threading.core.mixin.minecraftfix.ServerChunkCacheFix2" -> (!(isModLoaded("harium") || isModLoaded("canary") || isModLoaded("radium") || isModLoaded("lithium"))) || Boolean.getBoolean("KMT-OpenVanillaServerChunkCache");
             case "n1luik.K_multi_threading.core.mixin.minecraftfix.LegacyRandomSourceFix2" -> !isModLoaded("structureessentials");
             case "n1luik.K_multi_threading.core.mixin.minecraftfix.ServerWatchdogFix1" -> !isModLoaded("fullstackwatchdog");
-            case "n1luik.K_multi_threading.neoforge.mixin.fix.sable.LevelChunkMixin" -> isModLoaded("observable");
+            case "n1luik.K_multi_threading.neoforge.mixin.fix.sable.LevelChunkMixin" -> isModLoaded("sable");
             case "n1luik.K_multi_threading.core.mixin.impl.LevelImpl2" -> isModLoaded("observable");
             case "n1luik.K_multi_threading.core.mixin.impl.LevelImpl1" -> !isModLoaded("observable");
             case "n1luik.K_multi_threading.core.mixin.minecraftfix.FlowingFluidFix1" -> AsmApi.mcVersion.startsWith("1.19") || AsmApi.mcVersion.startsWith("1.20");

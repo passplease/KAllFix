@@ -14,7 +14,9 @@ import asm.n1luik.K_multi_threading.asm.mod.create.BeltInventory_ASM;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateGeneratingKineticBlockEntity_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateTrackBlockSynchronized_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.create.CreateTrackGraphSynchronized_Asm;
+import asm.n1luik.K_multi_threading.asm.mod.create_factory_logistics.GenericPromiseQueueMixin_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.createenchantmentindustry.FluidTankBlockIsNullFix1_Asm;
+import asm.n1luik.K_multi_threading.asm.mod.curios.CurioInventory_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.gtceu.ImplMetaMachine1_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.lithium.ChunkMap_Asm;
 import asm.n1luik.K_multi_threading.asm.mod.lithium.LithiumGetChunkSynchronized_Asm;
@@ -151,6 +153,8 @@ public class ForgeAsm extends AgentAPI {
                 //new Lithium$TypeFilterableListMixin_Asm(),
                 new CreateGeneratingKineticBlockEntity_Asm(),
                 new ServerChunkCacheMixin_Asm(),
+                new CurioInventory_Asm(),
+                new GenericPromiseQueueMixin_Asm(),
                 new AddMapConcurrent_ASM(),
                 new NoiseChunkGeneratorMixinFix1_Asm(),
                 new asm.n1luik.K_multi_threading.asm.ChunkMap_Asm(),

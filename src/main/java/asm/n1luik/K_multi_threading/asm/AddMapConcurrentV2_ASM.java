@@ -1,6 +1,7 @@
 package asm.n1luik.K_multi_threading.asm;
 
 import asm.n1luik.K_multi_threading.asm.util.ITransformer2;
+import com.ishland.c2me.base.common.scheduler.ScheduledTask;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +11,7 @@ import org.objectweb.asm.tree.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 @Slf4j
 public class AddMapConcurrentV2_ASM extends ITransformer2 {
@@ -33,13 +35,19 @@ public class AddMapConcurrentV2_ASM extends ITransformer2 {
     }*/
     private final static AsmTarget Empty = new AsmTarget("", false);
     public final List<AsmTarget> stringsList = new ArrayList<>(List.of(
+            new AsmTarget("net.neoforged.neoforge.attachment.AttachmentHolder", false, new String[0],
+                    new MethodInfo[]{
+                            new MethodInfo("getExistingDataOrNull", null, false, false)
+                    }),
             new AsmTarget("com.simibubi.create.content.fluids.FluidTransportBehaviour", false, new String[0],
                     new MethodInfo[]{
                             new MethodInfo(null, null, false, false)
                     }),
+            new AsmTarget("com.hlysine.create_connected.content.redstonelinkwildcard.LinkWildcardNetworkHandler", false),
             new AsmTarget("com.simibubi.create.content.redstone.link.RedstoneLinkNetworkHandler", false),
             new AsmTarget("com.simibubi.create.content.logistics.tunnel.BrassTunnelBlockEntity", false),
             new AsmTarget("aztech.modern_industrialization.machines.multiblocks.world.ChunkEventListeners", false),
+            new AsmTarget("it.hurts.sskirillss.relics.utils.ServerScheduler", false),
             new AsmTarget("com.ldtteam.structurize.util.BlockUtils", false),
             new AsmTarget("net.minecraft.world.level.block.RedstoneTorchBlock", false),
             new AsmTarget("net.minecraft.world.level.timers.TimerQueue", false)
@@ -51,6 +59,7 @@ public class AddMapConcurrentV2_ASM extends ITransformer2 {
     {
         typeMapping.put("java.util.PriorityQueue".replace('.', '/'), "java.util.concurrent.PriorityBlockingQueue".replace('.', '/'));
         typeMapping.put("java.util.IdentityHashMap".replace('.', '/'), "n1luik.K_multi_threading.core.util.concurrent.LockIdentityHashMap".replace('.', '/'));
+        typeMapping.put("java.util.LinkedList".replace('.', '/'), "java.util.concurrent.ConcurrentLinkedDeque".replace('.', '/'));
     }
     public String descMap(String desc){
         int array = 0;
@@ -178,6 +187,13 @@ public class AddMapConcurrentV2_ASM extends ITransformer2 {
                                         method.instructions.add(instruction);
                                     }
                                     break;
+                                case "java/util/LinkedList":
+                                    if (methodInsnNode.name.equals("<init>")) {
+                                        method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/util/concurrent/ConcurrentLinkedDeque", "<init>", methodInsnNode.desc, false));
+                                    } else {
+                                        method.instructions.add(instruction);
+                                    }
+                                    break;
                                 default:
                                     method.instructions.add(instruction);
 
@@ -185,6 +201,7 @@ public class AddMapConcurrentV2_ASM extends ITransformer2 {
                             }
                         } else if (instruction.getOpcode() == Opcodes.NEW && instruction instanceof TypeInsnNode typeInsnNode) {
                             switch (typeInsnNode.desc) {
+                                case "java/util/LinkedList" -> method.instructions.add(new TypeInsnNode(Opcodes.NEW, "java/util/concurrent/ConcurrentLinkedDeque"));
                                 case "java/util/PriorityQueue" -> method.instructions.add(new TypeInsnNode(Opcodes.NEW, "java/util/concurrent/PriorityBlockingQueue"));
                                 case "java/util/IdentityHashMap" -> {
 //                                    method.instructions.add(instruction);

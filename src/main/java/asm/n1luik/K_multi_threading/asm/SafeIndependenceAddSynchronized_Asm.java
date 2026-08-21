@@ -28,15 +28,18 @@ public class SafeIndependenceAddSynchronized_Asm extends ITransformer2 {
                 new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.removeEntity(Lnet/minecraft/world/entity/Entity;)V"), "kmt-ChunkMap.Entity"),
                 new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.addEntity(Lnet/minecraft/world/entity/Entity;)V"), "kmt-ChunkMap.Entity"),
                 new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.move(Lnet/minecraft/server/level/ServerPlayer;)V"), null),
-                new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.tickBlockEntities()V"), null),
+                new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkHolder.broadcastChanges(Lnet/minecraft/world/level/chunk/LevelChunk;)V"), null),
+                new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/Level.tickBlockEntities()V"), null)
                 //new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/DistanceManager.addPlayer(Lnet/minecraft/core/SectionPos;Lnet/minecraft/server/level/ServerPlayer;)V"), "kmt-fixPlayer"),
                 //new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/DistanceManager.removePlayer(Lnet/minecraft/core/SectionPos;Lnet/minecraft/server/level/ServerPlayer;)V"), "kmt-fixPlayer"),
-                new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.setBlockState(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/level/block/state/BlockState;"), null)
         ));
 
         String ss2 = AsmApi.mcVersion;
         if (ss2.startsWith("1.20") || ss2.startsWith("1.19")) {
             list2.add(new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.playerLoadedChunk(Lnet/minecraft/server/level/ServerPlayer;Lorg/apache/commons/lang3/mutable/MutableObject;Lnet/minecraft/world/level/chunk/LevelChunk;)V"), null));
+        }
+        if (!AsmApi.isModLoaded("sable")){
+            list2.add(new IndependenceAddSynchronized_Asm.ReadBuf(ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/chunk/LevelChunk.setBlockState(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/level/block/state/BlockState;"), null));
         }
 
 

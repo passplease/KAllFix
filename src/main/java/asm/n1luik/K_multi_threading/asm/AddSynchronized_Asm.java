@@ -67,7 +67,7 @@ public class AddSynchronized_Asm extends ITransformer2 {
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.updateChunkScheduling(JILnet/minecraft/server/level/ChunkHolder;I)Lnet/minecraft/server/level/ChunkHolder;"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.playerLoadedChunk(Lnet/minecraft/server/level/ServerPlayer;Lorg/apache/commons/lang3/mutable/MutableObject;Lnet/minecraft/world/level/chunk/LevelChunk;)V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.addEntity(Lnet/minecraft/world/entity/Entity;)V"),
-            ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.markPositionReplaceable(Lnet/minecraft/world/level/ChunkPos;)V"),
+            //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.markPositionReplaceable(Lnet/minecraft/world/level/ChunkPos;)V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.tick()V"),
             //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.promoteChunkMap()Z"),
             ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.isExistingChunkFull(Lnet/minecraft/world/level/ChunkPos;)Z"),
@@ -270,7 +270,7 @@ public class AddSynchronized_Asm extends ITransformer2 {
                     ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/storage/DimensionDataStorage.get(Ljava/util/function/Function;Ljava/lang/String;)Lnet/minecraft/world/level/saveddata/SavedData;"),
                     ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.lambda$getChunkRangeFuture$4(IIILjava/util/List;)Lcom/mojang/datafixers/util/Either;"),
                     ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.lambda$protoChunkToFullChunk$34(Lnet/minecraft/server/level/ChunkHolder;Lnet/minecraft/world/level/chunk/ChunkAccess;)Lnet/minecraft/world/level/chunk/ChunkAccess;"),
-                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.markPosition(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/world/level/chunk/ChunkStatus$ChunkType;)B"),
+                    //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.markPosition(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/world/level/chunk/ChunkStatus$ChunkType;)B"),
                     ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.lambda$scheduleUnload$14(Lnet/minecraft/server/level/ChunkHolder;Ljava/util/concurrent/CompletableFuture;JLnet/minecraft/world/level/chunk/ChunkAccess;)V"),
                     ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/effect/MobEffect.addAttributeModifiers(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/ai/attributes/AttributeMap;I)V"),
                     ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/Entity.getFeetBlockState()Lnet/minecraft/world/level/block/state/BlockState;"),
@@ -279,11 +279,12 @@ public class AddSynchronized_Asm extends ITransformer2 {
                     ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.fillFromNoise(Ljava/util/concurrent/Executor;Lnet/minecraft/world/level/levelgen/blending/Blender;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/StructureManager;Lnet/minecraft/world/level/chunk/ChunkAccess;)Ljava/util/concurrent/CompletableFuture;"),
                     ForgeAsm.minecraft_map.mapMethod("net/minecraft/network/Connection.sendPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V")
             ));
-        }else if (s.startsWith("1.21.")){
+        }else if (s.startsWith("1.21")){
             stringsList.addAll(List.of(
                     ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/level/storage/DimensionDataStorage.get(Lnet/minecraft/world/level/saveddata/SavedData$Factory;Ljava/lang/String;)Lnet/minecraft/world/level/saveddata/SavedData;"),
-                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.markPosition(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/world/level/chunk/status/ChunkType;)B"),
+                    //ForgeAsm.minecraft_map.mapMethod("net/minecraft/server/level/ChunkMap.markPosition(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/world/level/chunk/status/ChunkType;)B"),
                     ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/effect/MobEffect.addAttributeModifiers(Lnet/minecraft/world/entity/ai/attributes/AttributeMap;I)V"),
+                    ForgeAsm.minecraft_map.mapMethod("net/minecraft/world/entity/LivingEntity.dropAllDeathLoot(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;)V"),
                     ForgeAsm.minecraft_map.mapMethod("net/minecraft/network/Connection.sendPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;Z)V")
             ));
         }
